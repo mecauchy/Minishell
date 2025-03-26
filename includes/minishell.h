@@ -6,9 +6,10 @@
 /*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:02:17 by vluo              #+#    #+#             */
-/*   Updated: 2025/03/26 14:39:22 by mcauchy-         ###   ########.fr       */
+/*   Updated: 2025/03/26 14:46:45 by mcauchy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
@@ -31,6 +32,7 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <stdlib.h>
+# include <strings.h>
 # include <unistd.h>
 # include <linux/limits.h>
 # include <limits.h>
