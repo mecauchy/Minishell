@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   redirection.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/23 16:12:52 by mcauchy-          #+#    #+#             */
-/*   Updated: 2025/03/25 17:47:56 by vluo             ###   ########.fr       */
+/*   Updated: 2025/03/26 14:03:58 by mcauchy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-/*				------EXEC------
+/*								------EXEC------
 
 1/ TOKENISATION ->	decouper la ligne de cmd (**av) en tokens : 
 					- mot (ex : cat), 
