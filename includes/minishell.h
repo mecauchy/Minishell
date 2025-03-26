@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:02:17 by vluo              #+#    #+#             */
-/*   Updated: 2025/03/26 14:46:45 by mcauchy-         ###   ########.fr       */
+/*   Updated: 2025/03/26 15:55:53 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,6 @@ struct s_redir	*next; -> Au cas ou il y a plusieurs redirections
 typedef struct s_redir
 {
 	char			*file;
-	// int		type;
 	char			*type;
 	struct s_redir	*next;
 }				t_redir;
