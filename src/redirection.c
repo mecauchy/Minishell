@@ -6,7 +6,7 @@
 /*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/23 16:12:52 by mcauchy-          #+#    #+#             */
-/*   Updated: 2025/03/26 14:39:21 by mcauchy-         ###   ########.fr       */
+/*   Updated: 2025/03/26 16:02:11 by mcauchy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -304,36 +304,6 @@ void	ft_exec(char **av)
 	wo_redir = clean_without_redir(av);
 	if (redir >= 1)
 		stock_redir(av);
-}
-
-void	free_str(char **cmd)
-{
-	int	i = 0;
-
-	while (cmd[i])
-	{
-		free(cmd[i]);
-		i++;
-	}
-	free(cmd);
-}
-
-char	*ft_strdup(const char *s)
-{
-	char	*dup;
-	int		i;
-
-	dup = malloc((strlen(s) + 1) * sizeof(char));
-	if (dup == 0)
-		return (0);
-	i = 0;
-	while (s[i])
-	{
-		dup[i] = s[i];
-		i ++;
-	}
-	dup[i] = '\0';
-	return (dup);
 }
 
 // int	main(int ac, char **av)
