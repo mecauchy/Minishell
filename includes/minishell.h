@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:02:17 by vluo              #+#    #+#             */
-/*   Updated: 2025/03/25 17:34:45 by vluo             ###   ########.fr       */
+/*   Updated: 2025/03/26 14:39:22 by mcauchy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@
 # include <limits.h>
 
 /*
+TESSSST
 Comprend le file avec les delimiteurs stockees (type = <<, file = "output.txt")
 struct s_redir	*next; -> Au cas ou il y a plusieurs redirections
 */
