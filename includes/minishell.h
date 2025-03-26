@@ -6,9 +6,10 @@
 /*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:02:17 by vluo              #+#    #+#             */
-/*   Updated: 2025/03/26 14:34:35 by mcauchy-         ###   ########.fr       */
+/*   Updated: 2025/03/26 14:46:45 by mcauchy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
@@ -37,6 +38,7 @@
 # include <limits.h>
 
 /*
+TESSSST
 Comprend le file avec les delimiteurs stockees (type = <<, file = "output.txt")
 struct s_redir	*next; -> Au cas ou il y a plusieurs redirections
 */
