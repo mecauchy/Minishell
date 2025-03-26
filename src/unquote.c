@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 17:06:45 by vluo              #+#    #+#             */
-/*   Updated: 2025/03/25 18:37:23 by vluo             ###   ########.fr       */
+/*   Updated: 2025/03/26 15:36:24 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,9 @@ static char	*get_squote(char *line)
 {
 	int		i;
 
-	i = 1;
-	while (line[i])
-		if (line[i++] == '\'')
+	i = 0;
+	while (line[++i])
+		if (line[i] == '\'')
 			break ;
 	if (!line[i])
 		return (ft_strdup(line));

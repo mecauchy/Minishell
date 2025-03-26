@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:07:38 by vluo              #+#    #+#             */
-/*   Updated: 2025/03/25 16:26:04 by vluo             ###   ########.fr       */
+/*   Updated: 2025/03/26 15:36:22 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,10 @@ void	exec_cmd(char *path_cmd, char **envp)
 	cmd = paths[i - 1];
 	if (ft_strncmp(cmd, "pwd", 4) == 0)
 		print_path();
-	if (ft_strncmp(cmd, "env", 4) == 0)
+	else if (ft_strncmp(cmd, "env", 4) == 0)
 		print_env(envp);
+	else
+		ft_printf("to be implemented: %s\n", cmd);
 	free_tab(paths);
 }
 
@@ -59,9 +61,9 @@ void	parse_line(char *line, char **envp)
 	if (cmd == NULL)
 	{
 		if (expa[0] && expa[0] == '/')
-			return (ft_printf("zsh : no such file or directory: %s\n",
+			return (ft_printf("zsh: no such file or directory: %s\n",
 					expa), free_tab(line_sp), free(expa));
-		return (ft_printf("zsh : command not found: %s\n", expa)
+		return (ft_printf("zsh: command not found: %s\n", expa)
 			, free_tab(line_sp), free(expa));
 	}
 	return (exec_cmd(cmd, envp), free_tab(line_sp), free(cmd), free(expa));

@@ -6,7 +6,7 @@
 /*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/23 16:12:52 by mcauchy-          #+#    #+#             */
-/*   Updated: 2025/03/26 16:14:33 by mcauchy-         ###   ########.fr       */
+/*   Updated: 2025/03/26 16:17:20 by mcauchy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -327,3 +327,5 @@ void	ft_exec(char **av)
 // 	// free_str(new_cmd);
 // 	return (0);
 // }
+
+//hello world
