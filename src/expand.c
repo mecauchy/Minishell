@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 15:05:16 by vluo              #+#    #+#             */
-/*   Updated: 2025/03/25 18:21:54 by vluo             ###   ########.fr       */
+/*   Updated: 2025/03/26 17:28:14 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@
 
 	join_word renvoie alors l'indice apres le mot a expand
 */
-static int	join_word(char *cmd, int start, char **joined, char **envp)
+static int	join_word(char *cmd, int start, char **joined, t_env_vars *vars)
 {
 	int		i;
 	char	c;
@@ -33,7 +33,7 @@ static int	join_word(char *cmd, int start, char **joined, char **envp)
 	i = start;
 	if (cmd[i] == '\'' || cmd[i] == '"')
 	{
-		*joined = ft_strjoin_free(*joined, get_quote(&cmd[i], envp));
+		*joined = ft_strjoin_free(*joined, get_quote(&cmd[i], vars));
 		c = cmd[i ++];
 		while (cmd[i] && cmd[i] != c)
 			i ++;
@@ -41,7 +41,7 @@ static int	join_word(char *cmd, int start, char **joined, char **envp)
 	}
 	else
 	{
-		*joined = ft_strjoin_free(*joined, get_env_var(&cmd[i], envp));
+		*joined = ft_strjoin_free(*joined, get_env_var(&cmd[i], vars));
 		while (cmd[i] && (cmd[i] != '\'' && cmd[i] != '"'))
 			i ++;
 	}
@@ -52,9 +52,8 @@ static int	join_word(char *cmd, int start, char **joined, char **envp)
 
 Arguments :
 
-	- envp : est les variables d'environnement qu'on lance avec le programme
-	on les recupes avec le main => int main(int argc, char **argv, char **envp)
-	a passer a la fonction pour recupere les bonnes variables
+	- vars : est le dictionnaire dont on a stockees toutes 
+	les variables d'enrinnement
 
 	- cmd = la commande a expand 
 	ex : tu rentres ->  minishell> "$PWD " exemple ...
@@ -67,11 +66,11 @@ Arguments :
 
 Valeurs de retour :
 
-	expand(cmd, envp) renvoie alors la commande :
+	expand(cmd, vars) renvoie alors la commande :
 	- sans les "" et les ''
 	- et la bonne variable d'environement (si cmd contient un $)
-	ex : expand("pwd", envp) renvoie => pwd
-		 expand("$var_existe", envp) renvoie => valeur (si la variable
+	ex : expand("pwd", vars) renvoie => pwd
+		 expand("$var_existe", vars) renvoie => valeur (si la variable
 		 d'env var_existe = valeur)
 
 	cas particulier :
@@ -86,7 +85,7 @@ Valeurs de retour :
 si on veut evaluer une expr, qu'elle comporte un "", '' ou $ ou aucun des 3
 on utlise expand pour bien recup la bonne expression)
 */
-char	*expand(char *cmd, char **envp)
+char	*expand(char *cmd, t_env_vars *vars)
 {
 	int		i;
 	int		st;
@@ -103,7 +102,7 @@ char	*expand(char *cmd, char **envp)
 			return (ft_strjoin_free(joined, ft_substr(cmd, st, i - st)));
 		if (i != 0)
 			joined = ft_strjoin_free(joined, ft_substr(cmd, st, i - st));
-		i = join_word(cmd, i, &joined, envp);
+		i = join_word(cmd, i, &joined, vars);
 	}
 	return (joined);
 }

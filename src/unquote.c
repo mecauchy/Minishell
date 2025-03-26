@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 17:06:45 by vluo              #+#    #+#             */
-/*   Updated: 2025/03/26 15:36:24 by vluo             ###   ########.fr       */
+/*   Updated: 2025/03/26 17:28:48 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ static char	*get_squote(char *line)
 	return (ft_substr(line, 1, i - 1));
 }
 
-static char	*get_dquote(char *line, char **envp)
+static char	*get_dquote(char *line, t_env_vars *vars)
 {
 	int		i;
 	int		start;
@@ -42,7 +42,7 @@ static char	*get_dquote(char *line, char **envp)
 		if (!line[i] || line[i] == '"')
 			return (joined);
 		else
-			joined = ft_strjoin_free(joined, get_env_var(&line[i], envp));
+			joined = ft_strjoin_free(joined, get_env_var(&line[i], vars));
 		while (line[i] && line[i] != '\'')
 			i ++;
 	}
@@ -55,15 +55,13 @@ static char	*get_dquote(char *line, char **envp)
 	
 	Precision pour le shell :
 	- avec les "" on expand
-		-> ex : get_quote("$l", envp) renvoie => valeur (si l = valeur)
+		-> ex : get_quote("$l", vars) renvoie => valeur (si l = valeur)
 	- avec les '' on ne expand PAS
-		-> ex : get_quote('$l', envp) renvoie => $l
+		-> ex : get_quote('$l', vars) renvoie => $l
 	
-
 Arguments :
-	- envp : est les variables d'environnement qu'on lance avec le programme
-	on les recupes avec le main => int main(int argc, char **argv, char **envp)
-	a passer a la fonction pour recupere les bonnes variables
+	- vars : est le dictionnaire dont on a stockees toutes 
+	les variables d'enrinnement
 	
 	- line -> est la chaine de char dont on veut enlever les "" et les ''
 	(il faut que line commence par un "" ou '')
@@ -73,7 +71,7 @@ Valeurs de retour :
 	- une copie de line si "" ou '' ne commance pas la chaine de char
 
 */
-char	*get_quote(char *line, char **envp)
+char	*get_quote(char *line, t_env_vars *vars)
 {
 	char	c;
 
@@ -81,6 +79,6 @@ char	*get_quote(char *line, char **envp)
 	if (c == '\'')
 		return (get_squote(line));
 	if (c == '"')
-		return (get_dquote(line, envp));
+		return (get_dquote(line, vars));
 	return (ft_strdup(line));
 }
