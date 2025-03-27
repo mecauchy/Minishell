@@ -6,7 +6,7 @@
 /*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/23 16:12:52 by mcauchy-          #+#    #+#             */
-/*   Updated: 2025/03/26 16:17:20 by mcauchy-         ###   ########.fr       */
+/*   Updated: 2025/03/26 16:25:06 by mcauchy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,7 +173,6 @@ char	**clean_without_redir(char **cmd)
 	{
 		if (is_redir(cmd[i]))
 		{
-			// if (cmd[i + 2])
 			i += 2;
 			if (!cmd[i])
 				break ;
