@@ -6,7 +6,7 @@
 /*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/23 16:12:52 by mcauchy-          #+#    #+#             */
-/*   Updated: 2025/03/26 16:25:06 by mcauchy-         ###   ########.fr       */
+/*   Updated: 2025/03/27 12:59:03 by mcauchy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -263,10 +263,10 @@ void	stock_redir(char **av)
 	char	**file;
 
 	redir = count_redir(av);
-	type = (char **)malloc(sizeof(char) * redir + 1);
+	type = (char **)malloc(sizeof(char *) * redir + 1);
 	if (!type)
 		return ;
-	file = (char **)malloc(sizeof(char) * redir + 1);
+	file = (char **)malloc(sizeof(char *) * redir + 1);
 	if (!file)
 		return ;
 	while (redir > 0 && av[i])
