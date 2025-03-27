@@ -6,22 +6,11 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 16:12:31 by vluo              #+#    #+#             */
-/*   Updated: 2025/03/26 17:27:13 by vluo             ###   ########.fr       */
+/*   Updated: 2025/03/27 13:58:19 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
-
-void	free_vars(t_env_vars *vars)
-{
-	if (vars != NULL)
-	{
-		free_vars(vars -> next);
-		free(vars -> name);
-		free(vars -> value);
-		free(vars);
-	}
-}
 
 t_env_vars	*init_var(char *name, char *value)
 {
@@ -41,9 +30,37 @@ void	vars_add_one(t_env_vars *vars, char *name, char *value)
 	t_env_vars	*tmp;
 
 	tmp = vars;
+	if (tmp -> name == NULL)
+	{
+		tmp -> name = name;
+		tmp -> value = value;
+		tmp -> next = NULL;
+		return ;
+	}
 	while (tmp -> next != 0)
+	{
+		if (ft_strncmp(tmp -> name, name, ft_strlen(name)) == 0)
+		{
+			free(tmp -> value);
+			free(name);
+			tmp -> value = value;
+			return ;
+		}
 		tmp = tmp -> next;
+	}
 	tmp -> next = init_var(name, value);
+}
+
+static int	add_spec_var(t_env_vars *vars)
+{
+	char	*name;
+	char	*value;
+
+	name = ft_strdup("?");
+	value = ft_strdup("0");
+	if (!name || !value)
+		return (free(name), free(value), free_vars(vars), 1);
+	return (vars_add_one(vars, name, value), 0);
 }
 
 t_env_vars	*init_env_vars(char **envp)
@@ -52,38 +69,35 @@ t_env_vars	*init_env_vars(char **envp)
 	int			i;
 	int			j;
 	char		*name;
+	char		*value;
 
-	if (!envp[0])
+	vars = malloc(sizeof(t_env_vars));
+	if (vars == 0)
 		return (NULL);
-	j = 0;
-	while (envp[0][j] && envp[0][j] != '=')
-		j ++;
-	name = ft_substr(envp[0], 0, j);
-	vars = init_var(name, ft_strdup(getenv(name)));
-	if (!vars || !vars -> name || !vars -> value)
-		return (free_vars(vars), NULL);
-	i = 0;
+	i = -1;
 	while (envp[++i])
 	{
 		j = 0;
 		while (envp[i][j] && envp[i][j] != '=')
 			j ++;
 		name = ft_substr(envp[i], 0, j);
-		vars_add_one(vars, name, ft_strdup(getenv(name)));
+		value = ft_strdup(getenv(name));
+		if (!name || !value)
+			return (free(name), free(value), free_vars(vars), NULL);
+		vars_add_one(vars, name, value);
 	}
+	if (add_spec_var(vars))
+		return (0);
 	return (vars);
 }
 
-char	*get_var_value(t_env_vars*vars, char *name)
+void	update_exit_status(t_env_vars *vars, char *status)
 {
 	t_env_vars	*tmp;
 
 	tmp = vars;
-	while (tmp != NULL)
-	{
-		if (ft_strncmp(tmp -> name, name, ft_strlen(name)) == 0)
-			return (tmp -> value);
+	while (tmp -> next != 0)
 		tmp = tmp -> next;
-	}
-	return (NULL);
+	free(tmp -> value);
+	tmp -> value = status;
 }

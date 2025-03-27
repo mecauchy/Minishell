@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 17:19:06 by vluo              #+#    #+#             */
-/*   Updated: 2025/03/26 17:25:18 by vluo             ###   ########.fr       */
+/*   Updated: 2025/03/27 13:00:32 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,20 @@ static char	*get_name_var(char *line)
 		if (line[i - 1] == '"')
 			return (ft_substr(line, 1, i - 2));
 	return (ft_substr(line, 1, i - 1));
+}
+
+char	*get_var_value(t_env_vars *vars, char *name)
+{
+	t_env_vars	*tmp;
+
+	tmp = vars;
+	while (tmp != NULL)
+	{
+		if (ft_strncmp(tmp -> name, name, ft_strlen(name)) == 0)
+			return (tmp -> value);
+		tmp = tmp -> next;
+	}
+	return (NULL);
 }
 
 /* Get_env_var manuel
@@ -59,6 +73,8 @@ char	*get_env_var(char *line, t_env_vars *vars)
 	if (!line)
 		return (NULL);
 	var_name = get_name_var(line);
+	if (!var_name || !var_name[0])
+		return (free(var_name), ft_strdup(""));
 	res = get_var_value(vars, var_name);
 	if (res != NULL)
 		return (free(var_name), ft_strdup(res));

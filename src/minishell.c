@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:07:38 by vluo              #+#    #+#             */
-/*   Updated: 2025/03/26 17:47:48 by vluo             ###   ########.fr       */
+/*   Updated: 2025/03/27 13:53:33 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void	print_env(t_env_vars *vars)
 	t_env_vars	*tmp;
 
 	tmp = vars;
-	while (tmp != NULL)
+	while (tmp -> next != NULL)
 	{
 		ft_printf("%s=%s\n", tmp -> name, tmp -> value);
 		tmp = tmp -> next;
@@ -46,6 +46,7 @@ void	exec_cmd(char *path_cmd, t_env_vars *vars)
 		print_env(vars);
 	else
 		ft_printf("to be implemented: %s\n", cmd);
+	update_exit_status(vars, ft_strdup("0"));
 	free_tab(paths);
 }
 
@@ -63,38 +64,16 @@ void	parse_line(char *line, t_env_vars *vars)
 	cmd = get_correct_cmd(expa);
 	if (cmd == NULL)
 	{
+		update_exit_status(vars, ft_strdup("127"));
 		if (expa[0] && expa[0] == '/')
-			return (ft_printf("zsh: no such file or directory: %s\n",
-					expa), free_tab(full_cmd), free(expa));
-		return (ft_printf("zsh: command not found: %s\n", expa)
-			, free_tab(full_cmd), free(expa));
+			return (ft_printf("zsh: no such file or directory:"),
+				print_nonprintable(expa), ft_printf("\n"),
+				free_tab(full_cmd), free(expa));
+		return (ft_printf("zsh: command not found: "),
+			print_nonprintable(expa), ft_printf("\n"),
+			free_tab(full_cmd), free(expa));
 	}
 	return (exec_cmd(cmd, vars), free_tab(full_cmd), free(cmd), free(expa));
-}
-
-int	is_correctly_quoted(char *line)
-{
-	int		i;
-	char	c;
-	
-	i = -1;
-	while (line[++i])
-	{
-		if (line[i] == '\'' || line[i] == '"')
-		{
-			c = line[i++];
-			while (line[i] && line[i] != c)
-				i ++;
-			if (!line[i])
-			{
-				if (c == '\'')
-					return (1);
-				else
-					return (2);
-			}
-		}
-	}
-	return (0);
 }
 
 int	main(int argc, char **argv, char **envp)

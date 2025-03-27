@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 12:42:54 by vluo              #+#    #+#             */
-/*   Updated: 2025/03/25 17:41:29 by vluo             ###   ########.fr       */
+/*   Updated: 2025/03/27 15:46:03 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,4 +109,53 @@ char	**split_cmds(char *line)
 			i ++;
 	}
 	return (line_sp);
+}
+
+/* split_expand manuel
+
+	renvoie un tableau dont les elements sont les elements de split_cmds
+	dont on a expanded
+	split_expand[i] = expand(split_cmds[i])
+
+Arguments : 
+	- vars : dictionnaire contenant les variables d'environnemt
+
+	- line : la ligne de commande a split 
+
+	- splited_cmds : la ligne deja splite selon les mots 
+	-> on utilise split_cmds pour recup cet argument (voir split_cmds manuel)
+
+Valeurs de retour :
+	- NULL : si erreur de malloc
+
+	- un char ** avec pour elements chaque elements de splited_cmds expanded
+	ex : pour line = "$PWD" hello '$existepas' "$existepas"
+		 pour split_cmds = ["$PWD", hello, '$existepas', "$existepas"]
+	-> split_expand(split_cmds, line, vars)
+	renvoie => [/usr/Documents/..., hello, $existepas, ""]
+
+	free le tableau avec free_tab
+*/
+char	**split_expand(char	**splited_cmds, char *line, t_env_vars *vars)
+{
+	char	**split_expanded;
+	int		i;
+
+	split_expanded = malloc(sizeof(char *) * (split_cmds_len(line) + 1));
+	if (split_expanded == 0)
+		return (0);
+	split_expanded[split_cmds_len(line)] = 0;
+	i = -1;
+	while (splited_cmds[++i])
+	{
+		split_expanded[i] = expand(splited_cmds[i], vars);
+		if (!split_expanded[i])
+		{
+			while (i >= 0)
+				free(split_expanded[i]);
+			free(split_expanded);
+			return (NULL);
+		}
+	}
+	return (split_expanded);
 }

@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:02:17 by vluo              #+#    #+#             */
-/*   Updated: 2025/03/26 17:13:20 by vluo             ###   ########.fr       */
+/*   Updated: 2025/03/27 15:47:46 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ typedef struct s_cmd
 {
 	char	**args;
 	t_redir	*redirs;
-}				t_cmd;
+}	t_cmd;
 
 /*
 Dictionnaire stockant la liste des variables d'environnement
@@ -68,17 +68,29 @@ typedef struct s_env_vars
 	struct s_env_vars	*next;
 }	t_env_vars;
 
+
 /* REDIRECTION*/
+
 int			is_redir(char *cmd);
 int			len_without_redir(char **cmd);
 char		**clean_without_redir(char **cmd);
 
+/* EXPAND */
+
+char		*get_quote(char *line, t_env_vars *vars);
+char		*get_env_var(char *line, t_env_vars *vars);
+char		*expand(char *cmd, t_env_vars *vars);
+
 /* UTILS */
 
+int			is_correctly_quoted(char *line);
 void		free_tab(char **tab);
 char		*ft_strjoin_free(char *s1, char *s2);
 char		**split_cmds(char *line);
+char		**split_expand(char	**splited_cmds, char *line, t_env_vars *vars);
 char		*get_correct_cmd(char *cmd);
+void		print_nonprintable(char *str);
+void		update_exit_status(t_env_vars *vars, char *status);
 
 /* ENV_VARS STRUCT FUNCTION */
 
@@ -87,11 +99,5 @@ void		vars_add_one(t_env_vars *vars, char *name, char *value);
 t_env_vars	*init_env_vars(char **envp);
 char		*get_var_value(t_env_vars*vars, char *name);
 void		free_vars(t_env_vars *vars);
-
-/* EXPAND */
-
-char		*get_quote(char *line, t_env_vars *vars);
-char		*get_env_var(char *line, t_env_vars *vars);
-char		*expand(char *cmd, t_env_vars *vars);
 
 #endif

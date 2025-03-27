@@ -6,11 +6,35 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 12:11:07 by vluo              #+#    #+#             */
-/*   Updated: 2025/03/25 15:38:49 by vluo             ###   ########.fr       */
+/*   Updated: 2025/03/27 13:23:30 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
+
+int	is_correctly_quoted(char *line)
+{
+	int		i;
+	char	c;
+
+	i = -1;
+	while (line[++i])
+	{
+		if (line[i] == '\'' || line[i] == '"')
+		{
+			c = line[i++];
+			while (line[i] && line[i] != c)
+				i ++;
+			if (!line[i])
+			{
+				if (c == '\'')
+					return (1);
+				return (2);
+			}
+		}
+	}
+	return (0);
+}
 
 void	free_tab(char **tab)
 {
@@ -46,4 +70,37 @@ char	*ft_strjoin_free(char *s1, char *s2)
 	free(s1);
 	free(s2);
 	return (strj);
+}
+
+void	free_vars(t_env_vars *vars)
+{
+	if (vars != NULL)
+	{
+		free_vars(vars -> next);
+		free(vars -> name);
+		free(vars -> value);
+		free(vars);
+	}
+}
+
+void	print_nonprintable(char *str)
+{
+	int	i;
+
+	i = -1;
+	while (str[++i])
+	{
+		if (ft_isprint(str[i]))
+			ft_printf("%c", str[i]);
+		else if (str[i] == '\n')
+			ft_printf("\\n");
+		else if (str[i] == '\t')
+			ft_printf("\\t");
+		else if (str[i] == '\v')
+			ft_printf("\\v");
+		else if (str[i] == '\r')
+			ft_printf("\\r");
+		else if (str[i] == '\f')
+			ft_printf("\\f");
+	}
 }
