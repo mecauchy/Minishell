@@ -6,13 +6,11 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:07:38 by vluo              #+#    #+#             */
-/*   Updated: 2025/03/28 17:23:04 by vluo             ###   ########.fr       */
+/*   Updated: 2025/03/29 17:06:12 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
-#include <readline/readline.h>
-#include <signal.h>
 
 int	g_signal;
 
@@ -57,23 +55,29 @@ void	exec_cmd(char *path_cmd, t_env_vars *vars)
 void	test_sig(void)
 {
 	int	pid;
+	int	pid2;
 
 	pid = fork();
 	if (pid < 0)
 		return ;
-	if (pid > 0)
+	if (pid == 0)
 	{
-		kill(pid, SIGUSR1);
-		waitpid(pid, 0, 0);
+		sleep(4);
+		exit(0);
 	}
-	else
-	{
-		ft_printf("START WAIT\n");
-		while (1)
-			usleep(1);
-		ft_printf("FINISHED WAIT\n");
+	pid2 = fork();
+	if (pid2 < 0)
 		return ;
+	if (pid2 == 0)
+	{
+		while(1)
+			sleep(1);
+		exit(0);
 	}
+	kill(pid, SIGUSR1);
+	kill(pid2, SIGUSR1);
+	waitpid(pid, NULL, 0);
+	waitpid(pid2, NULL, 0);
 }
 
 void	parse_line(char *line, t_env_vars *vars)
@@ -110,45 +114,32 @@ int	main(int argc, char **argv, char **envp)
 	char				*line;
 	t_env_vars			*vars;
 	int					i;
-	int					correct;
+	int					incorrect;
 	struct sigaction	**sas;
 
 	vars = init_env_vars(envp);
 	sas = init_sas();
+	g_signal = 0;
 	i = 0;
 	while (i < 8)
 	{
-		ft_printf("signa : %d\n", g_signal);
-		if (g_signal == 0)
-		{
+		if (g_signal == 2)
 			write(2, "\n", 1);
-			rl_replace_line("", 0);
-			rl_on_new_line();
-			rl_redisplay();
-		}
 		g_signal = 0;
-		ft_printf("START\n");
 		line = readline("minishell> ");
-		ft_printf("what you said : |%s|\n", line);
 		if (line)
 		{
 			if (*line)
 			{
-				correct = is_correctly_quoted(line);
-				while (correct != 0)
-				{
-					line = ft_strjoin_free(line, ft_strdup("\n"));
-					if (correct == 1)
-						line = ft_strjoin_free(line, readline("quote> "));
-					else
-						line = ft_strjoin_free(line, readline("dquote> "));
-					correct = is_correctly_quoted(line);
-				}
 				add_history(line);
-				parse_line(line, vars);
+				incorrect = is_correctly_quoted(line);
+				if (incorrect)
+					printf("Not correctly quoted\n");
+				else
+					parse_line(line, vars);
 			}
 			free(line);
-		}
+		} 
 		i ++;
 	}
 	rl_clear_history();

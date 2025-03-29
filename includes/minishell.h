@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:02:17 by vluo              #+#    #+#             */
-/*   Updated: 2025/03/28 17:22:22 by vluo             ###   ########.fr       */
+/*   Updated: 2025/03/29 17:08:27 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,6 +108,10 @@ void				free_vars(t_env_vars *vars);
 
 /* SIGNALS */
 
+void				handle_usr1(int sig, siginfo_t *info, void *p);
+void				handle_usr2(int sig, siginfo_t *info, void *p);
+void				handle_chld(int sig);
+void				handle_ctrc_c(int sig);
 struct sigaction	**init_sas(void);
 
 #endif
