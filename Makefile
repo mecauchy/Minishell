@@ -9,7 +9,7 @@ READLINEFLAGS = -lreadline
 
 SRC = $(SRC_DIR)split_cmds.c $(SRC_DIR)get_correct_cmd.c \
 	$(SRC_DIR)vars_struct.c $(SRC_DIR)get_env_var.c $(SRC_DIR)unquote.c $(SRC_DIR)expand.c \
-	$(SRC_DIR)signal_handle.c \
+	$(SRC_DIR)signal_handle.c $(SRC_DIR)signal_init.c \
 	$(SRC_DIR)redirection.c \
 	$(SRC_DIR)utils.c $(SRC_DIR)utils2.c $(SRC_DIR)minishell.c \
 

@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 17:06:52 by vluo              #+#    #+#             */
-/*   Updated: 2025/03/29 17:07:01 by vluo             ###   ########.fr       */
+/*   Updated: 2025/03/30 16:55:47 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,12 +37,12 @@ struct sigaction	**init_sas(void)
 	struct sigaction	**sas;
 
 	sas = malloc(sizeof(struct sigaction *) * 5);
-	sas[3] = 0;
+	sas[4] = 0;
 	sas[0] = init_sa(SIGUSR1, handle_usr1, SA_SIGINFO);
 	sas[1] = init_sa(SIGUSR2, handle_usr2, SA_SIGINFO);
 	sas[2] = init_sa(SIGINT, handle_ctrc_c, -1);
 	sas[3] = init_sa(SIGCHLD, handle_chld, -1);
-	if (!sas[0] || !sas[1] || !sas[2])
-		return (free(sas[0]), free(sas[1]), free(sas[2]), NULL);
+	if (!sas[0] || !sas[1] || !sas[2] || !sas[3])
+		return (free(sas[0]), free(sas[1]), free(sas[2]), free(sas[3]), NULL);
 	return (sas);
 }

@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:07:38 by vluo              #+#    #+#             */
-/*   Updated: 2025/03/29 17:06:12 by vluo             ###   ########.fr       */
+/*   Updated: 2025/03/30 19:16:29 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,26 @@ void	print_env(t_env_vars *vars)
 	}
 }
 
-void	exec_cmd(char *path_cmd, t_env_vars *vars)
+void	exec_cmd(char *cmd, char **envp)
+{
+	int	pid;
+
+	pid = fork();
+	if (pid < 0)
+		return (perror("Error: "));
+	if (pid > 0)
+	{
+		kill(pid, SIGUSR1);
+		waitpid(pid, 0, 0);
+	}
+	else
+	{
+		execve(cmd, ft_split(cmd, ' '), envp);
+		return (perror("Error:"));
+	}
+}
+
+void	exec_cmds(char *path_cmd, t_env_vars *vars, char **envp)
 {
 	char	**paths;
 	char	*cmd;
@@ -47,40 +66,33 @@ void	exec_cmd(char *path_cmd, t_env_vars *vars)
 	else if (ft_strncmp(cmd, "env", 4) == 0)
 		print_env(vars);
 	else
-		ft_printf("to be implemented: %s\n", cmd);
+		exec_cmd(path_cmd, envp);
 	update_exit_status(vars, ft_strdup("0"));
 	free_tab(paths);
 }
 
-void	test_sig(void)
+void test_sig(void)
 {
 	int	pid;
-	int	pid2;
 
 	pid = fork();
 	if (pid < 0)
-		return ;
-	if (pid == 0)
+		return (perror("Error:"));
+	if (pid > 0)
 	{
-		sleep(4);
-		exit(0);
+		kill(pid, SIGUSR1);
+		waitpid(pid, 0, 0);
 	}
-	pid2 = fork();
-	if (pid2 < 0)
-		return ;
-	if (pid2 == 0)
+	else if (pid == 0)
 	{
 		while(1)
 			sleep(1);
 		exit(0);
 	}
-	kill(pid, SIGUSR1);
-	kill(pid2, SIGUSR1);
-	waitpid(pid, NULL, 0);
-	waitpid(pid2, NULL, 0);
+	return ;
 }
 
-void	parse_line(char *line, t_env_vars *vars)
+void	parse_line(char *line, t_env_vars *vars, char **envp)
 {
 	char	**full_cmd;
 	char	*expa;
@@ -106,7 +118,7 @@ void	parse_line(char *line, t_env_vars *vars)
 			print_nonprintable(expa), ft_printf("\n"),
 			free_tab(full_cmd), free(expa));
 	}
-	return (exec_cmd(cmd, vars), free_tab(full_cmd), free(cmd), free(expa));
+	return (exec_cmds(cmd, vars, envp), free_tab(full_cmd), free(cmd), free(expa));
 }
 
 int	main(int argc, char **argv, char **envp)
@@ -123,8 +135,7 @@ int	main(int argc, char **argv, char **envp)
 	i = 0;
 	while (i < 8)
 	{
-		if (g_signal == 2)
-			write(2, "\n", 1);
+		usleep(1000);
 		g_signal = 0;
 		line = readline("minishell> ");
 		if (line)
@@ -136,7 +147,7 @@ int	main(int argc, char **argv, char **envp)
 				if (incorrect)
 					printf("Not correctly quoted\n");
 				else
-					parse_line(line, vars);
+					parse_line(line, vars, envp);
 			}
 			free(line);
 		} 

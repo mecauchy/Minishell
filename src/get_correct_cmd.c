@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 12:42:21 by vluo              #+#    #+#             */
-/*   Updated: 2025/03/21 12:18:42 by vluo             ###   ########.fr       */
+/*   Updated: 2025/03/30 18:41:44 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ static char	*get_correct_cmd_rela(char *cmd)
 
 char	*get_correct_cmd(char *cmd)
 {
-	if (cmd && cmd[0] && cmd[0] == '/')
+	if (cmd && cmd[0] && (cmd[0] == '/' || cmd[0] == '.'))
 		return (get_correct_cmd_absol(cmd));
 	return (get_correct_cmd_rela(cmd));
 }
