@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 12:11:07 by vluo              #+#    #+#             */
-/*   Updated: 2025/03/27 13:23:30 by vluo             ###   ########.fr       */
+/*   Updated: 2025/03/31 10:57:16 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,14 +26,10 @@ int	is_correctly_quoted(char *line)
 			while (line[i] && line[i] != c)
 				i ++;
 			if (!line[i])
-			{
-				if (c == '\'')
-					return (1);
-				return (2);
-			}
+				return (0);
 		}
 	}
-	return (0);
+	return (1);
 }
 
 void	free_tab(char **tab)

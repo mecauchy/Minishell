@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 17:06:52 by vluo              #+#    #+#             */
-/*   Updated: 2025/03/30 16:55:47 by vluo             ###   ########.fr       */
+/*   Updated: 2025/03/31 12:27:08 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ struct sigaction	*init_sa(int sig, void *handler, int flags)
 	return (sa);
 }
 
-struct sigaction	**init_sas(void)
+struct sigaction	**init_signals(void)
 {
 	struct sigaction	**sas;
 

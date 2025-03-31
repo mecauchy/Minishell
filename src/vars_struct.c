@@ -6,24 +6,11 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 16:12:31 by vluo              #+#    #+#             */
-/*   Updated: 2025/03/27 13:58:19 by vluo             ###   ########.fr       */
+/*   Updated: 2025/03/31 11:46:31 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
-
-t_env_vars	*init_var(char *name, char *value)
-{
-	t_env_vars	*var;
-
-	var = malloc(sizeof(t_env_vars));
-	if (var == 0)
-		return (0);
-	var -> name = name;
-	var -> value = value;
-	var -> next = 0;
-	return (var);
-}
 
 void	vars_add_one(t_env_vars *vars, char *name, char *value)
 {
@@ -34,7 +21,6 @@ void	vars_add_one(t_env_vars *vars, char *name, char *value)
 	{
 		tmp -> name = name;
 		tmp -> value = value;
-		tmp -> next = NULL;
 		return ;
 	}
 	while (tmp -> next != 0)
@@ -48,7 +34,11 @@ void	vars_add_one(t_env_vars *vars, char *name, char *value)
 		}
 		tmp = tmp -> next;
 	}
-	tmp -> next = init_var(name, value);
+	tmp -> next = ft_calloc(1, sizeof(t_env_vars));
+	if (tmp -> next == 0)
+		return ;
+	tmp -> next -> name = name;
+	tmp -> next -> value = value;
 }
 
 static int	add_spec_var(t_env_vars *vars)
@@ -71,7 +61,7 @@ t_env_vars	*init_env_vars(char **envp)
 	char		*name;
 	char		*value;
 
-	vars = malloc(sizeof(t_env_vars));
+	vars = ft_calloc(1, sizeof(t_env_vars));
 	if (vars == 0)
 		return (NULL);
 	i = -1;
@@ -91,13 +81,24 @@ t_env_vars	*init_env_vars(char **envp)
 	return (vars);
 }
 
-void	update_exit_status(t_env_vars *vars, char *status)
+void	del_one_var(t_env_vars *vars, char *name)
 {
 	t_env_vars	*tmp;
+	t_env_vars	*del;
 
 	tmp = vars;
+	if (tmp == 0)
+		return ;
 	while (tmp -> next != 0)
+	{
+		if (ft_strncmp(tmp -> next -> name, name, ft_strlen(name)) == 0)
+		{
+			del = tmp -> next;
+			tmp -> next = tmp -> next -> next;
+			free(del -> name);
+			free(del -> value);
+			free(del);
+		}
 		tmp = tmp -> next;
-	free(tmp -> value);
-	tmp -> value = status;
+	}
 }
