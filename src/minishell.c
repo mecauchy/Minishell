@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:07:38 by vluo              #+#    #+#             */
-/*   Updated: 2025/03/31 12:29:23 by vluo             ###   ########.fr       */
+/*   Updated: 2025/03/31 13:22:10 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,35 +54,12 @@ void	exec_cmds(char *path_cmd, t_env_vars *vars)
 	free_tab(paths);
 }
 
-void	test_sig(void)
-{
-	int	pid;
-
-	pid = fork();
-	if (pid < 0)
-		return (perror("Error:"));
-	if (pid > 0)
-	{
-		kill(pid, SIGUSR1);
-		waitpid(pid, 0, 0);
-	}
-	else if (pid == 0)
-	{
-		while (1)
-			sleep(1);
-		exit(0);
-	}
-	return ;
-}
-
 void	parse_line(char *line, t_env_vars *vars)
 {
 	char	**full_cmd;
 	char	*expa;
 	char	*cmd;
 
-	if (ft_strncmp(line, "test", 4) == 0)
-		return (test_sig());
 	full_cmd = split_cmds(line);
 	expa = expand(full_cmd[0], vars);
 	if (expa == NULL || !expa[0])
