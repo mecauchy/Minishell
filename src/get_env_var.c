@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 17:19:06 by vluo              #+#    #+#             */
-/*   Updated: 2025/03/25 17:45:01 by vluo             ###   ########.fr       */
+/*   Updated: 2025/03/31 11:42:59 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,13 +28,25 @@ static char	*get_name_var(char *line)
 	return (ft_substr(line, 1, i - 1));
 }
 
+char	*get_var_value(t_env_vars *vars, char *name)
+{
+	t_env_vars	*tmp;
+
+	tmp = vars;
+	while (tmp != NULL)
+	{
+		if (ft_strncmp(tmp -> name, name, ft_strlen(name)) == 0)
+			return (tmp -> value);
+		tmp = tmp -> next;
+	}
+	return (NULL);
+}
+
 /* Get_env_var manuel
 
 Arguments :
-	- envp : est la liste des variables d'environnement qu'on
-	lance avec le programme
-	on les recupes avec le main => int main(int argc, char **argv, char **envp)
-	a passer a la fonction pour recupere les bonnes variables
+	- vars : est le dictionnaire dont on a stockees toutes 
+	les variables d'enrinnement
 
 	- line : est le nom de la variable d'environnement
 			 dont on veut recuperer la valeur
@@ -53,24 +65,85 @@ get_env_var renvoie tjs une chaine de char a free
 (Cette fonction est presque juste une fonction statique utile pour expand
 Pour evaluer une expression, utilise simplement expand)
 */
-char	*get_env_var(char *line, char **envp)
+char	*get_env_var(char *line, t_env_vars *vars)
 {
-	int		i;
 	char	*var_name;
 	char	*res;
 
 	if (!line)
 		return (NULL);
 	var_name = get_name_var(line);
-	i = -1;
-	while (envp[++i])
-	{
-		if (ft_strncmp(var_name, envp[i], ft_strlen(var_name)) == 0)
-		{
-			res = ft_substr(envp[i], ft_strlen(var_name) + 1,
-					ft_strlen(envp[i]) - ft_strlen(var_name));
-			return (free(var_name), res);
-		}
-	}
+	if (!var_name || !var_name[0])
+		return (free(var_name), ft_strdup(""));
+	res = get_var_value(vars, var_name);
+	if (res != NULL)
+		return (free(var_name), ft_strdup(res));
 	return (free(var_name), ft_strdup(""));
+}
+
+static	char	*join_name_value(t_env_vars *var)
+{
+	char	*join;
+	char	*s1;
+	char	*s2;
+
+	s1 = ft_strdup(var -> name);
+	s2 = ft_strdup("=");
+	if (!s1 || !s2)
+		return (free(s1), free(s2), NULL);
+	join = ft_strjoin_free(s1, s2);
+	s1 = join;
+	s2 = ft_strdup(var -> value);
+	if (!s1 || !s2)
+		return (free(s1), free(s2), NULL);
+	join = ft_strjoin_free(s1, s2);
+	if (join == 0)
+		return (0);
+	return (join);
+}
+
+/* get_envp manuel
+
+	=> obitent un tableau de env vars : ["var1=value1", "var2=val2", ..., 0]
+
+Arguments : 
+	- vars : dictionnaire contenant toutes les var d'env
+
+Valeurs de retour : 
+	- NULL : si erreur de malloc, calloc
+
+	- char **envp : list des var d'env sous forme ["v1=v2", ..., 0]
+
+	Fonction a utiliser pour execve
+	=> il faut passer comme arg a execve une liste de vairbales d'environnement
+	=> sous la forme ["v1=v2", ..., 0]
+
+*/
+char	**get_envp(t_env_vars *vars)
+{
+	t_env_vars	*tmp;
+	char		**envp;
+	int			i;
+
+	i = 0;
+	tmp = vars;
+	while (tmp != NULL)
+	{
+		i ++;
+		tmp = tmp -> next;
+	}
+	envp = malloc(sizeof(char *) * (i + 1));
+	if (vars == 0)
+		return (NULL);
+	envp[i] = 0;
+	i = 0;
+	tmp = vars;
+	while (tmp != NULL)
+	{
+		envp[i] = join_name_value(tmp);
+		if (envp[i++] == 0)
+			return (free_tab(envp), NULL);
+		tmp = tmp -> next;
+	}
+	return (envp);
 }
