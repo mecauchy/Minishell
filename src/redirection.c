@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirection.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mecauchy <mecauchy@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/23 16:12:52 by mcauchy-          #+#    #+#             */
-/*   Updated: 2025/04/01 18:54:40 by mecauchy         ###   ########.fr       */
+/*   Updated: 2025/04/02 12:13:15 by mcauchy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -299,7 +299,14 @@ void	stock_redir(char **av, t_cmd *cmd)
 	t_redir	*last;
 
 	i = 0;
-	cmd->redirs = NULL;
+	cmd = malloc(sizeof(t_cmd));
+	if (!cmd)
+	{
+		perror("Allocation t_cmd");
+		exit(EXIT_FAILURE);
+	}
+	// cmd->args = NULL;
+	// cmd->redirs = NULL;
 	while (av[i])
 	{
 		if (is_redir(av[i]) && av[i + 1])
@@ -313,12 +320,8 @@ void	stock_redir(char **av, t_cmd *cmd)
 			new_node->type = ft_strdup(av[i]);
 			new_node->file = ft_strdup(av[i + 1]);
 			new_node->next = NULL;
-			
-			// Affichage pour le debug
 			printf("type is -> [ %s ]\n", new_node->type);
 			printf("the file/delimiter is -> %s\n", new_node->file);
-			
-			// Ajout du nouveau nœud à la fin de la liste
 			if (cmd->redirs == NULL)
 				cmd->redirs = new_node;
 			else
@@ -328,12 +331,13 @@ void	stock_redir(char **av, t_cmd *cmd)
 					last = last->next;
 				last->next = new_node;
 			}
-			i += 2;  // On passe au token après la redirection et le fichier/délimiteur
+			i += 2;
 		}
 		else
 			i++;
 	}
 }
+
 char	*ft_strdup(const char *s)
 {
 	char	*dup;
@@ -372,8 +376,8 @@ void	ft_exec(char **av)
 
 int	main(int ac, char **av)
 {
-	t_cmd	*cmd;
-	ft_exec(av);
+	if (ac > 0)
+		ft_exec(av);
 	return (0);
 }
 
