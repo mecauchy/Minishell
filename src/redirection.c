@@ -6,7 +6,7 @@
 /*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/23 16:12:52 by mcauchy-          #+#    #+#             */
-/*   Updated: 2025/04/02 12:13:15 by mcauchy-         ###   ########.fr       */
+/*   Updated: 2025/04/02 12:30:20 by mcauchy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -299,12 +299,6 @@ void	stock_redir(char **av, t_cmd *cmd)
 	t_redir	*last;
 
 	i = 0;
-	cmd = malloc(sizeof(t_cmd));
-	if (!cmd)
-	{
-		perror("Allocation t_cmd");
-		exit(EXIT_FAILURE);
-	}
 	// cmd->args = NULL;
 	// cmd->redirs = NULL;
 	while (av[i])
@@ -366,6 +360,12 @@ void	ft_exec(char **av)
 	char	**wo_redir;
 	t_cmd	*cmd;
 	
+	cmd = malloc(sizeof(t_cmd));
+	if (!cmd)
+	{
+		perror("Allocation t_cmd");
+		exit(EXIT_FAILURE);
+	}
 	redir = count_redir(av);
 	printf("nb of redir is = %d\n", redir);
 	wo_redir = clean_without_redir(av);

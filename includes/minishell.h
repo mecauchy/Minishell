@@ -6,7 +6,7 @@
 /*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:02:17 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/02 11:05:35 by mcauchy-         ###   ########.fr       */
+/*   Updated: 2025/04/02 11:25:54 by mcauchy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,10 @@
 # define RED		"\033[1;31m"
 # define GREY 		"\033[0;90m"
 
-# define REDIR_IN	"<"
-# define REDIR_OUT	">"
-# define HEREDOC	"<<"
-# define APPEND	">>"
+# define REDIR_IN	3 //"<"
+# define REDIR_OUT	1 // ">"
+# define HEREDOC	4 // "<<"
+# define APPEND	2 // ">>"
 
 # include "../libft/includes/libft.h"
 # include "../libft/includes/ft_printf.h"
@@ -46,6 +46,7 @@ typedef struct s_redir
 {
 	char			*file;
 	char			*type;
+	int				is_type;
 	struct s_redir	*next;
 }				t_redir;
 

@@ -6,7 +6,7 @@
 /*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 13:41:49 by mcauchy-          #+#    #+#             */
-/*   Updated: 2025/04/02 11:11:24 by mcauchy-         ###   ########.fr       */
+/*   Updated: 2025/04/02 12:30:48 by mcauchy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,40 +77,42 @@ void	redirection_left_left(t_redir *current)
 	}
 }
 
-void	apply_redirection(t_redir *redir)
-{
-	t_redir	*current;
+// revoir utilite
+// void	apply_redirection(t_redir *redir)
+// {
+// 	t_redir	*current;
 
-	current = redir;
-	while (current)
-	{
-		if (current->type == REDIR_OUT)
-			redirection_right(current);
-		else if (current->type == APPEND)
-			redirection_right_right(current);
-		else if (current->type == REDIR_IN)
-			redirection_left(current);
-		else if (current->type == HEREDOC)
-			redirection_left_left(current);
-		current = current->next;
-	}
-}
+// 	current = redir;
+// 	while (current)
+// 	{
+// 		if (current->type == REDIR_OUT)
+// 			redirection_right(current);
+// 		else if (current->type == APPEND)
+// 			redirection_right_right(current);
+// 		else if (current->type == REDIR_IN)
+// 			redirection_left(current);
+// 		else if (current->type == HEREDOC)
+// 			redirection_left_left(current);
+// 		current = current->next;
+// 	}
+// }
 
-void	help_redir(char **cmd, t_redir *redir)
+// remplacer char **cmd par cmd->token[] separes a l'aide du pipe
+void	help_redir(t_redir *redir)
 {
 	int	i;
 
 	i = 0;
-	if (cmd[i][0] == '>')
+	if (redir->type[0] == '>')
 	{
-		if (cmd[i][1] == '>')
+		if (redir->type[1] && redir->type[1] == '>')
 			redirection_right_right(redir);
 		else
 			redirection_right(redir);
 	}
-	if (cmd[i][0] == '<')
+	if (redir->type[0] == '<')
 	{
-		if (cmd[i][1] == '<')
+		if (redir->type[1] == '<')
 			redirection_left_left(redir);
 		else
 			redirection_left(redir);
