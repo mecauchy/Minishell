@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirection.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mecauchy <mecauchy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/23 16:12:52 by mcauchy-          #+#    #+#             */
-/*   Updated: 2025/03/27 12:59:03 by mcauchy-         ###   ########.fr       */
+/*   Updated: 2025/04/01 18:54:40 by mecauchy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,6 +173,7 @@ char	**clean_without_redir(char **cmd)
 	{
 		if (is_redir(cmd[i]))
 		{
+			printf("okkk\n");
 			i += 2;
 			if (!cmd[i])
 				break ;
@@ -184,6 +185,7 @@ char	**clean_without_redir(char **cmd)
 			j++;
 			i++;
 		}
+		printf("cmd[%d] == %s\n", i, cmd[i]);
 	}
 	new_cmd[len] = NULL;
 	return (new_cmd);
@@ -196,6 +198,7 @@ int	count_redir(char **cmd)
 
 	i = 0;
 	redir = 0;
+	printf("here we are\n");
 	while (cmd[i])
 	{
 		if (is_redir(cmd[i]))
@@ -254,7 +257,7 @@ the file/ delmiter is -> output.txt
 type is -> [ < ] 
 the file/ delmiter is -> input.txt
 */
-void	stock_redir(char **av)
+void	old_stock_redir(char **av)
 {
 	int		redir;
 	int		i = 0;
@@ -289,6 +292,66 @@ void	stock_redir(char **av)
 	type[redir + 1] = NULL;
 }
 
+void	stock_redir(char **av, t_cmd *cmd)
+{
+	int		i;
+	t_redir	*new_node;
+	t_redir	*last;
+
+	i = 0;
+	cmd->redirs = NULL;
+	while (av[i])
+	{
+		if (is_redir(av[i]) && av[i + 1])
+		{
+			new_node = malloc(sizeof(t_redir));
+			if (!new_node)
+			{
+				perror("Minishell: malloc");
+				exit(EXIT_FAILURE);
+			}
+			new_node->type = ft_strdup(av[i]);
+			new_node->file = ft_strdup(av[i + 1]);
+			new_node->next = NULL;
+			
+			// Affichage pour le debug
+			printf("type is -> [ %s ]\n", new_node->type);
+			printf("the file/delimiter is -> %s\n", new_node->file);
+			
+			// Ajout du nouveau nœud à la fin de la liste
+			if (cmd->redirs == NULL)
+				cmd->redirs = new_node;
+			else
+			{
+				last = cmd->redirs;
+				while (last->next)
+					last = last->next;
+				last->next = new_node;
+			}
+			i += 2;  // On passe au token après la redirection et le fichier/délimiteur
+		}
+		else
+			i++;
+	}
+}
+char	*ft_strdup(const char *s)
+{
+	char	*dup;
+	int		i;
+
+	dup = malloc((strlen(s) + 1) * sizeof(char));
+	if (dup == 0)
+		return (0);
+	i = 0;
+	while (s[i])
+	{
+		dup[i] = s[i];
+		i ++;
+	}
+	dup[i] = '\0';
+	return (dup);
+}
+
 /*
 Pour l'instant ft_exec() me permet juste de tester que j'ai cree
 	elle a pas de but clair pr le moment
@@ -297,20 +360,22 @@ void	ft_exec(char **av)
 {
 	int		redir;
 	char	**wo_redir;
-
+	t_cmd	*cmd;
+	
 	redir = count_redir(av);
 	printf("nb of redir is = %d\n", redir);
 	wo_redir = clean_without_redir(av);
+	printf("nb of redir is : %d\n", redir);
 	if (redir >= 1)
-		stock_redir(av);
+		stock_redir(av, cmd);
 }
 
-// int	main(int ac, char **av)
-// {
-// 	t_cmd	*cmd;
-// 	ft_exec(av + 1);
-// 	return (0);
-// }
+int	main(int ac, char **av)
+{
+	t_cmd	*cmd;
+	ft_exec(av);
+	return (0);
+}
 
 // int	main(int ac, char **av)
 // {
@@ -328,3 +393,4 @@ void	ft_exec(char **av)
 // }
 
 //hello world
+
