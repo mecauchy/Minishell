@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   which_redirection.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mecauchy <mecauchy@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 13:41:49 by mcauchy-          #+#    #+#             */
-/*   Updated: 2025/04/01 18:18:16 by mecauchy         ###   ########.fr       */
+/*   Updated: 2025/04/02 11:11:24 by mcauchy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,12 +86,33 @@ void	apply_redirection(t_redir *redir)
 	{
 		if (current->type == REDIR_OUT)
 			redirection_right(current);
-		else if (current->type == O_APPEND)
+		else if (current->type == APPEND)
 			redirection_right_right(current);
 		else if (current->type == REDIR_IN)
 			redirection_left(current);
 		else if (current->type == HEREDOC)
 			redirection_left_left(current);
 		current = current->next;
+	}
+}
+
+void	help_redir(char **cmd, t_redir *redir)
+{
+	int	i;
+
+	i = 0;
+	if (cmd[i][0] == '>')
+	{
+		if (cmd[i][1] == '>')
+			redirection_right_right(redir);
+		else
+			redirection_right(redir);
+	}
+	if (cmd[i][0] == '<')
+	{
+		if (cmd[i][1] == '<')
+			redirection_left_left(redir);
+		else
+			redirection_left(redir);
 	}
 }

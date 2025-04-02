@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:02:17 by vluo              #+#    #+#             */
-/*   Updated: 2025/03/26 15:55:53 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/02 11:05:35 by mcauchy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 # define REDIR_IN	"<"
 # define REDIR_OUT	">"
 # define HEREDOC	"<<"
-# define O_APPEND	">>"
+# define APPEND	">>"
 
 # include "../libft/includes/libft.h"
 # include "../libft/includes/ft_printf.h"
@@ -36,9 +36,9 @@
 # include <unistd.h>
 # include <linux/limits.h>
 # include <limits.h>
+# include <fcntl.h>
 
 /*
-TESSSST
 Comprend le file avec les delimiteurs stockees (type = <<, file = "output.txt")
 struct s_redir	*next; -> Au cas ou il y a plusieurs redirections
 */
