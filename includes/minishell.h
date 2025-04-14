@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mecauchy <mecauchy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:02:17 by vluo              #+#    #+#             */
-/*   Updated: 2025/03/26 15:55:53 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/08 11:49:10 by mecauchy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,11 +34,11 @@
 # include <stdlib.h>
 # include <strings.h>
 # include <unistd.h>
-# include <linux/limits.h>
+# include <fcntl.h>
+// # include <linux/limits.h>
 # include <limits.h>
 
 /*
-TESSSST
 Comprend le file avec les delimiteurs stockees (type = <<, file = "output.txt")
 struct s_redir	*next; -> Au cas ou il y a plusieurs redirections
 */
@@ -59,10 +59,26 @@ typedef struct s_cmd
 	t_redir	*redirs;
 }				t_cmd;
 
+typedef struct s_data
+{
+	int		nb_cmds;
+	int		nb_heredocs;
+	int		nb_pipes;
+	int		*fd;
+	int		*pid;
+}				t_data;
+
 /* REDIRECTION*/
 int		is_redir(char *cmd);
 int		len_without_redir(char **cmd);
 char	**clean_without_redir(char **cmd);
+
+void	apply_redirection(t_redir *redir);
+void	redirection_left_left(t_redir *current);
+void	redirection_left(t_redir *current);
+void	redirection_right_right(t_redir *current);
+void	redirection_right(t_redir *redir);
+
 
 /* UTILS */
 
