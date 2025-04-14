@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:07:38 by vluo              #+#    #+#             */
-/*   Updated: 2025/03/26 15:36:22 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/14 17:04:28 by mcauchy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,30 +69,30 @@ void	parse_line(char *line, char **envp)
 	return (exec_cmd(cmd, envp), free_tab(line_sp), free(cmd), free(expa));
 }
 
-int	main(int argc, char **argv, char **envp)
-{
-	char	*line;
-	int		i;
+// int	main(int argc, char **argv, char **envp)
+// {
+// 	char	*line;
+// 	int		i;
 
-	i = 0;
-	while (i < 8)
-	{
-		line = readline("minishell> ");
-		if (line)
-		{
-			if (!(*line))
-				rl_on_new_line();
-			else
-			{
-				add_history(line);
-				parse_line(line, envp);
-			}
-			free(line);
-		}
-		i ++;
-	}
-	rl_clear_history();
-	argv ++;
-	envp ++;
-	return (argc - argc);
-}
+// 	i = 0;
+// 	while (i < 8)
+// 	{
+// 		line = readline("minishell> ");
+// 		if (line)
+// 		{
+// 			if (!(*line))
+// 				rl_on_new_line();
+// 			else
+// 			{
+// 				add_history(line);
+// 				parse_line(line, envp);
+// 			}
+// 			free(line);
+// 		}
+// 		i ++;
+// 	}
+// 	rl_clear_history();
+// 	argv ++;
+// 	envp ++;
+// 	return (argc - argc);
+// }

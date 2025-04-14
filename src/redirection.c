@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirection.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mecauchy <mecauchy@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/23 16:12:52 by mcauchy-          #+#    #+#             */
-/*   Updated: 2025/04/08 11:16:14 by mecauchy         ###   ########.fr       */
+/*   Updated: 2025/04/14 17:08:21 by mcauchy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -362,6 +362,7 @@ void	ft_exec(char **av)
 	char	**wo_redir;
 	t_cmd	*cmd;
 	
+	// cmd = NULL;
 	redir = count_redir(av);
 	printf("nb of redir is = %d\n", redir);
 	wo_redir = clean_without_redir(av);
@@ -370,12 +371,13 @@ void	ft_exec(char **av)
 		stock_redir(av, cmd);
 }
 
-int	main(int ac, char **av)
-{
-	t_cmd	*cmd;
-	ft_exec(av);
-	return (0);
-}
+// int	main(int ac, char **av)
+// {
+// 	// t_cmd	*cmd;
+// 	if (ac > 0)
+// 		ft_exec(av);
+// 	return (0);
+// }
 
 // int	main(int ac, char **av)
 // {

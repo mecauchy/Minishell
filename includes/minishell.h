@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mecauchy <mecauchy@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:02:17 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/08 11:49:10 by mecauchy         ###   ########.fr       */
+/*   Updated: 2025/04/14 17:07:10 by mcauchy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,9 @@
 # include "../libft/includes/libft.h"
 # include "../libft/includes/ft_printf.h"
 # include "../libft/includes/get_next_line_bonus.h"
+
+#include <sys/types.h>
+#include <sys/wait.h>
 
 # include <stdio.h>
 # include <readline/readline.h>
@@ -66,6 +69,7 @@ typedef struct s_data
 	int		nb_pipes;
 	int		*fd;
 	int		*pid;
+	t_redir	*redir;
 }				t_data;
 
 /* REDIRECTION*/
@@ -73,7 +77,7 @@ int		is_redir(char *cmd);
 int		len_without_redir(char **cmd);
 char	**clean_without_redir(char **cmd);
 
-void	apply_redirection(t_redir *redir);
+// void	apply_redirection(t_redir *redir);
 void	redirection_left_left(t_redir *current);
 void	redirection_left(t_redir *current);
 void	redirection_right_right(t_redir *current);
@@ -92,5 +96,12 @@ char	*get_correct_cmd(char *cmd);
 char	*get_quote(char *line, char **envp);
 char	*get_env_var(char *line, char **envp);
 char	*expand(char *cmd, char **envp);
+
+// test main fct //
+void	ft_exec(char **av);
+int		count_redir(char **cmd);
+void	stock_redir(char **av, t_cmd *cmd);
+
+
 
 #endif

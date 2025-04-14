@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   add_cmd.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mecauchy <mecauchy@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/08 11:31:13 by mecauchy          #+#    #+#             */
-/*   Updated: 2025/04/09 14:41:48 by mecauchy         ###   ########.fr       */
+/*   Updated: 2025/04/14 17:04:15 by mcauchy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,13 +63,13 @@ int	add_nb_cmd(char **av, t_data *data)
 	return (cmd);
 }
 
-int	main(int ac, char **av)
-{
-	int		res;
-	t_data	data;
+// int	main(int ac, char **av)
+// {
+// 	int		res;
+// 	t_data	data;
 	
-	res = add_nb_cmd(av, &data);
-	printf("nb de pipe == %d\n", res);
-	printf("data->nb_cmds = %d\n", data.nb_cmds);
-	return (0);
-}
+// 	res = add_nb_cmd(av, &data);
+// 	printf("nb de cmd == %d\n", res);
+// 	printf("data->nb_cmds = %d\n", data.nb_cmds);
+// 	return (0);
+// }
