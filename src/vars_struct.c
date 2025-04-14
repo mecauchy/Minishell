@@ -6,51 +6,59 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 16:12:31 by vluo              #+#    #+#             */
-/*   Updated: 2025/03/31 11:46:31 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/14 13:28:49 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-void	vars_add_one(t_env_vars *vars, char *name, char *value)
+static t_env_vars	*init_var(t_env_vars *vars, char *name, char *value)
+{
+	t_env_vars	*var;
+
+	if (vars == 0)
+	{
+		var = ft_calloc(1, sizeof(t_env_vars));
+		if (var == 0)
+			return (NULL);
+		var -> name = ft_strdup(name);
+		var -> value = ft_strdup(value);
+		return (var);
+	}
+	vars -> name = ft_strdup(name);
+	vars -> value = ft_strdup(value);
+	if (!vars -> name || !vars -> value)
+		return (free(vars -> name), free(vars -> value), NULL);
+	return (vars);
+}
+
+int	vars_add(t_env_vars *vars, char *name, char *value)
 {
 	t_env_vars	*tmp;
 
 	tmp = vars;
 	if (tmp -> name == NULL)
 	{
-		tmp -> name = name;
-		tmp -> value = value;
-		return ;
+		tmp = init_var(vars, name, value);
+		if (!tmp)
+			return (0);
+		return (1);
 	}
-	while (tmp -> next != 0)
-	{
-		if (ft_strncmp(tmp -> name, name, ft_strlen(name)) == 0)
-		{
-			free(tmp -> value);
-			free(name);
-			tmp -> value = value;
-			return ;
-		}
+	while (tmp -> next != 0
+		&& ft_strncmp(tmp -> name, name, ft_strlen(tmp -> name)))
 		tmp = tmp -> next;
+	if (ft_strncmp(tmp -> name, name, ft_strlen(tmp -> name)) != 0)
+	{
+		tmp -> next = init_var(NULL, name, value);
+		if (tmp -> next == 0)
+			return (free_vars(vars), 0);
+		return (1);
 	}
-	tmp -> next = ft_calloc(1, sizeof(t_env_vars));
-	if (tmp -> next == 0)
-		return ;
-	tmp -> next -> name = name;
-	tmp -> next -> value = value;
-}
-
-static int	add_spec_var(t_env_vars *vars)
-{
-	char	*name;
-	char	*value;
-
-	name = ft_strdup("?");
-	value = ft_strdup("0");
-	if (!name || !value)
-		return (free(name), free(value), free_vars(vars), 1);
-	return (vars_add_one(vars, name, value), 0);
+	free(tmp -> value);
+	tmp -> value = ft_strdup(value);
+	if (!tmp -> value)
+		return (free(tmp -> name), free_vars(vars), 0);
+	return (1);
 }
 
 t_env_vars	*init_env_vars(char **envp)
@@ -59,7 +67,6 @@ t_env_vars	*init_env_vars(char **envp)
 	int			i;
 	int			j;
 	char		*name;
-	char		*value;
 
 	vars = ft_calloc(1, sizeof(t_env_vars));
 	if (vars == 0)
@@ -71,17 +78,18 @@ t_env_vars	*init_env_vars(char **envp)
 		while (envp[i][j] && envp[i][j] != '=')
 			j ++;
 		name = ft_substr(envp[i], 0, j);
-		value = ft_strdup(getenv(name));
-		if (!name || !value)
-			return (free(name), free(value), free_vars(vars), NULL);
-		vars_add_one(vars, name, value);
+		if (!name)
+			return (free(name), free_vars(vars), NULL);
+		if (!vars_add(vars, name, getenv(name)))
+			return (free(name), free_vars(vars), NULL);
+		free(name);
 	}
-	if (add_spec_var(vars))
-		return (0);
+	if (!vars_add(vars, "?", "0"))
+		return (free_vars(vars), NULL);
 	return (vars);
 }
 
-void	del_one_var(t_env_vars *vars, char *name)
+void	vars_del_one(t_env_vars *vars, char *name)
 {
 	t_env_vars	*tmp;
 	t_env_vars	*del;

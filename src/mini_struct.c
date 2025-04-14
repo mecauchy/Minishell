@@ -1,39 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils2.c                                           :+:      :+:    :+:   */
+/*   mini_struct.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/28 14:21:27 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/11 15:00:29 by vluo             ###   ########.fr       */
+/*   Created: 2025/04/11 15:06:52 by vluo              #+#    #+#             */
+/*   Updated: 2025/04/11 15:25:51 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-int	is_all_space(char *line)
+t_mini	*init_mini(char **envp)
 {
-	int	i;
+	t_mini	*mini;
 
-	i = -1;
-	while (line[++i])
-		if (!((8 <= line[i] && line[i] <= 13) || line[i] == 32))
-			return (0);
-	return (1);
+	mini = ft_calloc(1, sizeof(t_mini));
+	if (mini == 0)
+		return (0);
+	mini -> sa = init_ctrl_c_sig();
+	mini -> env_vars = init_env_vars(envp);
+	mini -> exit_status = -1;
+	if (!(mini -> sa) || !(mini -> env_vars))
+		return (free(mini -> sa), free_vars(mini -> env_vars), NULL);
+	return (mini);
 }
 
-int	ft_is_identifier(char *name)
+void	free_mini(t_mini *mini)
 {
-	int	i;
-
-	if (!name)
-		return (0);
-	if (!ft_isalpha(name[0]) && name[0] != '_')
-		return (0);
-	i = 0;
-	while (name[++i])
-		if (!ft_isalnum(name[i]) && name[i] != '_')
-			return (0);
-	return (1);
+	free(mini -> sa);
+	free_vars(mini -> env_vars);
+	free(mini);
 }
