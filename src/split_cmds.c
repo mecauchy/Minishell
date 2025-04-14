@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 12:42:54 by vluo              #+#    #+#             */
-/*   Updated: 2025/03/27 15:46:03 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/11 15:00:46 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,4 +158,32 @@ char	**split_expand(char	**splited_cmds, char *line, t_env_vars *vars)
 		}
 	}
 	return (split_expanded);
+}
+
+char	**get_cmd_and_args(char **split, int index)
+{
+	int		i;
+	int		j;
+	char	**cmd_and_args;
+
+	i = index - 1;
+	while (split[++i] != 0)
+		if (split[i][0] == '|')
+			break ;
+	cmd_and_args = ft_calloc((i - index) + 1, sizeof(char *));
+	if (cmd_and_args == 0)
+		return (NULL);
+	cmd_and_args[0] = get_correct_cmd(split[index]);
+	j = 0;
+	while (++j < i - index)
+	{
+		cmd_and_args[j] = ft_strdup(split[index + j]);
+		if (cmd_and_args[j] == 0)
+		{
+			while (--j > 0)
+				free(cmd_and_args[j]);
+			free(cmd_and_args);
+		}
+	}
+	return (cmd_and_args);
 }

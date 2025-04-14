@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 15:05:16 by vluo              #+#    #+#             */
-/*   Updated: 2025/03/26 17:28:14 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/10 15:00:47 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,13 @@ char	*expand(char *cmd, t_env_vars *vars)
 	while (cmd[i])
 	{
 		st = i;
-		while (cmd[i] && (cmd[i] != '\'' && cmd[i] != '"' && cmd[i] != '$'))
+		while (cmd[i] && (cmd[i] != '\'' && cmd[i] != '"' && cmd[i] != '$' ))
+			i ++;
+		if (!cmd[i])
+			return (free(joined), ft_strdup(cmd));
+		if (cmd[i] == '$' && !cmd[i + 1])
+			return (free(joined), ft_strdup("$"));
+		if (cmd[i + 1] && cmd[i + 1] == '"')
 			i ++;
 		if (!cmd[i])
 			return (ft_strjoin_free(joined, ft_substr(cmd, st, i - st)));
