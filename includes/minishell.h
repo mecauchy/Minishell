@@ -6,7 +6,7 @@
 /*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:02:17 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/14 17:07:10 by mcauchy-         ###   ########.fr       */
+/*   Updated: 2025/04/15 14:33:00 by mcauchy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,10 @@
 # define RED		"\033[1;31m"
 # define GREY 		"\033[0;90m"
 
-# define REDIR_IN	"<"
-# define REDIR_OUT	">"
+# define REDIR_IN	'<'
+# define REDIR_OUT	'>'
 # define HEREDOC	"<<"
-# define O_APPEND	">>"
+# define APPEND	">>"
 
 # include "../libft/includes/libft.h"
 # include "../libft/includes/ft_printf.h"
@@ -38,7 +38,7 @@
 # include <strings.h>
 # include <unistd.h>
 # include <fcntl.h>
-// # include <linux/limits.h>
+# include <linux/limits.h>
 # include <limits.h>
 
 /*
@@ -100,8 +100,8 @@ char	*expand(char *cmd, char **envp);
 // test main fct //
 void	ft_exec(char **av);
 int		count_redir(char **cmd);
-void	stock_redir(char **av, t_cmd *cmd);
-
+void	stock_redir(char **av);
+void	apply_redirection(t_redir *redir);
 
 
 #endif

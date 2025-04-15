@@ -6,7 +6,7 @@
 /*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 14:38:43 by mecauchy          #+#    #+#             */
-/*   Updated: 2025/04/14 17:08:01 by mcauchy-         ###   ########.fr       */
+/*   Updated: 2025/04/15 16:51:14 by mcauchy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,66 +81,66 @@ void	wait_all_pids(t_data *data)
 		i++;
 	}
 }
-// void	exec_multi_cmd(t_data *data, t_cmd *cmd)
-// {
-// 	int	i;
-// 	int	prev_infile;
-// 	int	pipe_fd[2];
 
-// 	prev_infile = -1;
-// 	i = 0;
-// 	if (pipe(pipe_fd) == -1)
-// 	{
-// 		perror("pipe");
-// 		exit(1);
-// 	}
-// 	while (i < data->nb_cmds)
-// 	{
-// 		data->pid[i] = fork();
-// 		if (data->pid[i] < 0)
-// 		{
-// 			perror("fork");
-// 			exit(1);
-// 		}
-// 		if (data->pid[i])
-// 		{
-// 			redirect_pipe(data, prev_infile, i);
-// 			apply_redirection(cmd[i].redirs);
-// 			// EXECVP CMD[0] -> child_exec(data);
-// 		}
-// 		// parent process
-// 		else
-// 		{
-// 			if (prev_infile != -1)
-// 				close(prev_infile);
-// 			prev_infile = data->fd[0];
-// 			close(data->fd[1]);
-// 		}
-// 		i++;
-// 	}
-// 	wait_all_pids(data);
-// }
+void	exec_multi_cmd(t_data *data, t_cmd *cmds)
+{
+	int	i;
+	int	prev_infile;
+	int	pipe_fd[2];
 
-int main(int ac, char **av) {
-    // t_cmd cmds[2];
+	prev_infile = -1;
+	i = 0;
+	if (pipe(pipe_fd) == -1)
+	{
+		perror("pipe");
+		exit(1);
+	}
+	while (i < data->nb_cmds)
+	{
+		data->pid[i] = fork();
+		if (data->pid[i] < 0)
+		{
+			perror("fork");
+			exit(1);
+		}
+		if (data->pid[i])
+		{
+			redirect_pipe(data, prev_infile, i);
+			apply_redirection(cmds[i].redirs);
+			execvp(cmds[i][0].args, cmds);
+			// EXECVP CMD[0] -> child_exec(data);
+		}
+		// parent process
+		else
+		{
+			if (prev_infile != -1)
+				close(prev_infile);
+			prev_infile = data->fd[0];
+			close(data->fd[1]);
+		}
+		i++;
+	}
+	wait_all_pids(data);
+}
+
+int main(void) {
+    t_cmd cmds[2];
+	t_data	*data;
+	// t_cmd	*cmd;
 	// char	**res;
     // Première commande : ls -l
-
-	if (ac > 0)
-		ft_exec(av);
-    // cmds[0].args = (char *[]){"ls", "-l", NULL};
-    // cmds[0].redirs = NULL;
-
-    // // Deuxième commande : grep ".c" > result.txt
-    // cmds[1].args = (char *[]){"grep", ".c", NULL};
-    // t_redir *redir = malloc(sizeof(t_redir));
-    // redir->file = strdup("result.txt");
-    // redir->type = REDIR_OUT;
-    // redir->next = NULL;
-    // cmds[1].redirs = redir;
-
+	// ft_exec(av + 1);
+    cmds[0].args = (char *[]){"ls", "-l", NULL};
+    cmds[0].redirs = NULL;
+    // Deuxième commande : grep ".c" > result.txt
+    cmds[1].args = (char *[]){"grep", ".c", NULL};
+    t_redir *redir = malloc(sizeof(t_redir));
+    redir->file = strdup("result.txt");
+    redir->type = REDIR_OUT;
+    redir->next = NULL;
+    cmds[1].redirs = redir;
+	exec_multi_cmd(data, cmds);
     // // Exécuter le pipeline
     // execute_pipeline(cmds, 2);
-
     return 0;
 }

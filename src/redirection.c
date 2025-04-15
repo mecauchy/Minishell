@@ -6,7 +6,7 @@
 /*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/23 16:12:52 by mcauchy-          #+#    #+#             */
-/*   Updated: 2025/04/14 17:08:21 by mcauchy-         ###   ########.fr       */
+/*   Updated: 2025/04/15 14:50:57 by mcauchy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,7 +173,6 @@ char	**clean_without_redir(char **cmd)
 	{
 		if (is_redir(cmd[i]))
 		{
-			printf("okkk\n");
 			i += 2;
 			if (!cmd[i])
 				break ;
@@ -292,17 +291,21 @@ void	old_stock_redir(char **av)
 	type[redir + 1] = NULL;
 }
 
-void	stock_redir(char **av, t_cmd *cmd)
+void	stock_redir(char **av)
 {
 	int		i;
 	t_redir	*new_node;
 	t_redir	*last;
+	t_cmd	*cmd = NULL;
 
 	i = 0;
+	cmd = malloc(sizeof(t_cmd));
+	if (!cmd)
+		return ;
 	cmd->redirs = NULL;
 	while (av[i])
 	{
-		if (is_redir(av[i]) && av[i + 1])
+		if (is_redir(av[i]) && av[i + 1] && av[i + 2])
 		{
 			new_node = malloc(sizeof(t_redir));
 			if (!new_node)
@@ -313,12 +316,8 @@ void	stock_redir(char **av, t_cmd *cmd)
 			new_node->type = ft_strdup(av[i]);
 			new_node->file = ft_strdup(av[i + 1]);
 			new_node->next = NULL;
-			
-			// Affichage pour le debug
 			printf("type is -> [ %s ]\n", new_node->type);
 			printf("the file/delimiter is -> %s\n", new_node->file);
-			
-			// Ajout du nouveau nœud à la fin de la liste
 			if (cmd->redirs == NULL)
 				cmd->redirs = new_node;
 			else
@@ -328,12 +327,13 @@ void	stock_redir(char **av, t_cmd *cmd)
 					last = last->next;
 				last->next = new_node;
 			}
-			i += 2;  // On passe au token après la redirection et le fichier/délimiteur
+			i += 2;
 		}
 		else
 			i++;
 	}
 }
+
 char	*ft_strdup(const char *s)
 {
 	char	*dup;
@@ -354,21 +354,22 @@ char	*ft_strdup(const char *s)
 
 /*
 Pour l'instant ft_exec() me permet juste de tester que j'ai cree
-	elle a pas de but clair pr le moment
 */
 void	ft_exec(char **av)
 {
 	int		redir;
 	char	**wo_redir;
-	t_cmd	*cmd;
+	// t_cmd	*cmd;
 	
 	// cmd = NULL;
+	// cmd->args = NULL;
+	// cmd->redirs = NULL;
 	redir = count_redir(av);
 	printf("nb of redir is = %d\n", redir);
 	wo_redir = clean_without_redir(av);
 	printf("nb of redir is : %d\n", redir);
 	if (redir >= 1)
-		stock_redir(av, cmd);
+		stock_redir(av);
 }
 
 // int	main(int ac, char **av)
