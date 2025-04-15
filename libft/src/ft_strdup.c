@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 15:20:18 by vluo              #+#    #+#             */
-/*   Updated: 2024/11/18 10:42:19 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/15 13:34:34 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@ char	*ft_strdup(const char *s)
 	char	*dup;
 	int		i;
 
+	if (s == 0)
+		return (0);
 	dup = malloc((ft_strlen(s) + 1) * sizeof(char));
 	if (dup == 0)
 		return (0);

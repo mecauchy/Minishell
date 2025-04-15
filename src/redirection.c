@@ -6,7 +6,11 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/23 16:12:52 by mcauchy-          #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2025/03/26 15:55:54 by vluo             ###   ########.fr       */
+=======
+/*   Updated: 2025/04/15 13:28:30 by vluo             ###   ########.fr       */
+>>>>>>> vluo
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -316,24 +320,6 @@ void	free_str(char **cmd)
 		i++;
 	}
 	free(cmd);
-}
-
-char	*ft_strdup(const char *s)
-{
-	char	*dup;
-	int		i;
-
-	dup = malloc((strlen(s) + 1) * sizeof(char));
-	if (dup == 0)
-		return (0);
-	i = 0;
-	while (s[i])
-	{
-		dup[i] = s[i];
-		i ++;
-	}
-	dup[i] = '\0';
-	return (dup);
 }
 
 // int	main(int ac, char **av)
