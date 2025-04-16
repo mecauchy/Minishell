@@ -9,8 +9,8 @@ READLINEFLAGS = -lreadline
 
 SRC = $(SRC_DIR)split_cmds.c $(SRC_DIR)get_correct_cmd.c \
 	$(SRC_DIR)unquote.c $(SRC_DIR)get_env_var.c $(SRC_DIR)expand.c \
-	$(SRC_DIR)redirection.c \
-	$(SRC_DIR)utils.c $(SRC_DIR)minishell.c $(SRC_DIR)exec.c \
+	$(SRC_DIR)redirection.c $(SRC_DIR)add_cmd.c \
+	$(SRC_DIR)utils.c $(SRC_DIR)minishell.c $(SRC_DIR)exec.c $(SRC_DIR)which_redirection.c \
 
 OBJ = $(patsubst $(SRC_DIR)%.c,$(OBJ_DIR)%.o,$(SRC))
 

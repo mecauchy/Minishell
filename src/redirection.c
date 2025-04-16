@@ -6,7 +6,7 @@
 /*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/23 16:12:52 by mcauchy-          #+#    #+#             */
-/*   Updated: 2025/04/15 14:50:57 by mcauchy-         ###   ########.fr       */
+/*   Updated: 2025/04/16 15:49:17 by mcauchy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,38 +156,72 @@ c'est juste que l'une calcule et l'autre stock
 		["ls", "-l", "|", "grep", "test"]
 
 */
-char	**clean_without_redir(char **cmd)
+// char	**clean_without_redir(t_cmd *cmd, char **old_cmd)
+// {
+// 	char	**new_cmd;
+// 	int		i;
+// 	int		j;
+// 	int		len;
+
+// 	i = 0;
+// 	j = 0;
+// 	len = len_without_redir(old_cmd);
+// 	new_cmd = (char **)malloc(sizeof(char) * len);
+// 	if (!new_cmd)
+// 		return (NULL);
+// 	while (old_cmd[i])
+// 	{
+// 		if (is_redir(old_cmd[i]))
+// 		{
+// 			i += 2;
+// 			if (!old_cmd[i])
+// 				break ;
+// 		}
+// 		else
+// 		{
+// 			new_cmd[j] = ft_strdup(old_cmd[i]);
+// 			printf("\n [0%d]\t\t[  '%s'  ], \n", j, new_cmd[j]);
+// 			j++;
+// 			i++;
+// 		}
+// 		printf("cmd[%d] == %s\n", i, old_cmd[i]);
+// 	}
+// 	new_cmd[len] = NULL;
+// 	return (new_cmd);
+// }
+
+void	clean_without_redir(t_cmd *cmd, char **old_cmd)
 {
-	char	**new_cmd;
 	int		i;
 	int		j;
 	int		len;
 
 	i = 0;
 	j = 0;
-	len = len_without_redir(cmd);
-	new_cmd = (char **)malloc(sizeof(char) * len);
-	if (!new_cmd)
-		return (NULL);
-	while (cmd[i])
+	len = len_without_redir(old_cmd);
+	cmd->args = malloc(sizeof(char **) * len + 1);
+	if (!cmd->args)
+		return ;
+	while (old_cmd[i])
 	{
-		if (is_redir(cmd[i]))
+		if (is_redir(old_cmd[i]))
 		{
 			i += 2;
-			if (!cmd[i])
+			if (!old_cmd[i])
 				break ;
 		}
+		if (old_cmd[i] == '|')
+			i++;
+			j++;
 		else
 		{
-			new_cmd[j] = ft_strdup(cmd[i]);
-			printf("\n [0%d]\t\t[  '%s'  ], \n", j, new_cmd[j]);
+			cmd->args[j] = ft_strdup(old_cmd[i]);
+			printf("cmd[%d] == %s\n", j, cmd->args[j]);
 			j++;
 			i++;
 		}
-		printf("cmd[%d] == %s\n", i, cmd[i]);
 	}
-	new_cmd[len] = NULL;
-	return (new_cmd);
+	cmd->args[len] = NULL;
 }
 
 int	count_redir(char **cmd)
@@ -197,7 +231,6 @@ int	count_redir(char **cmd)
 
 	i = 0;
 	redir = 0;
-	printf("here we are\n");
 	while (cmd[i])
 	{
 		if (is_redir(cmd[i]))
@@ -291,17 +324,13 @@ void	old_stock_redir(char **av)
 	type[redir + 1] = NULL;
 }
 
-void	stock_redir(char **av)
+void	stock_redir(t_cmd *cmd, char **av)
 {
 	int		i;
 	t_redir	*new_node;
 	t_redir	*last;
-	t_cmd	*cmd = NULL;
 
 	i = 0;
-	cmd = malloc(sizeof(t_cmd));
-	if (!cmd)
-		return ;
 	cmd->redirs = NULL;
 	while (av[i])
 	{
@@ -355,7 +384,7 @@ char	*ft_strdup(const char *s)
 /*
 Pour l'instant ft_exec() me permet juste de tester que j'ai cree
 */
-void	ft_exec(char **av)
+void	ft_exec(t_cmd *cmd, char **av)
 {
 	int		redir;
 	char	**wo_redir;
@@ -366,7 +395,7 @@ void	ft_exec(char **av)
 	// cmd->redirs = NULL;
 	redir = count_redir(av);
 	printf("nb of redir is = %d\n", redir);
-	wo_redir = clean_without_redir(av);
+	wo_redir = clean_without_redir(cmd, av);
 	printf("nb of redir is : %d\n", redir);
 	if (redir >= 1)
 		stock_redir(av);

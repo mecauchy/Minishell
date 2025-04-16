@@ -6,7 +6,7 @@
 /*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:02:17 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/15 14:33:00 by mcauchy-         ###   ########.fr       */
+/*   Updated: 2025/04/16 15:37:47 by mcauchy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,8 @@
 # define RED		"\033[1;31m"
 # define GREY 		"\033[0;90m"
 
-# define REDIR_IN	'<'
-# define REDIR_OUT	'>'
+# define REDIR_IN	"<"
+# define REDIR_OUT	">"
 # define HEREDOC	"<<"
 # define APPEND	">>"
 
@@ -65,7 +65,7 @@ typedef struct s_cmd
 typedef struct s_data
 {
 	int		nb_cmds;
-	int		nb_heredocs;
+	// int		nb_heredocs;
 	int		nb_pipes;
 	int		*fd;
 	int		*pid;
@@ -75,7 +75,7 @@ typedef struct s_data
 /* REDIRECTION*/
 int		is_redir(char *cmd);
 int		len_without_redir(char **cmd);
-char	**clean_without_redir(char **cmd);
+void	clean_without_redir(t_cmd *cmd, char **old_cmd);
 
 // void	apply_redirection(t_redir *redir);
 void	redirection_left_left(t_redir *current);
@@ -98,10 +98,14 @@ char	*get_env_var(char *line, char **envp);
 char	*expand(char *cmd, char **envp);
 
 // test main fct //
-void	ft_exec(char **av);
+void	ft_exec(t_cmd *cmd, char **av);
 int		count_redir(char **cmd);
-void	stock_redir(char **av);
+void	stock_redir(t_cmd *cmd, char **av);
 void	apply_redirection(t_redir *redir);
-
+void	init_pids(t_data *data);
+void	exec_multi_cmd(t_data *data, t_cmd *cmds);
+void	redirect_pipe(t_data *data, int prev_infile, int i);
+void	wait_all_pids(t_data *data);
+int		add_nb_cmd(char **av, t_data *data);
 
 #endif

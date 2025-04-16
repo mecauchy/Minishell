@@ -6,7 +6,7 @@
 /*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 13:41:49 by mcauchy-          #+#    #+#             */
-/*   Updated: 2025/04/15 14:31:29 by mcauchy-         ###   ########.fr       */
+/*   Updated: 2025/04/16 14:37:44 by mcauchy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ void	redirection_right(t_redir *redir)
 {
 	int	fd;
 	fd = open(redir->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	printf("redir file == %s\n", redir->file);
 	if (fd == -1)
 	{
 		perror("Minishell : open");
@@ -84,11 +85,11 @@ void	apply_redirection(t_redir *redir)
 	current = redir;
 	while (current)
 	{
-		if (current->type == REDIR_OUT)
+		if (current->type[0] == '>')
 			redirection_right(current);
 		// else if (current->type == APPEND)
 		// 	redirection_right_right(current);
-		else if (current->type == REDIR_IN)
+		else if (current->type[0] == '<')
 			redirection_left(current);
 		// else if (current->type == HEREDOC)
 		// 	redirection_left_left(current);
