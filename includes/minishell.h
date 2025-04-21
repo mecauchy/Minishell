@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:02:17 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/14 16:48:38 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/21 18:48:11 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,9 @@
 # define REDIR_OUT	">"
 # define HEREDOC	"<<"
 # define O_APPEND	">>"
+
+# define HD_ERROR_MESSAGE "\nbash: warning: here-document \
+delimited by end-of-file (wanted `%s')\n"
 
 # include "../libft/includes/libft.h"
 # include "../libft/includes/ft_printf.h"
@@ -80,6 +83,14 @@ typedef struct s_mini
 	int					exit_status;
 }	t_mini;
 
+typedef struct s_here_doc
+{
+	char	**cmd_args;
+	int		fd;
+	char	*delimiter;
+	int		do_expand;
+}	t_here_doc;
+
 /* UTILS */
 
 int					is_correctly_quoted(char *line);
@@ -91,8 +102,12 @@ char				**split_cmds(char *line);
 char				**split_expand(char	**splited_cmds, char *line,
 						t_env_vars *vars);
 char				*get_correct_cmd(char *cmd);
-char				**get_cmd_and_args(char **split_expanded, int index);
+char				**get_cmd_and_args(char *cmd,
+						char **split_expanded, int index);
 void				print_nonprintable(char *str);
+void				wait_upex(int pid, t_env_vars *vars);
+char				*get_last_arg(char **cmd_arg, t_env_vars *vars);
+char				*unquote(char *line);
 
 /* EXPAND */
 
@@ -142,5 +157,15 @@ void				ft_exit(char **n, t_mini *mini);
 void				ft_echo(char **args, t_env_vars *vars);
 void				ft_cd(char *path, t_env_vars *vars);
 int					is_builtin(char *cmd, char **cmd_args, t_mini *mini);
+
+/* HERE DOC */
+
+void				free_hd(t_here_doc *hd);
+t_here_doc			*parse_heredoc(char *cmd);
+void				here_doc_cmd(char *cmd, t_env_vars *vars);
+
+/* MAIN */
+
+void				exec_cmd(char *cmd, char **cmd_args, t_env_vars *vars);
 
 #endif

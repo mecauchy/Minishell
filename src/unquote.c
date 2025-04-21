@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 17:06:45 by vluo              #+#    #+#             */
-/*   Updated: 2025/03/26 17:28:48 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/21 18:50:56 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,4 +81,23 @@ char	*get_quote(char *line, t_env_vars *vars)
 	if (c == '"')
 		return (get_dquote(line, vars));
 	return (ft_strdup(line));
+}
+
+char	*unquote(char *line)
+{
+	int		i;
+	char	to_add[2];
+	char	*unquoted;
+
+	i = -1;
+	to_add[1] = 0;
+	unquoted = ft_strdup("");
+	while (line[++i])
+	{
+		if (line[i] == '"' || line[i] == '\'')
+			continue ;
+		to_add[0] = line[i];
+		unquoted = ft_strjoin_free(unquoted, ft_strdup(to_add));
+	}
+	return (unquoted);
 }

@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 17:43:47 by vluo              #+#    #+#             */
-/*   Updated: 2024/11/18 16:15:22 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/21 13:46:52 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ size_t	ft_strlcpy(char *dst, const char *src, size_t siz)
 	size_t	i;
 
 	if (siz > 0)
-	{	
+	{
 		i = 0;
 		while (i < siz - 1 && src[i])
 		{

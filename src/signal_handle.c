@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 14:02:48 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/14 16:25:53 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/21 14:55:47 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,11 @@ void	handle_ctrc_c(int sig)
 	write(2, "\n", 1);
 	rl_replace_line("", 0);
 	rl_on_new_line();
-	if (g_signal == 0)
+	if (g_signal == 0 || g_signal == SIGUSR2)
+	{
+		g_signal = SIGUSR2;
 		return (rl_redisplay());
+	}
 	g_signal = sig;
 }
 
