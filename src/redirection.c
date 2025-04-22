@@ -6,7 +6,7 @@
 /*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/23 16:12:52 by mcauchy-          #+#    #+#             */
-/*   Updated: 2025/04/22 12:14:18 by mcauchy-         ###   ########.fr       */
+/*   Updated: 2025/04/22 14:54:27 by mcauchy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -195,11 +195,11 @@ void	clean_without_redir(t_cmd *cmd, char **old_cmd)
 	int		i;
 	int		j;
 	int		len;
-
+	
 	i = 0;
 	j = 0;
 	len = len_without_redir(old_cmd);
-	cmd->args = malloc(sizeof(char **) * len + 1);
+	cmd->args = malloc(sizeof(char **) * (len + 1));
 	if (!cmd->args)
 		return ;
 	while (old_cmd[i])

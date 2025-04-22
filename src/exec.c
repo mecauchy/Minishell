@@ -6,7 +6,7 @@
 /*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 14:38:43 by mecauchy          #+#    #+#             */
-/*   Updated: 2025/04/22 12:18:38 by mcauchy-         ###   ########.fr       */
+/*   Updated: 2025/04/22 18:01:51 by mcauchy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,17 +54,31 @@ fd[0] -> entree sauf pour la premiere commande
 
 void	redirect_pipe(t_data *data, int prev_infile, int i)
 {
-	if (prev_infile != -1)
+	(void)(prev_infile);
+	if (i == 0)
 	{
-		dup2(prev_infile, STDIN_FILENO);
-		close(prev_infile);
+		printf("000001 === %d\n", (i * 2 + 1));
+		dup2(data->fd[1], STDOUT_FILENO);
+		// close(data->fd[1]);
+		// close(prev_infile);
 	}
-	if (i < data->nb_cmds - 1)
+	else if (i == data->nb_cmds - 1)
 	{
-		dup2(data->fd[i * 2 + 1], STDOUT_FILENO);
-		close(data->fd[1 * 2 + 1]);
-		close(data->fd[1 * 2]);
+		printf("i == %d\n", i);
+		printf("000002 === %d\n", (2 * i) - 2);
+		dup2(data->fd[3], STDIN_FILENO);
+		// close(data->fd[(2 * i) - 2]);
 	}
+	else
+	{
+		printf("OUIIIIIII\n");
+		dup2(data->fd[(2 * i) - 2], STDIN_FILENO);
+		dup2(data->fd[(2 * i) + 1], STDOUT_FILENO);
+		// close(data->fd[i * 2 + 1]);
+		// close(data->fd[i * 2]);
+	}
+	close(data->fd[0]);
+	close(data->fd[1]);
 }
 
 void	wait_all_pids(t_data *data)
@@ -72,9 +86,23 @@ void	wait_all_pids(t_data *data)
 	int	i;
 
 	i = 0;
+	while (i < data->nb_cmds)
+	{
+		waitpid(data->pid[i], NULL, 0);
+		i++;
+	}
+}
+
+void	init_fds(t_data *data)
+{
+	int	i = 0;
 	while (i < data->nb_cmds - 1)
 	{
-		wait(NULL);
+		if (pipe(data->fd + (i * 2)) == -1)
+		{
+			perror("pipe");
+			exit(1);
+		}
 		i++;
 	}
 }
@@ -83,19 +111,13 @@ void	exec_multi_cmd(t_data *data, t_cmd *cmds)
 {
 	int	i;
 	int	prev_infile;
+	char	**tmp;
 
 	prev_infile = -1;
 	i = 0;
 	while (i < data->nb_cmds)
 	{
-		if (i < data->nb_cmds - 1)
-		{
-			if (pipe(data->fd + i * 2) == -1)
-			{
-				perror("pipe");
-				exit(1);
-			}
-		}
+		printf("nb cmds == %d\n", data->nb_cmds);
 		data->pid[i] = fork();
 		printf("here\n");
 		if (data->pid[i] < 0)
@@ -103,16 +125,21 @@ void	exec_multi_cmd(t_data *data, t_cmd *cmds)
 			perror("fork");
 			exit(1);
 		}
+		printf("0001-here\n");	
 		if (data->pid[i] == 0)
 		{
+			tmp = ft_split(cmds->args[i], ' ');
+			printf("cmd[%d] --> %s\n", i, tmp[0]);
 			redirect_pipe(data, prev_infile, i);
-			apply_redirection(cmds[i].redirs);
-			execvp(cmds[i].args[0], cmds[i].args);
+			apply_redirection(cmds->redirs);
+			// execvp(cmds[i].args[0], cmds[i].args);
+			execvp(tmp[0], tmp);
 			perror("execvp");
 			exit(1);
 		}
 		else
 		{
+			printf("002-here\n");
 			if (prev_infile != -1)
 				close(prev_infile);
 			if (i < data->nb_cmds -1)
@@ -123,6 +150,8 @@ void	exec_multi_cmd(t_data *data, t_cmd *cmds)
 		}
 		i++;
 	}
+	close(data->fd[0]);
+	close(data->fd[1]);	
 	wait_all_pids(data);
 }
 
@@ -135,7 +164,7 @@ int main(int ac, char **av)
     t_redir *redir = malloc(sizeof(t_redir));
 	cmd = malloc(sizeof(t_cmd));
 	data = malloc(sizeof(t_data));
-	data->nb_cmds = 2;
+	data->nb_cmds = 3;
 	ft_exec(cmd, av + 1);
 	add_nb_cmd(av, data);
     if (!redir || ac < 0)
@@ -144,12 +173,12 @@ int main(int ac, char **av)
     // cmds[0].redirs = NULL;
     // // Deuxième commande : grep ".c" > result.txt
     // cmds[1].args = (char *[]){"wc", NULL};
-	// redir->file = strdup("result.txt");
+	// redir->file = strdup("01.txt");
     // redir->type = REDIR_OUT;
     // redir->next = NULL;
     // cmds[1].redirs = redir;
 	// init_pids(data);
-	data->fd = malloc(sizeof(int) * data->nb_cmds - 1 * 2);
+	data->fd = malloc(sizeof(int) * ((data->nb_cmds - 1) * 2));
 	data->pid = malloc(sizeof(int) * data->nb_cmds);
 	if (!data->fd)
 	{
@@ -158,7 +187,9 @@ int main(int ac, char **av)
 	}
 	if (!data)
 		return (0);
+	init_fds(data);
 	exec_multi_cmd(data, cmd);
+	printf("SORTI\n");
     return (0);
 }
 

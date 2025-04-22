@@ -6,7 +6,7 @@
 /*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:02:17 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/16 15:37:47 by mcauchy-         ###   ########.fr       */
+/*   Updated: 2025/04/22 15:21:34 by mcauchy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,7 @@ Comprend la liste des redirections
 typedef struct s_cmd
 {
 	char	**args;
+	char	**split_args;
 	t_redir	*redirs;
 }				t_cmd;
 
@@ -107,5 +108,6 @@ void	exec_multi_cmd(t_data *data, t_cmd *cmds);
 void	redirect_pipe(t_data *data, int prev_infile, int i);
 void	wait_all_pids(t_data *data);
 int		add_nb_cmd(char **av, t_data *data);
+void	init_fds(t_data *data);
 
 #endif
