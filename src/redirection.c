@@ -6,7 +6,7 @@
 /*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/23 16:12:52 by mcauchy-          #+#    #+#             */
-/*   Updated: 2025/04/16 15:49:17 by mcauchy-         ###   ########.fr       */
+/*   Updated: 2025/04/22 12:14:18 by mcauchy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -210,9 +210,11 @@ void	clean_without_redir(t_cmd *cmd, char **old_cmd)
 			if (!old_cmd[i])
 				break ;
 		}
-		if (old_cmd[i] == '|')
+		if (old_cmd[i][0] == '|')
+		{
 			i++;
-			j++;
+			// j++;
+		}
 		else
 		{
 			cmd->args[j] = ft_strdup(old_cmd[i]);
@@ -334,7 +336,7 @@ void	stock_redir(t_cmd *cmd, char **av)
 	cmd->redirs = NULL;
 	while (av[i])
 	{
-		if (is_redir(av[i]) && av[i + 1] && av[i + 2])
+		if (is_redir(av[i]) && av[i + 1])
 		{
 			new_node = malloc(sizeof(t_redir));
 			if (!new_node)
@@ -387,7 +389,7 @@ Pour l'instant ft_exec() me permet juste de tester que j'ai cree
 void	ft_exec(t_cmd *cmd, char **av)
 {
 	int		redir;
-	char	**wo_redir;
+	// char	**wo_redir;
 	// t_cmd	*cmd;
 	
 	// cmd = NULL;
@@ -395,10 +397,10 @@ void	ft_exec(t_cmd *cmd, char **av)
 	// cmd->redirs = NULL;
 	redir = count_redir(av);
 	printf("nb of redir is = %d\n", redir);
-	wo_redir = clean_without_redir(cmd, av);
+	clean_without_redir(cmd, av);
 	printf("nb of redir is : %d\n", redir);
 	if (redir >= 1)
-		stock_redir(av);
+		stock_redir(cmd, av);
 }
 
 // int	main(int ac, char **av)

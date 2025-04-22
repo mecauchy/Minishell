@@ -6,7 +6,7 @@
 /*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 14:38:43 by mecauchy          #+#    #+#             */
-/*   Updated: 2025/04/16 15:41:48 by mcauchy-         ###   ########.fr       */
+/*   Updated: 2025/04/22 12:18:38 by mcauchy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,9 +110,7 @@ void	exec_multi_cmd(t_data *data, t_cmd *cmds)
 			execvp(cmds[i].args[0], cmds[i].args);
 			perror("execvp");
 			exit(1);
-			// EXECVP CMD[0] -> child_exec(data);
 		}
-		// parent process
 		else
 		{
 			if (prev_infile != -1)
@@ -128,20 +126,20 @@ void	exec_multi_cmd(t_data *data, t_cmd *cmds)
 	wait_all_pids(data);
 }
 
-int main(char **av) 
+int main(int ac, char **av) 
 {
-    t_cmd cmds[2];
+    // t_cmd cmds[2];
 	t_data	*data;
 	t_cmd	*cmd;
-	// char	**res;
     // Première commande : ls -l
     t_redir *redir = malloc(sizeof(t_redir));
 	cmd = malloc(sizeof(t_cmd));
 	data = malloc(sizeof(t_data));
+	data->nb_cmds = 2;
 	ft_exec(cmd, av + 1);
 	add_nb_cmd(av, data);
-    if (!redir)
-		return 0;
+    if (!redir || ac < 0)
+		return (0);
     // cmds[0].args = (char *[]){"ls", "-l", NULL};
     // cmds[0].redirs = NULL;
     // // Deuxième commande : grep ".c" > result.txt
@@ -150,7 +148,7 @@ int main(char **av)
     // redir->type = REDIR_OUT;
     // redir->next = NULL;
     // cmds[1].redirs = redir;
-	init_pids(data);
+	// init_pids(data);
 	data->fd = malloc(sizeof(int) * data->nb_cmds - 1 * 2);
 	data->pid = malloc(sizeof(int) * data->nb_cmds);
 	if (!data->fd)
@@ -158,18 +156,17 @@ int main(char **av)
 		perror("malloc");
 		exit(1);
 	}
-	data->nb_cmds = 2;
 	if (!data)
 		return (0);
-	exec_multi_cmd(data, cmds);
-    return 0;
+	exec_multi_cmd(data, cmd);
+    return (0);
 }
 
-int main(int ac, char **av) 
-{
-	if (ac < 0)
-		return 0;
-	t_cmd *cmd = malloc(sizeof(t_cmd));
-	clean_without_redir(cmd, av);
-    return 0;
-}
+// int main(int ac, char **av) 
+// {
+// 	if (ac < 0)
+// 		return 0;
+// 	t_cmd *cmd = malloc(sizeof(t_cmd));
+// 	clean_without_redir(cmd, av);
+//     return 0;
+// }
