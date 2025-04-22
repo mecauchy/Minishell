@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:07:38 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/21 18:28:27 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/22 11:04:56 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,26 +17,13 @@ int	g_signal;
 void	exec_cmd(char *cmd, char **cmd_args, t_env_vars *vars)
 {
 	int		pid;
-	int		status;
-	char	*exit_status;
 	char	**env;
 
 	pid = fork();
 	if (pid < 0)
 		return (perror("Error: "));
 	if (pid > 0)
-	{
-		g_signal = SIGUSR1;
-		waitpid(pid, &status, 0);
-		if (g_signal == SIGINT)
-			exit_status = ft_itoa(128 + g_signal);
-		else if (WIFEXITED(status))
-			exit_status = ft_itoa(WEXITSTATUS(status));
-		else
-			exit_status = ft_itoa(128 + g_signal);
-		vars_add(vars, "?", exit_status);
-		free(exit_status);
-	}
+		wait_upex(pid, vars);
 	else
 		return (env = get_envp(vars), vars_add(vars, "_", cmd), execve(cmd,
 				cmd_args, env), printf("%s: command not found\n", cmd),
