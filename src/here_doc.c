@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 13:57:52 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/21 18:51:13 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/22 11:17:10 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ static void	print_lines(t_list *lines, t_here_doc *hd, t_env_vars *vars)
 	char	*to_ex;
 
 	if (hd -> fd == -1)
-		return (vars_add(vars, "_", ""), ft_lstclear(&lines, free));
+		return (ft_lstclear(&lines, free));
 	tmp = lines;
 	while (tmp != 0)
 	{
@@ -40,7 +40,7 @@ static void	print_lines(t_list *lines, t_here_doc *hd, t_env_vars *vars)
 	ft_lstclear(&lines, free);
 }
 
-static t_list	*get_del_lines(char *deli)
+static t_list	*get_del_lines(char *deli, t_env_vars *vars)
 {
 	char	*lin;
 	char	*unquo_deli;
@@ -59,7 +59,10 @@ static t_list	*get_del_lines(char *deli)
 	}
 	if (g_signal == SIGUSR1
 		&& ft_strncmp(lin, unquo_deli, ft_strlen(unquo_deli)) != 0)
+	{
+		vars_add(vars, "_", "");
 		return (printf(HD_ERROR_MESSAGE, deli), free(unquo_deli), lines);
+	}
 	if (!lin)
 		return (ft_lstclear(&lines, free), NULL);
 	return (free(lin), free(unquo_deli), lines);
@@ -124,7 +127,7 @@ void	here_doc_cmd(char *cmd, t_env_vars *vars)
 	hd = parse_heredoc(cmd);
 	if (hd == 0)
 		return ;
-	lines = get_del_lines(hd -> delimiter);
+	lines = get_del_lines(hd -> delimiter, vars);
 	if (lines == 0)
 		return (vars_add(vars, "?", "130"), free_hd(hd));
 	if (hd -> cmd_args == 0)
