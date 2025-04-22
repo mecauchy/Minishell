@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:07:38 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/14 17:15:46 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/22 11:04:56 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,34 +17,24 @@ int	g_signal;
 void	exec_cmd(char *cmd, char **cmd_args, t_env_vars *vars)
 {
 	int		pid;
-	int		status;
-	char	*exit_status;
+	char	**env;
 
 	pid = fork();
 	if (pid < 0)
 		return (perror("Error: "));
 	if (pid > 0)
-	{
-		g_signal = SIGUSR1;
-		waitpid(pid, &status, 0);
-		if (WIFEXITED(status))
-			exit_status = ft_itoa(WEXITSTATUS(status));
-		else
-			exit_status = ft_itoa(128 + g_signal);
-		vars_add(vars, "?", exit_status);
-		free(exit_status);
-	}
+		wait_upex(pid, vars);
 	else
-	{
-		execve(cmd, cmd_args, get_envp(vars));
-		return (perror("Error:"));
-	}
+		return (env = get_envp(vars), vars_add(vars, "_", cmd), execve(cmd,
+				cmd_args, env), printf("%s: command not found\n", cmd),
+			free_tab(env), exit(127));
 }
 
 void	exec_cmds(char *path_cmd, char **cmd_args, t_mini *mini)
 {
 	char	**paths;
 	char	*cmd;
+	char	*_value;
 	int		i;
 
 	paths = ft_split(path_cmd, '/');
@@ -54,7 +44,9 @@ void	exec_cmds(char *path_cmd, char **cmd_args, t_mini *mini)
 	while (paths[i])
 		i ++;
 	cmd = paths[i - 1];
-	vars_add(mini -> env_vars, "_", path_cmd);
+	_value = get_last_arg(cmd_args, mini -> env_vars);
+	vars_add(mini -> env_vars, "_", _value);
+	free(_value);
 	if (!is_builtin(cmd, cmd_args, mini))
 		exec_cmd(path_cmd, cmd_args, mini -> env_vars);
 	free_tab(paths);
@@ -67,30 +59,52 @@ void	parse_line(char *line, t_mini *mini)
 	char	*cmd;
 	char	**cmd_args;
 
+	if (ft_strchr(line, '<'))
+	{
+		g_signal = SIGUSR1;
+		return (here_doc_cmd(line, mini -> env_vars));
+	}
 	full_cmd = split_cmds(line);
 	expa = expand(full_cmd[0], mini -> env_vars);
 	if (expa == NULL || !expa[0])
 		return (free_tab(full_cmd), free(expa));
 	cmd = get_correct_cmd(expa);
 	if (cmd == NULL)
-	{
-		vars_add(mini -> env_vars, "?", "127");
-		if (expa[0] && expa[0] == '/')
-			return (ft_printf("no such file or directory: "),
-				print_nonprintable(expa), free_tab(full_cmd), free(expa));
-		return (ft_printf("command not found: "),
-			print_nonprintable(expa), free_tab(full_cmd), free(expa));
-	}
-	cmd_args = get_cmd_and_args(full_cmd, 0);
+		cmd = ft_strdup(expa);
+	cmd_args = get_cmd_and_args(cmd, full_cmd, 0);
 	if (cmd_args == NULL)
+		return (free_tab(full_cmd), free(cmd), free(expa), free_tab(cmd_args));
+	if (is_builtin(cmd, cmd_args, mini))
 		return (free_tab(full_cmd), free(cmd), free(expa));
 	return (exec_cmds(cmd, cmd_args, mini),
 		free_tab(full_cmd), free(cmd), free(expa), free_tab(cmd_args));
 }
 
+void	handle_line(t_mini *mini, char *line)
+{
+	int	ex;
+
+	if (g_signal == SIGUSR2)
+	{
+		g_signal = 0;
+		vars_add(mini -> env_vars, "?", "130");
+	}
+	if (line == NULL)
+		return (ex = ft_atoi(get_var_value(mini -> env_vars, "?")),
+			printf("exit\n"), rl_clear_history(), free_mini(mini), exit(ex));
+	if (*line && !is_all_space(line))
+	{
+		add_history(line);
+		if (!is_correctly_quoted(line))
+			printf("Not correctly quoted\n");
+		else
+			parse_line(line, mini);
+	}
+	free(line);
+}
+
 int	main(int argc, char **argv, char **envp)
 {
-	int		exit;
 	char	*line;
 	t_mini	*mini;
 
@@ -104,23 +118,9 @@ int	main(int argc, char **argv, char **envp)
 	{
 		g_signal = 0;
 		line = readline("minishell> ");
-		if (line == NULL)
-			return (exit = ft_atoi(get_var_value(mini -> env_vars, "?")),
-				printf("exit\n"), rl_clear_history(), free_mini(mini), exit);
-		if (*line && !is_all_space(line))
-		{
-			add_history(line);
-			if (!is_correctly_quoted(line))
-				printf("Not correctly quoted\n");
-			else
-				parse_line(line, mini);
-		}
-		free(line);
+		handle_line(mini, line);
 		if (mini -> exit_status != -1)
 			return (rl_clear_history(), free_mini(mini), mini -> exit_status);
 	}
-	if (g_signal != 0)
-		return (exit = ft_atoi(get_var_value(mini -> env_vars, "?")),
-			rl_clear_history(), free_mini(mini), exit);
-	return (rl_clear_history(), free_mini(mini), 130);
+	return (0);
 }

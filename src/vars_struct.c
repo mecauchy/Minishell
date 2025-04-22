@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 16:12:31 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/14 13:28:49 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/21 14:33:27 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,6 +106,7 @@ void	vars_del_one(t_env_vars *vars, char *name)
 			free(del -> name);
 			free(del -> value);
 			free(del);
+			return ;
 		}
 		tmp = tmp -> next;
 	}

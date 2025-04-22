@@ -12,6 +12,7 @@ SRC = $(SRC_DIR)split_cmds.c $(SRC_DIR)get_correct_cmd.c \
 	$(SRC_DIR)signal_handle.c \
 	$(SRC_DIR)convert_to_dec.c $(SRC_DIR)builtins.c $(SRC_DIR)builtins2.c \
 	$(SRC_DIR)ft_echo.c $(SRC_DIR)ft_cd.c \
+	$(SRC_DIR)here_doc_utils.c $(SRC_DIR)here_doc.c \
 	$(SRC_DIR)redirection.c \
 	$(SRC_DIR)mini_struct.c $(SRC_DIR)utils.c $(SRC_DIR)utils2.c $(SRC_DIR)minishell.c \
 

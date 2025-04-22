@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 12:29:00 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/14 13:30:29 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/21 14:35:21 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ void	ft_unset(char **args, t_env_vars *vars)
 	int	exit;
 
 	i = -1;
+	exit = 0;
 	while (args[++i])
 	{
 		if (!ft_strncmp(args[i], "?", 2))
