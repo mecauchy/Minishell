@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 12:29:00 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/21 14:35:21 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/22 12:33:24 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,22 +50,14 @@ void	ft_exit(char **n, t_mini *mini)
 void	ft_unset(char **args, t_env_vars *vars)
 {
 	int	i;
-	int	exit;
 
 	i = -1;
-	exit = 0;
 	while (args[++i])
 	{
 		if (!ft_strncmp(args[i], "?", 2))
-		{
-			printf("unset: no matched found: ?\n");
-			exit = 1;
-		}
+			break ;
 		else
 			vars_del_one(vars, args[i]);
 	}
-	if (exit)
-		vars_add(vars, "?", "1");
-	else
-		vars_add(vars, "?", "0");
+	vars_add(vars, "?", "0");
 }

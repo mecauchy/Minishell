@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:07:38 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/22 11:04:56 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/22 12:45:37 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,10 +45,10 @@ void	exec_cmds(char *path_cmd, char **cmd_args, t_mini *mini)
 		i ++;
 	cmd = paths[i - 1];
 	_value = get_last_arg(cmd_args, mini -> env_vars);
-	vars_add(mini -> env_vars, "_", _value);
-	free(_value);
 	if (!is_builtin(cmd, cmd_args, mini))
 		exec_cmd(path_cmd, cmd_args, mini -> env_vars);
+	vars_add(mini -> env_vars, "_", _value);
+	free(_value);
 	free_tab(paths);
 }
 
@@ -74,8 +74,6 @@ void	parse_line(char *line, t_mini *mini)
 	cmd_args = get_cmd_and_args(cmd, full_cmd, 0);
 	if (cmd_args == NULL)
 		return (free_tab(full_cmd), free(cmd), free(expa), free_tab(cmd_args));
-	if (is_builtin(cmd, cmd_args, mini))
-		return (free_tab(full_cmd), free(cmd), free(expa));
 	return (exec_cmds(cmd, cmd_args, mini),
 		free_tab(full_cmd), free(cmd), free(expa), free_tab(cmd_args));
 }

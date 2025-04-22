@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 13:57:52 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/22 11:17:10 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/22 16:54:02 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ static void	print_lines(t_list *lines, t_here_doc *hd, t_env_vars *vars)
 	char	*line;
 	char	*to_ex;
 
+	vars_add(vars, "?", "0");
 	if (hd -> fd == -1)
 		return (ft_lstclear(&lines, free));
 	tmp = lines;
@@ -61,11 +62,12 @@ static t_list	*get_del_lines(char *deli, t_env_vars *vars)
 		&& ft_strncmp(lin, unquo_deli, ft_strlen(unquo_deli)) != 0)
 	{
 		vars_add(vars, "_", "");
-		return (printf(HD_ERROR_MESSAGE, deli), free(unquo_deli), lines);
+		return (printf(HD_ERROR_MESSAGE, deli), ft_lstadd_back(&lines,
+				ft_lstnew(lin)), free(unquo_deli), lines);
 	}
 	if (!lin)
-		return (ft_lstclear(&lines, free), NULL);
-	return (free(lin), free(unquo_deli), lines);
+		return (ft_lstclear(&lines, free), free(unquo_deli), NULL);
+	return (free(lin), free(unquo_deli), vars_add(vars, "_", ""), lines);
 }
 
 static int	hd_pr_lines(t_here_doc *hd, int *f_id, t_list *lines,
@@ -84,7 +86,8 @@ static int	hd_pr_lines(t_here_doc *hd, int *f_id, t_list *lines,
 			close(f_id[0]);
 			close(f_id[1]);
 		}
-		return (print_lines(lines, hd, vars), exit(0), 0);
+		print_lines(lines, hd, vars);
+		return (exit(0), 0);
 	}
 	return (pid);
 }
