@@ -6,7 +6,7 @@
 /*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:02:17 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/22 15:21:34 by mcauchy-         ###   ########.fr       */
+/*   Updated: 2025/04/24 14:32:07 by mcauchy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,5 +109,6 @@ void	redirect_pipe(t_data *data, int prev_infile, int i);
 void	wait_all_pids(t_data *data);
 int		add_nb_cmd(char **av, t_data *data);
 void	init_fds(t_data *data);
+void	close_fds(t_data *data);
 
 #endif

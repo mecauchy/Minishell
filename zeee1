@@ -1,0 +1,10 @@
+total 88
+drwxr-xr-x 2 mcauchy- 2024_paris    25 Apr 14 14:28 includes
+drwxr-xr-x 5 mcauchy- 2024_paris    75 Apr 23 16:59 libft
+-rw-r--r-- 1 mcauchy- 2024_paris   887 Apr 16 15:12 Makefile
+-rwxr-xr-x 1 mcauchy- 2024_paris 67864 Apr 23 17:00 minishell
+drwxr-xr-x 2 mcauchy- 2024_paris  4096 Apr 23 17:00 obj
+-rw-r--r-- 1 mcauchy- 2024_paris    12 Apr  2 12:37 README.md
+drwxr-xr-x 2 mcauchy- 2024_paris  4096 Apr 14 17:14 src
+-rw-r--r-- 1 mcauchy- 2024_paris   482 Apr 23 17:00 zeee
+-rw-r--r-- 1 mcauchy- 2024_paris     0 Apr 23 17:01 zeee1

@@ -1,0 +1,4 @@
+CFLAGS = -Wall -Werror -Wextra -g3
+all : $(LIBFT) $(NAME)
+re : fclean all
+.PHONY : all clean fclean re
