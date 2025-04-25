@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 13:57:52 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/22 16:54:02 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/25 17:04:15 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ static void	print_lines(t_list *lines, t_here_doc *hd, t_env_vars *vars)
 	char	*to_ex;
 
 	vars_add(vars, "?", "0");
-	if (hd -> fd == -1)
+	if (hd -> cmd_args == 0)
 		return (ft_lstclear(&lines, free));
 	tmp = lines;
 	while (tmp != 0)
@@ -34,7 +34,7 @@ static void	print_lines(t_list *lines, t_here_doc *hd, t_env_vars *vars)
 		}
 		else
 			line = ft_strdup((char *)(tmp -> content));
-		write(hd -> fd, line, ft_strlen(line));
+		write(0, line, ft_strlen(line));
 		free(line);
 		tmp = tmp -> next;
 	}
@@ -80,12 +80,9 @@ static int	hd_pr_lines(t_here_doc *hd, int *f_id, t_list *lines,
 		return (-1);
 	if (pid == 0)
 	{
-		if (hd -> fd == 0)
-		{
-			dup2(f_id[1], hd -> fd);
-			close(f_id[0]);
-			close(f_id[1]);
-		}
+		dup2(f_id[1], 1);
+		close(f_id[0]);
+		close(f_id[1]);
 		print_lines(lines, hd, vars);
 		return (exit(0), 0);
 	}
@@ -103,12 +100,9 @@ static int	hd_exec_cmd(t_here_doc *hd, int *f_id, t_env_vars *vars)
 		return (-1);
 	if (pid2 == 0)
 	{
-		if (hd -> fd == 0)
-		{
-			dup2(f_id[0], 0);
-			close(f_id[0]);
-			close(f_id[1]);
-		}
+		dup2(f_id[0], 0);
+		close(f_id[0]);
+		close(f_id[1]);
 		vars_add(vars, "_", hd->cmd_args[0]);
 		return (envp = get_envp(vars), execve(hd->cmd_args[0], hd->cmd_args,
 				envp), printf("%s: command not found\n", hd->cmd_args[0]),
@@ -135,16 +129,12 @@ void	here_doc_cmd(char *cmd, t_env_vars *vars)
 		return (vars_add(vars, "?", "130"), free_hd(hd));
 	if (hd -> cmd_args == 0)
 		return (print_lines(lines, hd, vars), free_hd(hd));
-	if (hd -> fd == 0)
-		if (pipe(f_id) == -1)
-			return (free_hd(hd), ft_lstclear(&lines, free));
+	if (pipe(f_id) == -1)
+		return (free_hd(hd), ft_lstclear(&lines, free));
 	ps[0] = hd_pr_lines(hd, f_id, lines, vars);
 	ps[1] = hd_exec_cmd(hd, f_id, vars);
 	if (ps[0] == -1 || ps[1] == -1)
 		return (free_hd(hd), ft_lstclear(&lines, free));
-	if (hd -> fd == 0)
-		return (close(f_id[0]), close(f_id[1]), wait_upex(ps[0], vars),
-			wait_upex(ps[1], vars), ft_lstclear(&lines, free), free_hd(hd));
-	return (wait_upex(ps[0], vars), wait_upex(ps[1], vars),
-		ft_lstclear(&lines, free), free_hd(hd));
+	return (close(f_id[0]), close(f_id[1]), wait_upex(ps[0], vars),
+		wait_upex(ps[1], vars), ft_lstclear(&lines, free), free_hd(hd));
 }

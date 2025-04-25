@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:07:38 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/22 12:45:37 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/25 15:09:10 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,7 @@ int	main(int argc, char **argv, char **envp)
 	signal(SIGQUIT, SIG_IGN);
 	mini = init_mini(envp);
 	if (!mini)
-		return (perror("Error:"), 1);
+		return (perror("Error"), 1);
 	while (1)
 	{
 		g_signal = 0;
