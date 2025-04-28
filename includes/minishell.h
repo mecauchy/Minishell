@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:02:17 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/25 16:57:15 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/28 16:44:46 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,7 @@ typedef struct s_here_doc
 {
 	char	**cmd_args;
 	char	*delimiter;
+	int		fd;
 	int		do_expand;
 }	t_here_doc;
 

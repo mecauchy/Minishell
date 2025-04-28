@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 13:57:52 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/25 17:04:15 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/28 16:45:01 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,9 +48,9 @@ static t_list	*get_del_lines(char *deli, t_env_vars *vars)
 	t_list	*lines;
 
 	lines = NULL;
+	unquo_deli = unquote(deli);
 	ft_putstr_fd("heredoc> ", 1);
 	lin = get_next_line(0);
-	unquo_deli = unquote(deli);
 	while (lin && !(!ft_strncmp(lin, unquo_deli, ft_strlen(unquo_deli))
 			&& lin[ft_strlen(unquo_deli)] == '\n'))
 	{
@@ -58,8 +58,8 @@ static t_list	*get_del_lines(char *deli, t_env_vars *vars)
 		ft_putstr_fd("> ", 1);
 		lin = get_next_line(0);
 	}
-	if (g_signal == SIGUSR1
-		&& ft_strncmp(lin, unquo_deli, ft_strlen(unquo_deli)) != 0)
+	if ((g_signal == SIGUSR1 && lin == NULL) || (g_signal == SIGUSR1
+			&& ft_strncmp(lin, unquo_deli, ft_strlen(unquo_deli))) != 0)
 	{
 		vars_add(vars, "_", "");
 		return (printf(HD_ERROR_MESSAGE, deli), ft_lstadd_back(&lines,
@@ -67,7 +67,7 @@ static t_list	*get_del_lines(char *deli, t_env_vars *vars)
 	}
 	if (!lin)
 		return (ft_lstclear(&lines, free), free(unquo_deli), NULL);
-	return (free(lin), free(unquo_deli), vars_add(vars, "_", ""), lines);
+	return (free(lin), free(unquo_deli), lines);
 }
 
 static int	hd_pr_lines(t_here_doc *hd, int *f_id, t_list *lines,
@@ -100,13 +100,15 @@ static int	hd_exec_cmd(t_here_doc *hd, int *f_id, t_env_vars *vars)
 		return (-1);
 	if (pid2 == 0)
 	{
-		dup2(f_id[0], 0);
-		close(f_id[0]);
-		close(f_id[1]);
+		if (hd -> fd != -1)
+		{
+			dup2(f_id[0], hd -> fd);
+			close(f_id[1]);
+		}
 		vars_add(vars, "_", hd->cmd_args[0]);
 		return (envp = get_envp(vars), execve(hd->cmd_args[0], hd->cmd_args,
 				envp), printf("%s: command not found\n", hd->cmd_args[0]),
-			free_tab(envp), exit(127), 127);
+			free_tab(envp), close(f_id[0]), exit(127), 127);
 	}
 	_value = get_last_arg(hd -> cmd_args, vars);
 	vars_add(vars, "_", _value);
@@ -129,12 +131,13 @@ void	here_doc_cmd(char *cmd, t_env_vars *vars)
 		return (vars_add(vars, "?", "130"), free_hd(hd));
 	if (hd -> cmd_args == 0)
 		return (print_lines(lines, hd, vars), free_hd(hd));
-	if (pipe(f_id) == -1)
-		return (free_hd(hd), ft_lstclear(&lines, free));
+	if (hd -> fd != -1)
+		if (pipe(f_id) == -1)
+			return (free_hd(hd), ft_lstclear(&lines, free));
 	ps[0] = hd_pr_lines(hd, f_id, lines, vars);
 	ps[1] = hd_exec_cmd(hd, f_id, vars);
 	if (ps[0] == -1 || ps[1] == -1)
-		return (free_hd(hd), ft_lstclear(&lines, free));
+		return (free_hd(hd), printf("-1\n"), ft_lstclear(&lines, free));
 	return (close(f_id[0]), close(f_id[1]), wait_upex(ps[0], vars),
 		wait_upex(ps[1], vars), ft_lstclear(&lines, free), free_hd(hd));
 }
