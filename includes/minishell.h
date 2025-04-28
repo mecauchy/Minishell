@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:02:17 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/28 16:44:46 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/28 19:31:07 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,7 @@ typedef struct s_mini
 	struct sigaction	*sa;
 	t_env_vars			*env_vars;
 	int					exit_status;
+	int					do_exit;
 }	t_mini;
 
 typedef struct s_here_doc
@@ -108,6 +109,7 @@ void				print_nonprintable(char *str);
 void				wait_upex(int pid, t_env_vars *vars);
 char				*get_last_arg(char **cmd_arg, t_env_vars *vars);
 char				*unquote(char *line);
+long long			ft_atoll(char *nb);
 
 /* EXPAND */
 

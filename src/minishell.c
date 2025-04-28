@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:07:38 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/25 15:09:10 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/28 18:13:01 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,6 +105,7 @@ int	main(int argc, char **argv, char **envp)
 {
 	char	*line;
 	t_mini	*mini;
+	int		exit;
 
 	if (argv[1])
 		return (argc - argc + 1);
@@ -117,8 +118,9 @@ int	main(int argc, char **argv, char **envp)
 		g_signal = 0;
 		line = readline("minishell> ");
 		handle_line(mini, line);
-		if (mini -> exit_status != -1)
-			return (rl_clear_history(), free_mini(mini), mini -> exit_status);
+		if (mini -> do_exit)
+			return (rl_clear_history(), exit = mini -> exit_status,
+				free_mini(mini), exit);
 	}
 	return (0);
 }

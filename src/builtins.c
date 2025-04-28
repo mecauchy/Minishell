@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 12:29:00 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/22 12:33:24 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/28 19:29:57 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,17 +36,6 @@ void	ft_env(t_env_vars *vars)
 	ft_printf("_=%s\n", value_);
 }
 
-void	ft_exit(char **n, t_mini *mini)
-{
-	char	*exit_stat;
-
-	if (n[1] == 0)
-		exit_stat = get_var_value(mini -> env_vars, "?");
-	else
-		exit_stat = n[1];
-	mini -> exit_status = ft_atoi(exit_stat);
-}
-
 void	ft_unset(char **args, t_env_vars *vars)
 {
 	int	i;
@@ -60,4 +49,54 @@ void	ft_unset(char **args, t_env_vars *vars)
 			vars_del_one(vars, args[i]);
 	}
 	vars_add(vars, "?", "0");
+}
+
+int	check_isll(char *nb, int len)
+{
+	int			i;
+	long long	res;
+	int			po;
+
+	if (len > 20)
+		return (0);
+	po = 1;
+	i = 0;
+	while (nb[i] && (nb[i] == ' ' || nb[i] == '\t'))
+		i ++;
+	if (nb[i] == '-')
+		po = -1;
+	res = ft_atoll(nb);
+	if (res <= 0 && po == -1)
+		return (1);
+	if (res > 0 && po == 1)
+		return (1);
+	return (0);
+}
+
+void	ft_exit(char **n, t_mini *mini)
+{
+	char		*exit;
+	int			i;
+	int			j;
+	long long	res;
+
+	if (n[1] == 0)
+		return (mini->exit_status = ft_atoi(get_var_value(mini->env_vars,
+					"?")), mini -> do_exit = 1, (void)n);
+	exit = n[1];
+	j = 0;
+	while (exit[j] && (exit[j] == ' ' || exit[j] == '\t'))
+		j ++;
+	i = 0;
+	if (exit[j] && (exit[j] == '-' || exit[j] == '+'))
+		i ++;
+	while (exit[i + j] && ft_isdigit(exit[i + j]))
+		i ++;
+	res = ft_atoll(exit);
+	if (!check_isll(exit, i) || exit[i + j]
+		|| res > LLONG_MAX || res < LLONG_MIN)
+		return (printf("bash: exit: %s: numeric argument requiered\n",
+				exit), mini -> exit_status = 2, mini -> do_exit = 1, (void)n);
+	mini -> exit_status = res;
+	mini -> do_exit = 1;
 }
