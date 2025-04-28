@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 13:19:49 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/25 16:57:50 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/28 16:48:09 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,17 +42,42 @@ static int	get_delimiter(char *cmd, t_here_doc *hd)
 	{
 		if ((!hd -> delimiter))
 			return (free(hd), -2);
+		hd -> fd = -1;
 		hd -> cmd_args = 0;
 		return (-1);
 	}
 	return (i + 1);
 }
 
+static int	get_fd(char *cmd, int end, t_here_doc *hd)
+{
+	int		i;
+	char	*sub;
+
+	i = end;
+	while (--i >= 0)
+		if (ft_isdigit(cmd[i]) == 0)
+			break ;
+	if (i == -1)
+		sub = ft_substr(cmd, 0, end);
+	else
+		sub = ft_substr(cmd, i, end - i);
+	if (sub == 0)
+		return (free(hd -> delimiter), free(hd), -2);
+	hd -> fd = ft_atoi(sub);
+	if (i == -1)
+	{
+		hd -> cmd_args = 0;
+		return (free(sub), -1);
+	}
+	return (free(sub), i);
+}
+
 static int	get_hd_cmd_args(char *cmd, int i, t_here_doc *hd)
 {
 	char	*sub;
 
-	sub = ft_substr(cmd, 0, i);
+	sub = ft_substr(cmd, 0, i + 1);
 	if (is_all_space(sub))
 		return (free(sub), hd -> cmd_args = 0, 0);
 	if (sub == 0)
@@ -90,6 +115,11 @@ t_here_doc	*parse_heredoc(char *cmd)
 		return (NULL);
 	if (i == -1)
 		return (hd);
+	i = get_fd(cmd, i, hd);
+	if (i == -1)
+		return (hd);
+	if (i == -2)
+		return (NULL);
 	i = get_hd_cmd_args(cmd, i, hd);
 	if (i == -1)
 		return (NULL);
