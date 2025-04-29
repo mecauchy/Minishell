@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:07:38 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/28 18:13:01 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/29 13:54:24 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ void	parse_line(char *line, t_mini *mini)
 	if (ft_strchr(line, '<'))
 	{
 		g_signal = SIGUSR1;
-		return (here_doc_cmd(line, mini -> env_vars));
+		return (here_doc_cmd(line, mini));
 	}
 	full_cmd = split_cmds(line);
 	expa = expand(full_cmd[0], mini -> env_vars);
@@ -94,7 +94,10 @@ void	handle_line(t_mini *mini, char *line)
 	{
 		add_history(line);
 		if (!is_correctly_quoted(line))
+		{
 			printf("Not correctly quoted\n");
+			vars_add(mini -> env_vars, "?", "2");
+		}
 		else
 			parse_line(line, mini);
 	}

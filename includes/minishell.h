@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:02:17 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/28 19:31:07 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/29 11:42:56 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,11 +163,11 @@ int					is_builtin(char *cmd, char **cmd_args, t_mini *mini);
 /* HERE DOC */
 
 void				free_hd(t_here_doc *hd);
-t_here_doc			*parse_heredoc(char *cmd);
-void				here_doc_cmd(char *cmd, t_env_vars *vars);
+t_here_doc			*parse_heredoc(char *cmd, t_mini *mini);
+void				here_doc_cmd(char *cmd, t_mini *mini);
 
 /* MAIN */
 
-void				exec_cmd(char *cmd, char **cmd_args, t_env_vars *vars);
+void				exec_cmds(char *path_cmd, char **cmd_args, t_mini *mini);
 
 #endif
