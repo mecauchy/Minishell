@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mecauchy <mecauchy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:02:17 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/24 14:32:07 by mcauchy-         ###   ########.fr       */
+/*   Updated: 2025/04/29 14:54:45 by mecauchy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@
 # include <strings.h>
 # include <unistd.h>
 # include <fcntl.h>
-# include <linux/limits.h>
+// # include <linux/limits.h>
 # include <limits.h>
 
 /*
@@ -69,6 +69,7 @@ typedef struct s_data
 	// int		nb_heredocs;
 	int		nb_pipes;
 	int		*fd;
+	int		fd1[2];
 	int		*pid;
 	t_redir	*redir;
 }				t_data;
@@ -101,14 +102,14 @@ char	*expand(char *cmd, char **envp);
 // test main fct //
 void	ft_exec(t_cmd *cmd, char **av);
 int		count_redir(char **cmd);
-void	stock_redir(t_cmd *cmd, char **av);
-void	apply_redirection(t_redir *redir);
+void	stock_redir(t_cmd **c, char **av);
+void	apply_redirection(t_redir *redir, int i);
 void	init_pids(t_data *data);
-void	exec_multi_cmd(t_data *data, t_cmd *cmds);
+void	exec_multi_cmd(t_data **d, t_cmd *cmds, char **env);
 void	redirect_pipe(t_data *data, int prev_infile, int i);
-void	wait_all_pids(t_data *data);
+void	wait_all_pids(t_data *data, int *s);
 int		add_nb_cmd(char **av, t_data *data);
-void	init_fds(t_data *data);
+void	init_fds(t_data **d);
 void	close_fds(t_data *data);
 
 #endif

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirection.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mecauchy <mecauchy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/23 16:12:52 by mcauchy-          #+#    #+#             */
-/*   Updated: 2025/04/22 14:54:27 by mcauchy-         ###   ########.fr       */
+/*   Updated: 2025/04/29 14:20:52 by mecauchy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -326,13 +326,15 @@ void	old_stock_redir(char **av)
 	type[redir + 1] = NULL;
 }
 
-void	stock_redir(t_cmd *cmd, char **av)
+void	stock_redir(t_cmd **c, char **av)
 {
 	int		i;
 	t_redir	*new_node;
 	t_redir	*last;
+	t_cmd	*cmd;
 
 	i = 0;
+	cmd = *c;
 	cmd->redirs = NULL;
 	while (av[i])
 	{
@@ -347,22 +349,29 @@ void	stock_redir(t_cmd *cmd, char **av)
 			new_node->type = ft_strdup(av[i]);
 			new_node->file = ft_strdup(av[i + 1]);
 			new_node->next = NULL;
-			printf("type is -> [ %s ]\n", new_node->type);
-			printf("the file/delimiter is -> %s\n", new_node->file);
+			// printf("type is -> [ %s ]\n", new_node->type);
+			// printf("the file/delimiter is -> %s\n", new_node->file);
 			if (cmd->redirs == NULL)
+			{
 				cmd->redirs = new_node;
+				printf("cmd->redirs = %s\n", cmd->redirs->file);
+				printf("cmd->redirs type = %s\n", cmd->redirs->type);
+			}
 			else
 			{
 				last = cmd->redirs;
 				while (last->next)
 					last = last->next;
 				last->next = new_node;
+				printf("last->next = %s\n", last->next->file);
+				printf("last->next type = %s\n", last->next->type);
 			}
 			i += 2;
 		}
 		else
 			i++;
 	}
+	*c = cmd;
 }
 
 char	*ft_strdup(const char *s)
@@ -400,7 +409,7 @@ void	ft_exec(t_cmd *cmd, char **av)
 	clean_without_redir(cmd, av);
 	printf("nb of redir is : %d\n", redir);
 	if (redir >= 1)
-		stock_redir(cmd, av);
+		stock_redir(&cmd, av);
 }
 
 // int	main(int ac, char **av)

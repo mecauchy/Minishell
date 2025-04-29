@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mecauchy <mecauchy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 14:38:43 by mecauchy          #+#    #+#             */
-/*   Updated: 2025/04/24 16:30:11 by mcauchy-         ###   ########.fr       */
+/*   Updated: 2025/04/29 14:35:35 by mecauchy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,12 +66,12 @@ void	close_fds(t_data *data)
 
 void	redirect_pipe(t_data *data, int prev_infile, int i)
 {
-	int	j = 0;
+	// int	j = 0;
 	(void)(prev_infile);
 	if (i == 0)
 	{
 		printf("000001 === %d\n", (i * 2 + 1));
-		dup2(data->fd[(i * 2 + 1)], STDOUT_FILENO);
+		dup2(data->fd1[1], STDOUT_FILENO);
 		// close(data->fd[1]);
 		// close(prev_infile);
 	}
@@ -79,7 +79,7 @@ void	redirect_pipe(t_data *data, int prev_infile, int i)
 	{
 		printf("i == %d\n", i);
 		printf("000002 === %d\n", (2 * i) - 2);
-		dup2(data->fd[(2 * i) - 2], STDIN_FILENO);
+		dup2(data->fd1[0], STDIN_FILENO);
 		// close(data->fd[(2 * i) - 2]);
 	}
 	else
@@ -91,12 +91,14 @@ void	redirect_pipe(t_data *data, int prev_infile, int i)
 		// close(data->fd[i * 2 + 1]);
 		// close(data->fd[i * 2]);
 	}
-	while (j < (data->nb_cmds - 1)* 2)
-	{
-		close(data->fd[j]);
-		j++;
-	}
+	// while (j < (data->nb_cmds - 1)* 2)
+	// {
+	// 	close(data->fd[j]);
+	// 	j++;
+	// }
 	// close_fds(data);
+	close(data->fd1[0]);
+	close(data->fd1[1]);
 }
 
 void	wait_all_pids(t_data *data)
@@ -114,25 +116,29 @@ void	wait_all_pids(t_data *data)
 void	init_fds(t_data *data)
 {
 	int	i = 0;
+	
 	while (i < data->nb_cmds - 1)
 	{
-		if (pipe(data->fd + (i * 2)) == -1)
+		if (pipe(data->fd1) == -1)
 		{
 			perror("pipe");
 			exit(1);
 		}
 		i++;
 	}
+	*d = data;
 }
 
-void	exec_multi_cmd(t_data *data, t_cmd *cmds)
+void	exec_multi_cmd(t_data **d, t_cmd *cmds, char **env)
 {
 	int	i;
 	int	prev_infile;
 	char	**tmp;
+	t_data	*data;
 
-	prev_infile = -1;
 	i = 0;
+	data = *d;
+	prev_infile = -1;
 	while (i < data->nb_cmds)
 	{
 		printf("nb cmds == %d\n", data->nb_cmds);
@@ -149,7 +155,7 @@ void	exec_multi_cmd(t_data *data, t_cmd *cmds)
 			tmp = ft_split(cmds->args[i], ' ');
 			printf("cmd[%d] --> %s\n", i, tmp[0]);
 			redirect_pipe(data, prev_infile, i);
-			apply_redirection(cmds->redirs);
+			apply_redirection(cmds->redirs, i);
 			// execvp(cmds[i].args[0], cmds[i].args);
 			execvp(tmp[0], tmp);
 			perror("execvp");
@@ -168,19 +174,21 @@ void	exec_multi_cmd(t_data *data, t_cmd *cmds)
 		// }
 		i++;
 	}
-	// close(data->fd[0]);
-	// close(data->fd[1]);	
+	close(data->fd1[0]);
+	close(data->fd1[1]);	
 	// close(data->fd[2]);
-	int	j = 0;
-	while ((j < data->nb_cmds - 1)* 2)
-	{
-		close(data->fd[j]);
-		j++;
-	}
+	// int	j = 0;
+	// while ((j < data->nb_cmds - 1)* 2)
+	// {
+	// 	close(data->fd[j]);
+	// 	j++;
+	//
+	// close_fds(data);
 	wait_all_pids(data);
+	*d = data;
 }
 
-int main(int ac, char **av) 
+int main(int ac, char **av, char **env) 
 {
     // t_cmd cmds[3];
 	t_data	*data;
@@ -213,8 +221,8 @@ int main(int ac, char **av)
 	}
 	if (!data)
 		return (0);
-	init_fds(data);
-	exec_multi_cmd(data, cmd);
+	init_fds(&data);
+	exec_multi_cmd(&data, cmd, env);
 	printf("SORTI\n");
     return (0);
 }
