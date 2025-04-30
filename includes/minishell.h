@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:02:17 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/29 11:42:56 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/30 18:04:23 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,8 +100,8 @@ int					ft_is_identifier(char *name);
 void				free_tab(char **tab);
 char				*ft_strjoin_free(char *s1, char *s2);
 char				**split_cmds(char *line);
-char				**split_expand(char	**splited_cmds, char *line,
-						t_env_vars *vars);
+char				**split_expand(char	**splited_cmds, t_env_vars *vars);
+
 char				*get_correct_cmd(char *cmd);
 char				**get_cmd_and_args(char *cmd,
 						char **split_expanded, int index);
@@ -135,8 +135,6 @@ char				**get_envp(t_env_vars *vars);
 
 void				handle_ctrc_c(int sig);
 struct sigaction	*init_ctrl_c_sig(void);
-
-struct sigaction	*init_quit(void);
 
 /* REDIRECTION*/
 

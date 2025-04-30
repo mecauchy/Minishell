@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:07:38 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/29 13:54:24 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/30 19:07:01 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ void	exec_cmds(char *path_cmd, char **cmd_args, t_mini *mini)
 	free(_value);
 	free_tab(paths);
 }
+
 
 void	parse_line(char *line, t_mini *mini)
 {
@@ -112,10 +113,10 @@ int	main(int argc, char **argv, char **envp)
 
 	if (argv[1])
 		return (argc - argc + 1);
-	signal(SIGQUIT, SIG_IGN);
+	// signal(SIGQUIT, SIG_IGN);
 	mini = init_mini(envp);
 	if (!mini)
-		return (perror("Error"), 1);
+		return (printf("Malloc error\n"), 1);
 	while (1)
 	{
 		g_signal = 0;
