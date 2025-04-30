@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 14:21:27 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/28 19:31:13 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/30 10:53:44 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,16 @@ int	ft_is_identifier(char *name)
 			return (0);
 	return (1);
 }
+
+/* wait_upex manuel
+
+wait and update exit selon la valeur de retour du processus
+-> si il y a eu une erreur echo $? pour voir la valeur de sortie
+
+Arguments : 
+	- pid : l'id du process dont on veut wait
+	- vars : les variables d'environnement
+*/
 
 void	wait_upex(int pid, t_env_vars *vars)
 {

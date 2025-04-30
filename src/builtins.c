@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 12:29:00 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/28 19:29:57 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/30 11:56:43 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,26 +14,49 @@
 
 void	ft_pwd(t_env_vars *vars)
 {
-	ft_printf("%s\n", get_var_value(vars, "PWD"));
-	vars_add(vars, "?", "0");
+	int	pid;
+
+	pid = fork();
+	if (pid == -1)
+		return ;
+	if (pid == 0)
+	{
+		g_signal = SIGUSR1;
+		signal(SIGINT, SIG_DFL);
+		ft_printf("%s\n", get_var_value(vars, "PWD"));
+		exit(0);
+	}
+	else
+		wait_upex(pid, vars);
 }
 
 void	ft_env(t_env_vars *vars)
 {
+	int			pid;
 	t_env_vars	*tmp;
 	char		*value_;
 
-	vars_add(vars, "?", "0");
-	tmp = vars;
-	while (tmp != NULL)
+	pid = fork();
+	if (pid == -1)
+		return ;
+	if (pid == 0)
 	{
-		if (!ft_strncmp(tmp -> name, "_", 2))
-			value_ = tmp -> value;
-		if (ft_strncmp(tmp -> name, "?", 2) && ft_strncmp(tmp -> name, "_", 2))
-			ft_printf("%s=%s\n", tmp -> name, tmp -> value);
-		tmp = tmp -> next;
+		g_signal = SIGUSR1;
+		signal(SIGINT, SIG_DFL);
+		tmp = vars;
+		while (tmp != NULL)
+		{
+			if (!ft_strncmp(tmp -> name, "_", 2))
+				value_ = tmp -> value;
+			if (ft_strncmp(tmp->name, "?", 2) && ft_strncmp(tmp->name, "_", 2))
+				ft_printf("%s=%s\n", tmp -> name, tmp -> value);
+			tmp = tmp -> next;
+		}
+		ft_printf("_=%s\n", value_);
+		exit(0);
 	}
-	ft_printf("_=%s\n", value_);
+	else
+		wait_upex(pid, vars);
 }
 
 void	ft_unset(char **args, t_env_vars *vars)

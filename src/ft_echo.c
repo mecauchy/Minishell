@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 16:29:47 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/14 13:25:34 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/30 12:00:23 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,13 +93,15 @@ static int	echo_print(char *line)
 	return (1);
 }
 
-void	ft_echo(char **args, t_env_vars *vars)
+static int	echo_ch(char **args, t_env_vars *vars)
 {
 	int		i;
 	char	*line;
 
 	if (!args[1])
-		return (vars_add(vars, "?", "0"), ft_putchar_fd('\n', 1));
+		return (ft_putchar_fd('\n', 1), 0);
+	if (!ft_strncmp(args[1], "-n", 3) && !args[2])
+		return (0);
 	if (!ft_strncmp(args[1], "-n", 3))
 		i = 1;
 	else
@@ -108,15 +110,31 @@ void	ft_echo(char **args, t_env_vars *vars)
 	{
 		line = expand(args[i], vars);
 		if (!echo_print(line))
-			return (free(line));
+			return (free(line), 0);
 		ft_putchar_fd(' ', 1);
 		free(line);
 	}
 	line = expand(args[i], vars);
 	if (!echo_print(line))
-		return (free(line));
-	free(line);
+		return (free(line), 0);
 	if (ft_strncmp(args[1], "-n", 3))
 		ft_putchar_fd('\n', 1);
-	vars_add(vars, "?", "0");
+	return (free(line), 0);
+}
+
+void	ft_echo(char **args, t_env_vars *vars)
+{
+	int	pid;
+
+	pid = fork();
+	if (pid == -1)
+		return ;
+	if (pid == 0)
+	{
+		g_signal = SIGUSR1;
+		signal(SIGINT, SIG_DFL);
+		exit(echo_ch(args, vars));
+	}
+	else
+		wait_upex(pid, vars);
 }
