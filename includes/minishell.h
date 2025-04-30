@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:02:17 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/22 11:09:05 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/30 12:55:56 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,13 +84,14 @@ typedef struct s_mini
 	struct sigaction	*sa;
 	t_env_vars			*env_vars;
 	int					exit_status;
+	int					do_exit;
 }	t_mini;
 
 typedef struct s_here_doc
 {
 	char	**cmd_args;
-	int		fd;
 	char	*delimiter;
+	int		fd;
 	int		do_expand;
 }	t_here_doc;
 
@@ -111,6 +112,7 @@ void				print_nonprintable(char *str);
 void				wait_upex(int pid, t_env_vars *vars);
 char				*get_last_arg(char **cmd_arg, t_env_vars *vars);
 char				*unquote(char *line);
+long long			ft_atoll(char *nb);
 
 /* EXPAND */
 
@@ -164,11 +166,11 @@ int					is_builtin(char *cmd, char **cmd_args, t_mini *mini);
 /* HERE DOC */
 
 void				free_hd(t_here_doc *hd);
-t_here_doc			*parse_heredoc(char *cmd);
-void				here_doc_cmd(char *cmd, t_env_vars *vars);
+t_here_doc			*parse_heredoc(char *cmd, t_mini *mini);
+void				here_doc_cmd(char *cmd, t_mini *mini);
 
 /* MAIN */
 
-void				exec_cmd(char *cmd, char **cmd_args, t_env_vars *vars);
+void				exec_cmds(char *path_cmd, char **cmd_args, t_mini *mini);
 
 #endif

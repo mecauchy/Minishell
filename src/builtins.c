@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 12:29:00 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/21 14:35:21 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/30 11:56:43 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,58 +14,112 @@
 
 void	ft_pwd(t_env_vars *vars)
 {
-	ft_printf("%s\n", get_var_value(vars, "PWD"));
-	vars_add(vars, "?", "0");
+	int	pid;
+
+	pid = fork();
+	if (pid == -1)
+		return ;
+	if (pid == 0)
+	{
+		g_signal = SIGUSR1;
+		signal(SIGINT, SIG_DFL);
+		ft_printf("%s\n", get_var_value(vars, "PWD"));
+		exit(0);
+	}
+	else
+		wait_upex(pid, vars);
 }
 
 void	ft_env(t_env_vars *vars)
 {
+	int			pid;
 	t_env_vars	*tmp;
 	char		*value_;
 
-	vars_add(vars, "?", "0");
-	tmp = vars;
-	while (tmp != NULL)
+	pid = fork();
+	if (pid == -1)
+		return ;
+	if (pid == 0)
 	{
-		if (!ft_strncmp(tmp -> name, "_", 2))
-			value_ = tmp -> value;
-		if (ft_strncmp(tmp -> name, "?", 2) && ft_strncmp(tmp -> name, "_", 2))
-			ft_printf("%s=%s\n", tmp -> name, tmp -> value);
-		tmp = tmp -> next;
+		g_signal = SIGUSR1;
+		signal(SIGINT, SIG_DFL);
+		tmp = vars;
+		while (tmp != NULL)
+		{
+			if (!ft_strncmp(tmp -> name, "_", 2))
+				value_ = tmp -> value;
+			if (ft_strncmp(tmp->name, "?", 2) && ft_strncmp(tmp->name, "_", 2))
+				ft_printf("%s=%s\n", tmp -> name, tmp -> value);
+			tmp = tmp -> next;
+		}
+		ft_printf("_=%s\n", value_);
+		exit(0);
 	}
-	ft_printf("_=%s\n", value_);
-}
-
-void	ft_exit(char **n, t_mini *mini)
-{
-	char	*exit_stat;
-
-	if (n[1] == 0)
-		exit_stat = get_var_value(mini -> env_vars, "?");
 	else
-		exit_stat = n[1];
-	mini -> exit_status = ft_atoi(exit_stat);
+		wait_upex(pid, vars);
 }
 
 void	ft_unset(char **args, t_env_vars *vars)
 {
 	int	i;
-	int	exit;
 
 	i = -1;
-	exit = 0;
 	while (args[++i])
 	{
 		if (!ft_strncmp(args[i], "?", 2))
-		{
-			printf("unset: no matched found: ?\n");
-			exit = 1;
-		}
+			break ;
 		else
 			vars_del_one(vars, args[i]);
 	}
-	if (exit)
-		vars_add(vars, "?", "1");
-	else
-		vars_add(vars, "?", "0");
+	vars_add(vars, "?", "0");
+}
+
+int	check_isll(char *nb, int len)
+{
+	int			i;
+	long long	res;
+	int			po;
+
+	if (len > 20)
+		return (0);
+	po = 1;
+	i = 0;
+	while (nb[i] && (nb[i] == ' ' || nb[i] == '\t'))
+		i ++;
+	if (nb[i] == '-')
+		po = -1;
+	res = ft_atoll(nb);
+	if (res <= 0 && po == -1)
+		return (1);
+	if (res > 0 && po == 1)
+		return (1);
+	return (0);
+}
+
+void	ft_exit(char **n, t_mini *mini)
+{
+	char		*exit;
+	int			i;
+	int			j;
+	long long	res;
+
+	if (n[1] == 0)
+		return (mini->exit_status = ft_atoi(get_var_value(mini->env_vars,
+					"?")), mini -> do_exit = 1, (void)n);
+	exit = n[1];
+	j = 0;
+	while (exit[j] && (exit[j] == ' ' || exit[j] == '\t'))
+		j ++;
+	i = 0;
+	if (exit[j] && (exit[j] == '-' || exit[j] == '+'))
+		i ++;
+	while (exit[i + j] && ft_isdigit(exit[i + j]))
+		i ++;
+	res = ft_atoll(exit);
+	if (!check_isll(exit, i) || exit[i + j]
+		|| res > LLONG_MAX || res < LLONG_MIN)
+		return (printf("bash: exit: %s: numeric argument requiered\n",
+				exit), mini -> exit_status = 2, mini -> do_exit = 1, (void)n);
+	mini -> exit_status = res;
+	mini -> do_exit = 1;
 }

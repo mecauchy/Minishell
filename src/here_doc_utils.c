@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 13:19:49 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/21 17:31:36 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/29 13:50:04 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,108 +20,96 @@ void	free_hd(t_here_doc *hd)
 	free(hd);
 }
 
-static int	get_delimiter(char *cmd, t_here_doc *hd)
+static int	get_del(char *cmd, t_here_doc *hd)
 {
-	int	i;
-	int	j;
+	int		i;
+	int		start;
+	char	*delimiter;
 
-	i = ft_strlen(cmd);
-	while (--i >= 0)
-		if (cmd[i] == '<' || cmd[i] == ' ' || cmd[i] == '\t')
-			break ;
-	hd -> delimiter = ft_substr(cmd, i + 1, ft_strlen(cmd) - i);
-	j = -1;
-	while (hd -> delimiter[++j])
-		if (hd -> delimiter[j] == '"' || hd -> delimiter[j] == '\'')
-			hd -> do_expand = 0;
-	while (i >= 0 && (cmd[i] == ' ' || cmd[i] == '\t'))
-		i --;
-	while (i >= 0 && (cmd[i] == '<'))
-		i --;
-	if (i + 1 == 0)
-	{
-		if ((!hd -> delimiter))
-			return (free(hd), -2);
-		hd -> fd = -1;
-		hd -> cmd_args = 0;
-		return (-1);
-	}
-	return (i + 1);
+	i = 0;
+	while (cmd[i] && !ft_isalnum(cmd[i]))
+		i ++;
+	if (cmd[i - 1] == '\'' || cmd[i - 1] == '"')
+		hd -> do_expand = 0;
+	start = i;
+	while (cmd[i] && ft_isalnum(cmd[i]))
+		i ++;
+	delimiter = ft_substr(cmd, start, i - start);
+	if (!delimiter)
+		return (free(hd), 0);
+	hd -> delimiter = delimiter;
+	return (1);
 }
 
-static int	get_fd(char *cmd, int end, t_here_doc *hd)
+static int	get_fd(char *cmd, int redir, t_here_doc *hd)
 {
 	int		i;
 	char	*sub;
 
-	i = end;
-	while (--i >= 0)
-		if (ft_isdigit(cmd[i]) == 0)
-			break ;
-	if (i == -1)
-		sub = ft_substr(cmd, 0, end);
-	else
-		sub = ft_substr(cmd, i, end - i);
-	if (sub == 0)
-		return (free(hd -> delimiter), free(hd), -2);
-	hd -> fd = ft_atoi(sub);
-	if (i == -1)
-	{
-		hd -> cmd_args = 0;
-		return (free(sub), -1);
-	}
-	return (free(sub), i);
-}
-
-static int	get_hd_cmd_args(char *cmd, int i, t_here_doc *hd)
-{
-	char	*sub;
-
-	sub = ft_substr(cmd, 0, i + 1);
-	if (is_all_space(sub))
-		return (free(sub), hd -> cmd_args = 0, 0);
-	if (sub == 0)
-	{
-		free(hd -> delimiter);
-		free(hd);
-		return (-1);
-	}
-	hd -> cmd_args = ft_split(sub, ' ');
-	free(sub);
-	if (!hd -> delimiter || !hd -> cmd_args)
-	{
-		free_hd(hd);
-		return (-1);
-	}
-	sub = get_correct_cmd(hd -> cmd_args[0]);
+	i = redir - 1;
+	while (i >= 0 && ft_isdigit(cmd[i]))
+		i --;
+	if (i == redir -1)
+		hd -> fd = 0;
+	sub = ft_substr(cmd, i + 1, (redir - 1 - i));
 	if (!sub)
-		return (0);
-	free(hd -> cmd_args[0]);
-	hd -> cmd_args[0] = sub;
-	return (0);
+		return (free(hd -> delimiter), free(hd), 0);
+	hd -> fd = ft_atoi(sub);
+	return (free(sub), 1);
 }
 
-t_here_doc	*parse_heredoc(char *cmd)
+static int	get_cmd_all(char *cmd, t_here_doc *hd, int redir, t_env_vars *vars)
+{
+	int		i;
+	char	*s1;
+	char	*s2;
+	char	**split;
+
+	i = redir - 1;
+	if (i == -1)
+		return (hd -> cmd_args = 0, 1);
+	while (i >= 0 && ft_isdigit(cmd[i]))
+		i --;
+	while (i >= 0 && (cmd[i] == ' ' || cmd[i] == '\t'))
+		i --;
+	s1 = ft_substr(cmd, 0, i + 1);
+	i = redir + 2;
+	while (cmd[i] && !ft_isalnum(cmd[i]))
+		i ++;
+	while (cmd[i] && cmd[i] != ' ' && cmd[i] != '\t')
+		i ++;
+	s2 = ft_substr(cmd, i, ft_strlen(cmd) - i);
+	s1 = ft_strjoin_free(s1, s2);
+	split = ft_split(s1, ' ');
+	hd -> cmd_args = split_expand(split, s1, vars);
+	if (!hd -> cmd_args)
+		return (free(s1), free_tab(split), 0);
+	return (free(s1), free_tab(split), 1);
+}
+
+t_here_doc	*parse_heredoc(char *cmd, t_mini *mini)
 {
 	t_here_doc	*hd;
+	char		*corr_cmd;
 	int			i;
 
 	hd = ft_calloc(1, sizeof(t_here_doc));
 	if (hd == 0)
 		return (NULL);
 	hd -> do_expand = 1;
-	i = get_delimiter(cmd, hd);
-	if (i == -2)
+	i = 0;
+	while (cmd[i] && cmd[i] != '<')
+		i ++;
+	if (!get_del(&cmd[i], hd))
 		return (NULL);
-	if (i == -1)
+	if (!get_fd(cmd, i, hd))
+		return (NULL);
+	if (!get_cmd_all(cmd, hd, i, mini -> env_vars))
+		return (free(hd -> delimiter), free(hd), NULL);
+	if (hd -> cmd_args == 0)
 		return (hd);
-	i = get_fd(cmd, i, hd);
-	if (i == -1)
-		return (hd);
-	if (i == -2)
-		return (NULL);
-	i = get_hd_cmd_args(cmd, i, hd);
-	if (i == -1)
-		return (NULL);
+	corr_cmd = get_correct_cmd(hd -> cmd_args[0]);
+	if (corr_cmd)
+		return (free(hd -> cmd_args[0]), hd -> cmd_args[0] = corr_cmd, hd);
 	return (hd);
 }

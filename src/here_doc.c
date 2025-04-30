@@ -6,20 +6,21 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 13:57:52 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/21 18:51:13 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/29 13:12:45 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-static void	print_lines(t_list *lines, t_here_doc *hd, t_env_vars *vars)
+static void	print_lines(t_list *lines, t_here_doc *hd, t_env_vars *vars, int fd)
 {
 	t_list	*tmp;
 	char	*line;
 	char	*to_ex;
 
-	if (hd -> fd == -1)
-		return (vars_add(vars, "_", ""), ft_lstclear(&lines, free));
+	vars_add(vars, "?", "0");
+	if (hd -> cmd_args == 0)
+		return (ft_lstclear(&lines, free));
 	tmp = lines;
 	while (tmp != 0)
 	{
@@ -33,36 +34,39 @@ static void	print_lines(t_list *lines, t_here_doc *hd, t_env_vars *vars)
 		}
 		else
 			line = ft_strdup((char *)(tmp -> content));
-		write(hd -> fd, line, ft_strlen(line));
+		write(fd, line, ft_strlen(line));
 		free(line);
 		tmp = tmp -> next;
 	}
 	ft_lstclear(&lines, free);
 }
 
-static t_list	*get_del_lines(char *deli)
+static t_list	*get_del_lines(char *deli, t_env_vars *vars)
 {
 	char	*lin;
-	char	*unquo_deli;
+	char	*unquo_del;
 	t_list	*lines;
 
 	lines = NULL;
+	unquo_del = unquote(deli);
 	ft_putstr_fd("heredoc> ", 1);
 	lin = get_next_line(0);
-	unquo_deli = unquote(deli);
-	while (lin && !(!ft_strncmp(lin, unquo_deli, ft_strlen(unquo_deli))
-			&& lin[ft_strlen(unquo_deli)] == '\n'))
+	while (lin && !(!ft_strncmp(lin, unquo_del, ft_strlen(unquo_del))
+			&& lin[ft_strlen(unquo_del)] == '\n'))
 	{
 		ft_lstadd_back(&lines, ft_lstnew(lin));
 		ft_putstr_fd("> ", 1);
 		lin = get_next_line(0);
 	}
-	if (g_signal == SIGUSR1
-		&& ft_strncmp(lin, unquo_deli, ft_strlen(unquo_deli)) != 0)
-		return (printf(HD_ERROR_MESSAGE, deli), free(unquo_deli), lines);
+	if ((lin == NULL || ft_strncmp(lin, unquo_del, ft_strlen(unquo_del))) != 0
+		&& g_signal == SIGUSR1)
+	{
+		vars_add(vars, "_", "");
+		return (printf(HD_ERROR_MESSAGE, deli), free(unquo_del), lines);
+	}
 	if (!lin)
-		return (ft_lstclear(&lines, free), NULL);
-	return (free(lin), free(unquo_deli), lines);
+		return (ft_lstclear(&lines, free), free(unquo_del), NULL);
+	return (free(lin), free(unquo_del), lines);
 }
 
 static int	hd_pr_lines(t_here_doc *hd, int *f_id, t_list *lines,
@@ -75,18 +79,16 @@ static int	hd_pr_lines(t_here_doc *hd, int *f_id, t_list *lines,
 		return (-1);
 	if (pid == 0)
 	{
-		if (hd -> fd == 0)
-		{
-			dup2(f_id[1], hd -> fd);
-			close(f_id[0]);
-			close(f_id[1]);
-		}
-		return (print_lines(lines, hd, vars), exit(0), 0);
+		dup2(f_id[1], 1);
+		close(f_id[0]);
+		print_lines(lines, hd, vars, f_id[1]);
+		close(f_id[1]);
+		return (exit(0), 0);
 	}
 	return (pid);
 }
 
-static int	hd_exec_cmd(t_here_doc *hd, int *f_id, t_env_vars *vars)
+static int	hd_exec_cmd(t_here_doc *hd, int *f_id, t_mini *mini)
 {
 	char	**envp;
 	int		pid2;
@@ -97,48 +99,45 @@ static int	hd_exec_cmd(t_here_doc *hd, int *f_id, t_env_vars *vars)
 		return (-1);
 	if (pid2 == 0)
 	{
-		if (hd -> fd == 0)
+		if (hd -> fd != -1)
 		{
-			dup2(f_id[0], 0);
-			close(f_id[0]);
+			dup2(f_id[0], hd -> fd);
 			close(f_id[1]);
+			close(f_id[0]);
 		}
-		vars_add(vars, "_", hd->cmd_args[0]);
-		return (envp = get_envp(vars), execve(hd->cmd_args[0], hd->cmd_args,
-				envp), printf("%s: command not found\n", hd->cmd_args[0]),
-			free_tab(envp), exit(127), 127);
+		if (is_builtin(hd -> cmd_args[0], hd -> cmd_args, mini))
+			return (ft_atoi(get_var_value(mini->env_vars, "?")));
+		vars_add(mini -> env_vars, "_", hd->cmd_args[0]);
+		return (envp = get_envp(mini->env_vars), execve(hd->cmd_args[0],
+				hd->cmd_args, envp), printf("%s: command not found\n",
+				hd->cmd_args[0]), free_tab(envp), close(f_id[0]), 127);
 	}
-	_value = get_last_arg(hd -> cmd_args, vars);
-	vars_add(vars, "_", _value);
-	free(_value);
-	return (pid2);
+	return (_value = get_last_arg(hd -> cmd_args, mini -> env_vars),
+		vars_add(mini -> env_vars, "_", _value), free(_value), pid2);
 }
 
-void	here_doc_cmd(char *cmd, t_env_vars *vars)
+void	here_doc_cmd(char *cmd, t_mini *mini)
 {
 	t_here_doc	*hd;
 	t_list		*lines;
 	int			f_id[2];
 	int			ps[2];
 
-	hd = parse_heredoc(cmd);
+	hd = parse_heredoc(cmd, mini);
 	if (hd == 0)
 		return ;
-	lines = get_del_lines(hd -> delimiter);
-	if (lines == 0)
-		return (vars_add(vars, "?", "130"), free_hd(hd));
+	lines = get_del_lines(hd -> delimiter, mini -> env_vars);
+	if (lines == 0 && g_signal != SIGUSR1)
+		return (vars_add(mini -> env_vars, "?", "130"), free_hd(hd));
 	if (hd -> cmd_args == 0)
-		return (print_lines(lines, hd, vars), free_hd(hd));
-	if (hd -> fd == 0)
-		if (pipe(f_id) == -1)
-			return (free_hd(hd), ft_lstclear(&lines, free));
-	ps[0] = hd_pr_lines(hd, f_id, lines, vars);
-	ps[1] = hd_exec_cmd(hd, f_id, vars);
+		return (print_lines(lines, hd, mini->env_vars, hd->fd), free_hd(hd));
+	if (pipe(f_id) == -1)
+		return (free_hd(hd), ft_lstclear(&lines, free));
+	ps[0] = hd_pr_lines(hd, f_id, lines, mini -> env_vars);
+	ps[1] = hd_exec_cmd(hd, f_id, mini);
 	if (ps[0] == -1 || ps[1] == -1)
 		return (free_hd(hd), ft_lstclear(&lines, free));
-	if (hd -> fd == 0)
-		return (close(f_id[0]), close(f_id[1]), wait_upex(ps[0], vars),
-			wait_upex(ps[1], vars), ft_lstclear(&lines, free), free_hd(hd));
-	return (wait_upex(ps[0], vars), wait_upex(ps[1], vars),
+	return (close(f_id[0]), close(f_id[1]),
+		wait_upex(ps[0], mini -> env_vars), wait_upex(ps[1], mini -> env_vars),
 		ft_lstclear(&lines, free), free_hd(hd));
 }

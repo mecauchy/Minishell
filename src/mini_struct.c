@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 15:06:52 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/11 15:25:51 by vluo             ###   ########.fr       */
+/*   Updated: 2025/04/28 18:12:54 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,8 @@ t_mini	*init_mini(char **envp)
 		return (0);
 	mini -> sa = init_ctrl_c_sig();
 	mini -> env_vars = init_env_vars(envp);
-	mini -> exit_status = -1;
+	mini -> exit_status = 0;
+	mini -> do_exit = 0;
 	if (!(mini -> sa) || !(mini -> env_vars))
 		return (free(mini -> sa), free_vars(mini -> env_vars), NULL);
 	return (mini);
