@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   test.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mecauchy <mecauchy@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 14:38:43 by mecauchy          #+#    #+#             */
-/*   Updated: 2025/04/29 16:05:11 by mecauchy         ###   ########.fr       */
+/*   Updated: 2025/04/30 17:38:36 by mcauchy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,12 +65,14 @@ void	redirect_pipe(t_data *data, int i)
 	}
 	else
 	{
+		printf("midle 01 == %d", (2 * i) - 2);
+		printf("midle 02 == %d", (2 * i) + 1);
 		dup2(data->fd[(2 * i) - 2], STDIN_FILENO);
 		dup2(data->fd[(2 * i) + 1], STDOUT_FILENO);
 	}
-	// close_fds(data);
-	close(data->fd[0]);
-	close(data->fd[1]);
+	close_fds(data);
+	// close(data->fd[0]);
+	// close(data->fd[1]);
 }
 
 void	wait_all_pids(t_data *data, int *s)
@@ -183,7 +185,7 @@ void	exec_multi_cmd(t_data **d, t_cmd *cmds, char **env)
 		printf("boucle ith = %d\n", i);
 		data->pid[i] = fork();
 		if (data->pid[i] < 0)
-			exit(1);
+		exit(1);
 		if (data->pid[i] == 0)
 		{
 			printf("PID = %d\n", getpid());
@@ -199,9 +201,9 @@ void	exec_multi_cmd(t_data **d, t_cmd *cmds, char **env)
 		}
 		i++;
 	}
-	// close_fds(data);
-	close(data->fd[0]);
-	close(data->fd[1]);
+	close_fds(data);
+	// close(data->fd[0]);
+	// close(data->fd[1]);
 	wait_all_pids(data, &status);
 	if (WIFEXITED(status))
 		exit(WEXITSTATUS(status));
@@ -228,8 +230,8 @@ int main(int ac, char **av, char **env)
 	}
 	if (!data)
 		return (0);
-	init_fds(data);
 	data->fd = malloc(sizeof(int) * (data->nb_cmds - 1) * 2);
+	// init_fds(data);
 	pipe(data->fd);
 	exec_multi_cmd(&data, cmd, env);
     return (0);

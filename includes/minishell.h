@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mecauchy <mecauchy@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:02:17 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/29 16:04:09 by mecauchy         ###   ########.fr       */
+/*   Updated: 2025/04/30 17:35:35 by mcauchy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,7 @@ typedef struct s_data
 	// int		nb_heredocs;
 	int		nb_pipes;
 	int		*fd;
+	int		*fdd;
 	int		fd1[2];
 	int		*pid;
 	t_redir	*redir;
@@ -109,7 +110,7 @@ void	exec_multi_cmd(t_data **d, t_cmd *cmds, char **env);
 void	redirect_pipe(t_data *data, int i);
 void	wait_all_pids(t_data *data, int *s);
 int		add_nb_cmd(char **av, t_data *data);
-void	init_fds(t_data **d);
+void	init_fds(t_data *data);
 void	close_fds(t_data *data);
 
 #endif
