@@ -6,7 +6,7 @@
 /*   By: mecauchy <mecauchy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:02:17 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/29 14:54:45 by mecauchy         ###   ########.fr       */
+/*   Updated: 2025/04/29 16:04:09 by mecauchy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,10 +103,10 @@ char	*expand(char *cmd, char **envp);
 void	ft_exec(t_cmd *cmd, char **av);
 int		count_redir(char **cmd);
 void	stock_redir(t_cmd **c, char **av);
-void	apply_redirection(t_redir *redir, int i);
+void	apply_redirection(t_redir *redir, t_data *data, int i);
 void	init_pids(t_data *data);
 void	exec_multi_cmd(t_data **d, t_cmd *cmds, char **env);
-void	redirect_pipe(t_data *data, int prev_infile, int i);
+void	redirect_pipe(t_data *data, int i);
 void	wait_all_pids(t_data *data, int *s);
 int		add_nb_cmd(char **av, t_data *data);
 void	init_fds(t_data **d);

@@ -6,7 +6,7 @@
 /*   By: mecauchy <mecauchy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 14:38:43 by mecauchy          #+#    #+#             */
-/*   Updated: 2025/04/29 14:44:27 by mecauchy         ###   ########.fr       */
+/*   Updated: 2025/04/29 16:05:11 by mecauchy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,34 +22,62 @@ void	init_pids(t_data *data)
 		data->pid[i] = -1;
 		i++;
 	}
-} 
+}
 
-// {
-// 	(void)(prev_infile);
-// 	if (i == 0)
-// 	{
-// 		dup2(data->fd1[1], STDOUT_FILENO);
-// 	}
-// 	else if (i == data->nb_cmds - 1)
-// 	{
-// 		dup2(data->fd1[0], STDIN_FILENO);
-// 	}
-// 	else
-// 	{
-// 		dup2(data->fd1[(2 * i) - 2], STDIN_FILENO);
-// 		dup2(data->fd1[(2 * i) + 1], STDOUT_FILENO);
-// 	}
-// 	close(data->fd1[0]);
-// 	close(data->fd1[1]);
-// }
+void	init_fds(t_data *data)
+{	
+	int	i = 0;
+
+	data->fd = malloc(sizeof(int) * (data->nb_cmds - 1) * 2);
+	if (data->fd)
+		return ;
+	while (i < data->nb_cmds)
+	{
+		if ((pipe(data->fd + i) * 2) == -1)
+		{
+			perror("pipe");
+			exit(1);
+		}
+		i++;
+	}
+}
+
+void	close_fds(t_data *data)
+{
+	int	i = 0;
+	
+	while (i < data->nb_cmds - 1)
+	{
+		close(data->fd[i * 2]);
+		close(data->fd[i * 2 + 1]);
+		i++;
+	}
+}
+void	redirect_pipe(t_data *data, int i)
+{
+	if (i == 0)
+	{
+		dup2(data->fd[1], STDOUT_FILENO);
+	}
+	else if (i == data->nb_cmds - 1)
+	{
+		dup2(data->fd[(2 * i) - 2], STDIN_FILENO);
+	}
+	else
+	{
+		dup2(data->fd[(2 * i) - 2], STDIN_FILENO);
+		dup2(data->fd[(2 * i) + 1], STDOUT_FILENO);
+	}
+	// close_fds(data);
+	close(data->fd[0]);
+	close(data->fd[1]);
+}
 
 void	wait_all_pids(t_data *data, int *s)
 {
 	int	i;
-	// t_data	*data;
 
 	i = 0;
-	// data = *d;
 	while (i < data->nb_cmds)
 	{
 		waitpid(data->pid[i], s, 0);
@@ -71,7 +99,7 @@ void	wait_all_pids(t_data *data, int *s)
 // 	}
 // }
 
-void	apply_redirection(t_redir *redir, int i)
+void	apply_redirection(t_redir *redir, t_data *data , int i)
 {
 	t_redir	*current;
 
@@ -92,10 +120,7 @@ void	apply_redirection(t_redir *redir, int i)
 			close(infd);
 		}
 	}
-		// redirection_right(current);
-	// else if (current->type == APPEND)
-	// 	redirection_right_right(current);
-	else if (i == 1)
+	else if (i == data->nb_cmds - 1)
 	{
 		current = current->next;
 		int fd = open(current->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
@@ -110,25 +135,7 @@ void	apply_redirection(t_redir *redir, int i)
 			close(fd);
 		}
 	}
-		// redirection_left(current);
-	// else if (current->type == HEREDOC)
-	// 	redirection_left_left(current);
 }
-
-// void	apply_redirection(t_redir *redir)
-// {
-// 	t_redir	*current;
-
-// 	current = redir;
-// 	if (!current)
-// 		printf("NULL\n");
-// 	// if (current->type[0] == '>')
-// 	// 	redirection_right(current);
-// 	// else if (current->type[0] == '<')
-// 	// 	redirection_left(current);
-// 	// printf("Redirection type: %s\n", current->type);
-// 	// current = current->next;
-// }
 
 void	redirection_right(t_redir *redir)
 {
@@ -182,13 +189,8 @@ void	exec_multi_cmd(t_data **d, t_cmd *cmds, char **env)
 			printf("PID = %d\n", getpid());
 			printf("Child executing command: %s\n", cmds->args[i]);
 			char **tmp = ft_split(cmds->args[i], ' ');
-			if (i == 0)
-				dup2(data->fd1[1], 1); // stdout vers le pipe
-			else
-				dup2(data->fd1[0], 0); // stdin depuis le pipe
-			close(data->fd1[0]);
-			close(data->fd1[1]);
-			apply_redirection(cmds->redirs, i);
+			redirect_pipe(data, i);
+			apply_redirection(cmds->redirs, data, i);
 			if (execve(tmp[0], tmp, env) == -1)
 			{
 				printf("ERRRRROR\n");
@@ -197,8 +199,9 @@ void	exec_multi_cmd(t_data **d, t_cmd *cmds, char **env)
 		}
 		i++;
 	}
-	close(data->fd1[0]);
-	close(data->fd1[1]);
+	// close_fds(data);
+	close(data->fd[0]);
+	close(data->fd[1]);
 	wait_all_pids(data, &status);
 	if (WIFEXITED(status))
 		exit(WEXITSTATUS(status));
@@ -214,19 +217,20 @@ int main(int ac, char **av, char **env)
 	data = malloc(sizeof(t_data));
 	ft_exec(cmd, av + 1);
 	add_nb_cmd(av, data);
+	printf("nb comand is = %d\n", data->nb_cmds);
 	if (!redir || ac < 0)
 		return (0);
-	data->fd = malloc(sizeof(int) * ((data->nb_cmds - 1) * 2));
 	data->pid = malloc(sizeof(int) * data->nb_cmds);
-	if (!data->fd || !data->pid)
+	if (!data->pid)
 	{
 		perror("malloc");
 		exit(1);
 	}
 	if (!data)
 		return (0);
-	// init_fds(&data);
-	pipe(data->fd1);
+	init_fds(data);
+	data->fd = malloc(sizeof(int) * (data->nb_cmds - 1) * 2);
+	pipe(data->fd);
 	exec_multi_cmd(&data, cmd, env);
     return (0);
 }
