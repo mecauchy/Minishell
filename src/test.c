@@ -6,7 +6,7 @@
 /*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 14:38:43 by mecauchy          #+#    #+#             */
-/*   Updated: 2025/05/01 14:37:37 by mcauchy-         ###   ########.fr       */
+/*   Updated: 2025/05/01 15:00:37 by mcauchy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,14 +32,12 @@ void	init_fds(t_data *data)
 	data->fd = malloc(sizeof(int) * (data->nb_cmds - 1) * 2);
 	if (!data->fd)
 	{
-		printf("NULLLLLLLLLLLL\n");
 		return ;
 	}
 	while (i < data->nb_cmds - 1)
 	{
 		if (pipe(data->fd + i * 2) == -1)
 		{
-			dprintf(1, "--------- init_pipe_here -> %d\n", i);
 			perror("pipe");
 			exit(1);
 		}
@@ -53,9 +51,7 @@ void	close_fds(t_data *data)
 	
 	while (i < data->nb_cmds - 1)
 	{
-		dprintf(2, "closing pipes for %dth cmd %d\n", i + 1, i * 2);
 		close(data->fd[i * 2]);
-		dprintf(2, "closing pipes for %dth cmd %d\n", i + 1, (i * 2) + 1);
 		close(data->fd[(i * 2) + 1]);
 		i++;
 	}
@@ -113,7 +109,6 @@ void	apply_redirection(t_redir *redir, t_data *data , int i)
 		printf("NULL\n");
 	if (i == 0)
 	{
-		dprintf(1, "OPEN INfILE AT %d\n", i);
 		int infd = open(current->file, O_RDONLY);
 		if (infd == -1)
 		{
@@ -128,7 +123,6 @@ void	apply_redirection(t_redir *redir, t_data *data , int i)
 	}
 	else if (i == data->nb_cmds - 1)
 	{
-		// dprintf(1, "OPEN OUTFILE AT %d\n", i);
 		current = current->next;
 		int fd = open(current->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 		if (fd == -1)
@@ -184,7 +178,6 @@ void	exec_multi_cmd(t_data **d, t_cmd *cmds, char **env)
 	t_data	*data;
 	
 	data = *d;
-	printf("nb = %d\n", i);
 	while (i < data->nb_cmds)
 	{
 		printf("boucle ith = %d\n", i);
@@ -233,9 +226,7 @@ int main(int ac, char **av, char **env)
 	}
 	if (!data)
 		return (0);
-	// data->fd = malloc(sizeof(int) * (data->nb_cmds - 1) * 2);
 	init_fds(data);
-	// pipe(data->fd);
 	exec_multi_cmd(&data, cmd, env);
     return (0);
 }
