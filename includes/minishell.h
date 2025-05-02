@@ -6,7 +6,7 @@
 /*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:02:17 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/30 17:35:35 by mcauchy-         ###   ########.fr       */
+/*   Updated: 2025/05/02 13:00:42 by mcauchy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ typedef struct s_redir
 {
 	char			*file;
 	char			*type;
-	struct s_redir	*next;
+	// struct s_redir	*next;
 }				t_redir;
 
 /*
@@ -58,9 +58,11 @@ Comprend la liste des redirections
 */
 typedef struct s_cmd
 {
+	int		len_tab_tot;
+	int		tab_i;
 	char	**args;
-	char	**split_args;
-	t_redir	*redirs;
+	// char	**redirs;
+	t_redir	*redir;
 }				t_cmd;
 
 typedef struct s_data
