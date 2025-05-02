@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:02:17 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/02 13:00:42 by mcauchy-         ###   ########.fr       */
+/*   Updated: 2025/05/02 14:49:02 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,17 +52,21 @@ typedef struct s_redir
 	// struct s_redir	*next;
 }				t_redir;
 
+typedef	struct s_array
+{
+	int		tot_len;
+	int		arr_i;
+	char	**arr;
+}	t_array;
+
 /*
 Comprend la liste d'arguments (["ls", "-l" ">" ...])
 Comprend la liste des redirections
 */
 typedef struct s_cmd
 {
-	int		len_tab_tot;
-	int		tab_i;
-	char	**args;
-	// char	**redirs;
-	t_redir	*redir;
+	t_array	**args;
+	t_redir	**redir;
 }				t_cmd;
 
 typedef struct s_data
@@ -106,7 +110,7 @@ char	*expand(char *cmd, char **envp);
 void	ft_exec(t_cmd *cmd, char **av);
 int		count_redir(char **cmd);
 void	stock_redir(t_cmd **c, char **av);
-void	apply_redirection(t_redir *redir, t_data *data, int i);
+void	apply_redirection(t_cmd *cmd, int i);
 void	init_pids(t_data *data);
 void	exec_multi_cmd(t_data **d, t_cmd *cmds, char **env);
 void	redirect_pipe(t_data *data, int i);
