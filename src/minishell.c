@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:07:38 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/29 13:54:24 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/02 16:22:29 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,27 +55,30 @@ void	exec_cmds(char *path_cmd, char **cmd_args, t_mini *mini)
 void	parse_line(char *line, t_mini *mini)
 {
 	char	**full_cmd;
-	char	*expa;
-	char	*cmd;
-	char	**cmd_args;
+	// char	*expa;
+	// char	*cmd;
+	// char	**cmd_args;
 
-	if (ft_strchr(line, '<'))
-	{
-		g_signal = SIGUSR1;
-		return (here_doc_cmd(line, mini));
-	}
+	// if (ft_strchr(line, '<'))
+	// {
+	// 	g_signal = SIGUSR1;
+	// 	return (here_doc_cmd(line, mini));
+	// }
 	full_cmd = split_cmds(line);
-	expa = expand(full_cmd[0], mini -> env_vars);
-	if (expa == NULL || !expa[0])
-		return (free_tab(full_cmd), free(expa));
-	cmd = get_correct_cmd(expa);
-	if (cmd == NULL)
-		cmd = ft_strdup(expa);
-	cmd_args = get_cmd_and_args(cmd, full_cmd, 0);
-	if (cmd_args == NULL)
-		return (free_tab(full_cmd), free(cmd), free(expa), free_tab(cmd_args));
-	return (exec_cmds(cmd, cmd_args, mini),
-		free_tab(full_cmd), free(cmd), free(expa), free_tab(cmd_args));
+	mini -> cmds_splitted = full_cmd;
+	multi_cmds(mini);
+	free_tab(full_cmd);
+	// expa = expand(full_cmd[0], mini -> env_vars);
+	// if (expa == NULL || !expa[0])
+	// 	return (free_tab(full_cmd), free(expa));
+	// cmd = get_correct_cmd(expa);
+	// if (cmd == NULL)
+	// 	cmd = ft_strdup(expa);
+	// cmd_args = get_cmd_and_args(cmd, full_cmd, 0);
+	// if (cmd_args == NULL)
+	// 	return (free_tab(full_cmd), free(cmd), free(expa), free_tab(cmd_args));
+	// return (exec_cmds(cmd, cmd_args, mini),
+	// 	free_tab(full_cmd), free(cmd), free(expa), free_tab(cmd_args));
 }
 
 void	handle_line(t_mini *mini, char *line)

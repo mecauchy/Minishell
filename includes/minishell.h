@@ -6,10 +6,9 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:02:17 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/30 12:55:56 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/02 16:40:16 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
@@ -42,11 +41,11 @@ delimited by end-of-file (wanted `%s')\n"
 # include <signal.h>
 # include <bits/types/siginfo_t.h>
 # include <sys/wait.h>
+# include <fcntl.h>
 
 extern int	g_signal;
 
 /*
-TESSSST
 Comprend le file avec les delimiteurs stockees (type = <<, file = "output.txt")
 struct s_redir	*next; -> Au cas ou il y a plusieurs redirections
 */
@@ -54,8 +53,14 @@ typedef struct s_redir
 {
 	char			*file;
 	char			*type;
-	struct s_redir	*next;
 }				t_redir;
+
+typedef struct s_array
+{
+	int		tot_len;
+	int		arr_i;
+	char	**arr;
+}	t_array;
 
 /*
 Comprend la liste d'arguments (["ls", "-l" ">" ...])
@@ -63,9 +68,18 @@ Comprend la liste des redirections
 */
 typedef struct s_cmd
 {
-	char	**args;
-	t_redir	*redirs;
-}	t_cmd;
+	t_array	**args;
+	t_redir	**redir;
+}				t_cmd;
+
+typedef struct s_data
+{
+	int		nb_cmds;
+	int		nb_pipes;
+	int		*fd;
+	int		*pid;
+	t_redir	*redir;
+}				t_data;
 
 /*
 Dictionnaire stockant la liste des variables d'environnement
@@ -83,6 +97,7 @@ typedef struct s_mini
 {
 	struct sigaction	*sa;
 	t_env_vars			*env_vars;
+	char				**cmds_splitted;
 	int					exit_status;
 	int					do_exit;
 }	t_mini;
@@ -113,6 +128,8 @@ void				wait_upex(int pid, t_env_vars *vars);
 char				*get_last_arg(char **cmd_arg, t_env_vars *vars);
 char				*unquote(char *line);
 long long			ft_atoll(char *nb);
+void				free_cmds(t_cmd *cmds);
+char				**append(char **sp, int *len_tot, int *sp_i, char *sub);
 
 /* EXPAND */
 
@@ -124,6 +141,11 @@ char				*expand(char *cmd, t_env_vars *vars);
 
 t_mini				*init_mini(char **envp);
 void				free_mini(t_mini *mini);
+
+/* CMD STRUCT FUNCTION */
+
+int					nb_cmd(char **av);
+t_cmd				*get_cmds(char **av);
 
 /* ENV_VARS STRUCT FUNCTIONS */
 
@@ -170,6 +192,8 @@ t_here_doc			*parse_heredoc(char *cmd, t_mini *mini);
 void				here_doc_cmd(char *cmd, t_mini *mini);
 
 /* MAIN */
+
+int					multi_cmds(t_mini *mini);
 
 void				exec_cmds(char *path_cmd, char **cmd_args, t_mini *mini);
 
