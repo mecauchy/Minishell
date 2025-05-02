@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 14:45:20 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/30 19:16:12 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/02 01:46:50 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,54 +23,78 @@ int	is_all_space(char *line)
 	return (1);
 }
 
-int	is_correct_deli(char *deli)
+char	**append(char **sp, int *len_tot, int *sp_i, char *sub)
 {
-	if (!ft_strncmp("|>>", deli, 4))
-		return (1);
-	if (!ft_strncmp("|<<", deli, 4))
-		return (1);
-	if (ft_strlen(deli) >= 3)
-		return (0);
-	if (ft_strncmp("|>", deli, 3))
-		return (1);
-	if (ft_strncmp("|<", deli, 3))
-		return (1);
-	if (ft_strncmp("<", deli, 2))
-		return (1);
-	if (ft_strncmp(">", deli, 2))
-		return (1);
-	if (ft_strncmp("|", deli, 2))
-		return (1);
-	return (0);
+	int		i;
+	char	**split_double;
+
+	if (sub == 0)
+		return (free_tab(sp), NULL);
+	if (*sp_i < *len_tot)
+	{
+		*sp_i += 1;
+		return (sp[*sp_i - 1] = sub, sp);
+	}
+	split_double = ft_calloc((*len_tot * 2) + 1, sizeof(char *));
+	if (!split_double)
+		return (free_tab(sp), NULL);
+	i = -1;
+	while (sp[++i])
+		split_double[i] = sp[i];
+	return (split_double[i] = sub, split_double[i + 1] = 0,
+		*len_tot = *len_tot * 2, *sp_i = i + 1, free(sp), split_double);
+}
+
+int	correct_redir(char *line)
+{
+	int		i;
+	int		st;
+	char	*sub;
+
+	i = 1;
+	if (!line[i])
+		return (-1);
+	if (line[0] == line[1])
+		i ++;
+	st = i;
+	while (line[i] && line[i] != '<' && line[i] != '>' && line[i] != '|')
+		i ++;
+	if (!line[i])
+		return (!is_all_space(&line[st]));
+	sub = ft_substr(line, st, i - st);
+	if (is_all_space(sub))
+		return (free(sub), -1);
+	free(sub);
+	if (line[i] == '<' || line[i] == '>')
+		return (correct_redir(&line[i]));
+	return (i + 1);
 }
 
 int	is_correct_cmds(char *line)
 {
 	int		i;
-	int		st_deli;
-	char	*deli;
+	int		st;
 
 	i = 0;
-	while (line[i] && (line[i] == ' ' || line[i] != '\t'))
+	while (line[i] && (line[i] == ' ' || line[i] == '\t'))
 		i ++;
-	if (line[i] && line[i] == '|')
-		return (printf("bash: syntax error\n"), 0);
 	while (line[i])
 	{
-		while (line[i] && (line[i] != ' ' && line[i] != '\t' && line[i] != '>'
-			&& line[i] != '<' && line[i] != '|'))
+		st = i;
+		while (line[i] && (line[i] != '>' && line[i] != '<' && line[i] != '|'))
 			i ++;
-		if (line[i])
-			return (1);
-		st_deli = i;
-		while (line[i] && (line[i] == '>' || line[i] != '<' || line[i] != '|'))
-			i ++;
-		deli = ft_substr(line, st_deli, i - st_deli);
-		if (!is_correct_deli(deli))
-			return (free(deli), printf("bash: syntax error\n"), 0);
-		free(deli);
-		while (line[i] && (line[i] == '>' || line[i] != '<' || line[i] != '|'))
-			i ++;
+		if (!line[i])
+			return (!is_all_space(&line[st]));
+		if (line[i] == '>' || line[i] == '<')
+		{
+			i = correct_redir(line);
+			if (i == -1)
+				return (0);
+		}
+		if (line[i] == '|')
+			if (st == i)
+				return (0);
+		i ++;
 	}
 	return (1);
 }

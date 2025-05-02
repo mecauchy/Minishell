@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 13:19:49 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/29 13:50:04 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/02 00:49:03 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ static int	get_cmd_all(char *cmd, t_here_doc *hd, int redir, t_env_vars *vars)
 	s2 = ft_substr(cmd, i, ft_strlen(cmd) - i);
 	s1 = ft_strjoin_free(s1, s2);
 	split = ft_split(s1, ' ');
-	hd -> cmd_args = split_expand(split, s1, vars);
+	hd -> cmd_args = split_expand(split, vars);
 	if (!hd -> cmd_args)
 		return (free(s1), free_tab(split), 0);
 	return (free(s1), free_tab(split), 1);

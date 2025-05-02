@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:07:38 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/30 19:07:01 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/02 01:10:00 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,11 +60,11 @@ void	parse_line(char *line, t_mini *mini)
 	char	*cmd;
 	char	**cmd_args;
 
-	if (ft_strchr(line, '<'))
-	{
-		g_signal = SIGUSR1;
-		return (here_doc_cmd(line, mini));
-	}
+	// if (ft_strchr(line, '<'))
+	// {
+	// 	g_signal = SIGUSR1;
+	// 	return (here_doc_cmd(line, mini));
+	// }
 	full_cmd = split_cmds(line);
 	expa = expand(full_cmd[0], mini -> env_vars);
 	if (expa == NULL || !expa[0])
@@ -113,7 +113,7 @@ int	main(int argc, char **argv, char **envp)
 
 	if (argv[1])
 		return (argc - argc + 1);
-	// signal(SIGQUIT, SIG_IGN);
+	signal(SIGQUIT, SIG_IGN);
 	mini = init_mini(envp);
 	if (!mini)
 		return (printf("Malloc error\n"), 1);
@@ -121,7 +121,19 @@ int	main(int argc, char **argv, char **envp)
 	{
 		g_signal = 0;
 		line = readline("minishell> ");
-		handle_line(mini, line);
+		if (line == NULL)
+			return (0);
+		int cor = is_correct_cmds(line);
+		if (line != NULL)
+			printf("is correct : %d\n", cor);
+		if (cor)
+		{
+			char **sp = split_cmds(line);
+			int	i = -1.;
+			while (sp[++i])
+				printf("%d [%s]\n", i, sp[i]);
+		}
+		// handle_line(mini, line);
 		if (mini -> do_exit)
 			return (rl_clear_history(), exit = mini -> exit_status,
 				free_mini(mini), exit);

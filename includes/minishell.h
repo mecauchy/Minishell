@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:02:17 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/30 18:04:23 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/02 00:47:32 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,6 @@ void				free_tab(char **tab);
 char				*ft_strjoin_free(char *s1, char *s2);
 char				**split_cmds(char *line);
 char				**split_expand(char	**splited_cmds, t_env_vars *vars);
-
 char				*get_correct_cmd(char *cmd);
 char				**get_cmd_and_args(char *cmd,
 						char **split_expanded, int index);
@@ -110,6 +109,8 @@ void				wait_upex(int pid, t_env_vars *vars);
 char				*get_last_arg(char **cmd_arg, t_env_vars *vars);
 char				*unquote(char *line);
 long long			ft_atoll(char *nb);
+char				**append(char **sp, int *len_tot, int *sp_i, char *sub);
+int					is_correct_cmds(char *line);
 
 /* EXPAND */
 

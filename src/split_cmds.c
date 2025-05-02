@@ -6,33 +6,11 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 12:42:54 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/30 18:48:16 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/01 22:12:21 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
-
-static char	**append(char **sp, int *len_tot, int *sp_i, char *sub)
-{
-	int		i;
-	char	**split_double;
-
-	if (sub == 0)
-		return (free_tab(sp), NULL);
-	if (*sp_i < *len_tot)
-	{
-		*sp_i += 1;
-		return (sp[*sp_i - 1] = sub, sp);
-	}
-	split_double = ft_calloc((*len_tot * 2) + 1, sizeof(char *));
-	if (!split_double)
-		return (free_tab(sp), NULL);
-	i = -1;
-	while (sp[++i])
-		split_double[i] = sp[i];
-	return (split_double[i] = sub, split_double[i + 1] = 0,
-		*len_tot = *len_tot * 2, *sp_i = i + 1, free(sp), split_double);
-}
 
 static int	end_word(char *line, char ***sp, int *len_tot, int *sp_i)
 {
