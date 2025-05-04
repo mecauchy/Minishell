@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   test.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mecauchy <mecauchy@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 14:38:43 by mecauchy          #+#    #+#             */
-/*   Updated: 2025/05/02 15:01:00 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/04 12:58:43 by mecauchy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -409,5 +409,5 @@ int main(int ac, char **av, char **env)
 	printf("------------------\n");
 	exec_multi_cmd(&data, cmd, env);
 	free_cmds(cmd);
-    return (0);
+	return (0);
 }
