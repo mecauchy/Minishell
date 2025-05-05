@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 14:45:20 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/02 01:46:50 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/05 20:44:51 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,11 @@ int	correct_redir(char *line)
 	while (line[i] && line[i] != '<' && line[i] != '>' && line[i] != '|')
 		i ++;
 	if (!line[i])
-		return (!is_all_space(&line[st]));
+	{
+		if (st == i || is_all_space(&line[st]))
+			return (-1);
+		return (i);
+	}
 	sub = ft_substr(line, st, i - st);
 	if (is_all_space(sub))
 		return (free(sub), -1);
@@ -87,9 +91,9 @@ int	is_correct_cmds(char *line)
 			return (!is_all_space(&line[st]));
 		if (line[i] == '>' || line[i] == '<')
 		{
-			i = correct_redir(line);
-			if (i == -1)
+			if (correct_redir(&line[i]) == -1)
 				return (0);
+			i += correct_redir(&line[i]);
 		}
 		if (line[i] == '|')
 			if (st == i)

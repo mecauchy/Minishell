@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 12:42:54 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/01 22:12:21 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/05 21:12:03 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ static int	end_word(char *line, char ***sp, int *len_tot, int *sp_i)
 
 	i = 0;
 	while (line[i] && (line[i] != ' ' && line[i] != '\t' && line[i] != '>'
-		&& line[i] != '<' && line[i] != '|'))
+			&& line[i] != '<' && line[i] != '|'))
 	{
 		if (line[i] == '\'' || line[i] == '"')
 		{
@@ -34,11 +34,11 @@ static int	end_word(char *line, char ***sp, int *len_tot, int *sp_i)
 	if (sub == 0)
 		return (free_tab(*sp), -1);
 	if (!sub[0])
-		return (i);
+		return (free(sub), i);
 	*sp = append(*sp, len_tot, sp_i, sub);
 	if (sp == 0)
 		return (-1);
-	return (i);	
+	return (i);
 }
 
 static int	end_deli(char *line, char ***sp, int *len_tot, int *sp_i)
@@ -60,6 +60,8 @@ static int	end_deli(char *line, char ***sp, int *len_tot, int *sp_i)
 		return (free_tab(*sp), -1);
 	if (!is_all_space(sub))
 		*sp = append(*sp, len_tot, sp_i, sub);
+	else
+		free(sub);
 	if (*sp == 0)
 		return (-1);
 	while (line[i] && (line[i] == ' ' || line[i] == '\t'))
@@ -101,13 +103,14 @@ char	**split_cmds(char *line)
 	while (line[i])
 	{
 		i += end_word(&line[i], &sp, &len_tot, &sp_i);
-		if (i == -1)
-			return (NULL);
+		if (sp == 0)
+			return (0);
 		i += end_deli(&line[i], &sp, &len_tot, &sp_i);
+		if (sp == 0)
+			return (0);
 	}
 	return (sp);
 }
-
 
 /* split_expand manuel
 
@@ -161,4 +164,3 @@ char	**split_expand(char	**splited_cmds, t_env_vars *vars)
 	}
 	return (split_expanded);
 }
-

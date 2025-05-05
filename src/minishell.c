@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:07:38 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/02 01:10:00 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/05 21:12:37 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,6 @@ void	exec_cmds(char *path_cmd, char **cmd_args, t_mini *mini)
 	free_tab(paths);
 }
 
-
 void	parse_line(char *line, t_mini *mini)
 {
 	char	**full_cmd;
@@ -60,11 +59,9 @@ void	parse_line(char *line, t_mini *mini)
 	char	*cmd;
 	char	**cmd_args;
 
-	// if (ft_strchr(line, '<'))
-	// {
-	// 	g_signal = SIGUSR1;
-	// 	return (here_doc_cmd(line, mini));
-	// }
+	if (!is_correct_cmds(line))
+		return (printf("bash: syntax error\n"),
+			vars_add(mini->env_vars, "?", "2"), (void)line);
 	full_cmd = split_cmds(line);
 	expa = expand(full_cmd[0], mini -> env_vars);
 	if (expa == NULL || !expa[0])
@@ -121,19 +118,7 @@ int	main(int argc, char **argv, char **envp)
 	{
 		g_signal = 0;
 		line = readline("minishell> ");
-		if (line == NULL)
-			return (0);
-		int cor = is_correct_cmds(line);
-		if (line != NULL)
-			printf("is correct : %d\n", cor);
-		if (cor)
-		{
-			char **sp = split_cmds(line);
-			int	i = -1.;
-			while (sp[++i])
-				printf("%d [%s]\n", i, sp[i]);
-		}
-		// handle_line(mini, line);
+		handle_line(mini, line);
 		if (mini -> do_exit)
 			return (rl_clear_history(), exit = mini -> exit_status,
 				free_mini(mini), exit);
