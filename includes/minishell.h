@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:02:17 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/02 00:47:32 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/06 22:13:49 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ typedef struct s_mini
 
 typedef struct s_here_doc
 {
-	char	**cmd_args;
+	t_array	*array;
 	char	*delimiter;
 	int		fd;
 	int		do_expand;
@@ -162,7 +162,7 @@ int					is_builtin(char *cmd, char **cmd_args, t_mini *mini);
 /* HERE DOC */
 
 void				free_hd(t_here_doc *hd);
-t_here_doc			*parse_heredoc(char *cmd, t_mini *mini);
+t_here_doc			*parse_heredoc(char **cmd, t_mini *mini);
 void				here_doc_cmd(char *cmd, t_mini *mini);
 
 /* MAIN */
