@@ -6,7 +6,7 @@
 #    By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/05 10:53:25 by mcauchy-          #+#    #+#              #
-#    Updated: 2025/05/06 22:58:45 by vluo             ###   ########.fr        #
+#    Updated: 2025/05/06 23:13:10 by vluo             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -40,8 +40,8 @@ SRC				=	$(SRC_DIR)split_cmds.c $(SRC_DIR)get_correct_cmd.c	\
 					$(SRC_DIR)here_doc_utils.c $(SRC_DIR)here_doc.c		\
 					$(SRC_DIR)get_cmds.c $(SRC_DIR)redir.c				\
 					$(SRC_DIR)utils.c $(SRC_DIR)utils2.c 				\
+					$(SRC_DIR)redirection.c $(SRC_DIR)is_correct_cmds.c \
 					$(SRC_DIR)utils3.c $(SRC_DIR)minishell.c			\
-					$(SRC_DIR)redirection.c								\
 
 OBJ				=	$(patsubst $(SRC_DIR)%.c,$(OBJ_DIR)%.o,$(SRC))
 

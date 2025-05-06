@@ -6,16 +6,52 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 10:51:40 by mcauchy-          #+#    #+#             */
-/*   Updated: 2025/05/06 22:27:04 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/07 01:08:53 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
+static int	is_hd(t_cmd *cmds, int i)
+{
+	int	j;
+
+	j = -1;
+	while (cmds->args[i]->arr[++j])
+		if (ft_strncmp(cmds->args[i]->arr[j], "<<", 3) == 0)
+			return (1);
+	return (0);
+}
+
+static void	exec_child(t_cmd *cmds, t_data *data, t_mini *m, int i)
+{
+	char	*corr_cmd;
+	char	**env;
+
+	redirect_pipe(data, i);
+	apply_redirection(cmds->redir, i);
+	if (!cmds->args[i]->arr[0])
+		exit(0);
+	if (is_hd(cmds, i))
+		return (here_doc_cmd(cmds->args[i]->arr, m),
+			exit(ft_atoi(get_var_value(m->env_vars, "?"))));
+	corr_cmd = get_correct_cmd(cmds->args[i]->arr[0], m);
+	if (corr_cmd != NULL)
+	{
+		free(cmds->args[i]->arr[0]);
+		cmds->args[i]->arr[0] = corr_cmd;
+	}
+	printf("Child executing command: %s\n", cmds->args[i]->arr[0]);
+	if (is_builtin(cmds->args[i]->arr[0], cmds->args[i]->arr, m))
+		exit(ft_atoi(get_var_value(m->env_vars, "?")));
+	vars_add(m -> env_vars, "_", corr_cmd);
+	return (env = get_envp(m->env_vars), execve(cmds->args[i]->arr[0],
+			cmds->args[i]->arr, env), exit(127));
+}
+
 void	exec_multi_cmd(t_data **d, t_cmd *cmds, t_mini *m)
 {
 	int		i;
-	char	**env;
 	t_data	*data;
 
 	i = 0;
@@ -26,18 +62,7 @@ void	exec_multi_cmd(t_data **d, t_cmd *cmds, t_mini *m)
 		if (data->pid[i] < 0)
 			exit(1);
 		if (data->pid[i] == 0)
-		{
-			printf("Child executing command: %s\n", cmds->args[i]->arr[0]);
-			redirect_pipe(data, i);
-			apply_redirection(cmds->redir, i);
-			if (!cmds->args[i]->arr[0])
-				exit(0);
-			if (is_builtin(cmds->args[i]->arr[0], cmds->args[i]->arr, m))
-				exit(ft_atoi(get_var_value(m->env_vars, "?")));
-			vars_add(m -> env_vars, "_", cmds->args[i]->arr[0]);
-			return (env = get_envp(m->env_vars), execve(cmds->args[i]->arr[0],
-					cmds->args[i]->arr, env), exit(127));
-		}
+			return (exec_child(cmds, data, m, i));
 		i++;
 	}
 	close_fds(data);

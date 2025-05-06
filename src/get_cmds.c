@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/02 16:38:13 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/06 22:24:55 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/07 00:45:41 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,8 @@ static	void	init_redirs(t_cmd *cmd, char **av)
 	i = -1;
 	while (av[++i])
 	{
-		if (av[i][0] == '>' || av[i][0] == '<')
+		if (ft_strncmp(av[i], "<<", 3) != 0
+			&& (av[i][0] == '>' || av[i][0] == '<'))
 			nb_redir ++;
 		if (av[i][0] == '|')
 		{
@@ -83,7 +84,7 @@ static void	parse_add(t_cmd *cmds, char **av, int *i, int *nb_cmd)
 		*nb_cmd += 1;
 		*i += 1;
 	}
-	if (av[*i] && av[*i][0] != '>' && av[*i][0] != '<')
+	if (av[*i])
 	{
 		cmds->args[*nb_cmd]->arr = append(cmds->args[*nb_cmd]->arr,
 				&cmds->args[*nb_cmd]->tot_len,
@@ -102,20 +103,21 @@ t_cmd	*get_cmds(char **av)
 	t_cmd	*cmds;
 
 	cmds = init_cmds(nb_cmd(av), av);
-	if (!cmds)
-		return (NULL);
 	i = 0;
 	cmd_i = 0;
 	r_i = 0;
 	while (av[i] && cmds)
 	{
-		if (av[i][0] == '<' || av[i][0] == '>')
+		if (ft_strncmp(av[i], "<<", 3) != 0
+			&& (av[i][0] == '<' || av[i][0] == '>'))
 		{
 			cmds->redir[cmd_i][r_i]->type = ft_strdup(av[i++]);
 			cmds->redir[cmd_i][r_i++]->file = ft_strdup(av[i++]);
 			if (!cmds->redir[cmd_i][r_i - 1] || !cmds->redir[cmd_i][r_i - 1])
 				return (free_cmds(cmds), NULL);
 		}
+		if (av[i] && av[i][0] == '|')
+			r_i = 0;
 		parse_add(cmds, av, &i, &cmd_i);
 	}
 	return (cmds);

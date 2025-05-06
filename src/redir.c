@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 14:38:43 by mecauchy          #+#    #+#             */
-/*   Updated: 2025/05/06 22:44:14 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/07 00:52:06 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void	init_pids(t_data *data)
 }
 
 void	init_fds(t_data *data)
-{	
+{
 	int	i;
 
 	i = 0;
@@ -34,22 +34,22 @@ void	init_fds(t_data *data)
 	{
 		return ;
 	}
-	if (data->nb_cmds == 1)
+	// if (data->nb_cmds == 1)
+	// {
+	// 	pipe(data->fd);
+	// }
+	// else
+	// {
+	while (i < data->nb_cmds - 1)
 	{
-		pipe(data->fd);
-	}
-	else
-	{
-		while (i < data->nb_cmds - 1)
+		if (pipe(data->fd + i * 2) == -1)
 		{
-			if (pipe(data->fd + i * 2) == -1)
-			{
-				perror("pipe");
-				exit(1);
-			}
-			i++;
+			perror("pipe");
+			exit(1);
 		}
+		i++;
 	}
+	// }
 }
 
 void	close_fds(t_data *data)

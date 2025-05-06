@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 12:42:54 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/05 21:12:03 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/07 00:42:39 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,6 +112,33 @@ char	**split_cmds(char *line)
 	return (sp);
 }
 
+static void	add_expanded(char **splited_cmds, char **split_expanded,
+		t_env_vars *vars, int *i)
+{
+	if (!ft_strncmp(splited_cmds[*i], "<<", 3))
+	{
+		split_expanded[*i] = ft_strdup(splited_cmds[*i]);
+		*i += 1;
+		split_expanded[*i] = ft_strdup(splited_cmds[*i]);
+		if (!split_expanded[*i] || !split_expanded[*i - 1])
+		{
+			free(split_expanded[*i]);
+			free(split_expanded[*i - 1]);
+			free_tab(split_expanded);
+			return ;
+		}
+		return ;
+	}
+	split_expanded[*i] = expand(splited_cmds[*i], vars);
+	if (!split_expanded[*i])
+	{
+		while (*i >= 0)
+			free(split_expanded[*i]);
+		return (free(split_expanded));
+	}
+	return ;
+}
+
 /* split_expand manuel
 
 	renvoie un tableau dont les elements sont les elements de split_cmds
@@ -145,22 +172,15 @@ char	**split_expand(char	**splited_cmds, t_env_vars *vars)
 	i = 0;
 	while (splited_cmds[i])
 		i ++;
-	split_expanded = malloc(sizeof(char *) * (i + 1));
+	split_expanded = ft_calloc(i + 1, (sizeof(char *)));
 	if (split_expanded == 0)
 		return (0);
-	split_expanded[i] = 0;
 	i = -1;
 	while (splited_cmds[++i])
 	{
-		split_expanded[i] = expand(splited_cmds[i], vars);
-		if (!split_expanded[i])
-		{
-			while (i >= 0)
-				free(split_expanded[i]);
-			return (free(split_expanded), NULL);
-		}
-		if (!ft_strncmp(splited_cmds[i], "<<", 3))
-			i ++;
+		add_expanded(splited_cmds, split_expanded, vars, &i);
+		if (split_expanded == 0)
+			return (NULL);
 	}
 	return (split_expanded);
 }

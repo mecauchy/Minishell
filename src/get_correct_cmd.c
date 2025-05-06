@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 12:42:21 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/14 12:26:12 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/07 01:07:47 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ static char	*get_correct_cmd_absol(char *cmd)
 	return (NULL);
 }
 
-static char	*get_correct_cmd_rela(char *cmd)
+static char	*get_correct_cmd_rela(char *cmd, t_mini *mini)
 {
 	char	**cmd_no_arg;
 	char	**paths;
@@ -28,7 +28,7 @@ static char	*get_correct_cmd_rela(char *cmd)
 	int		i;
 
 	cmd_no_arg = ft_split(cmd, ' ');
-	paths = ft_split(getenv("PATH"), ':');
+	paths = ft_split(get_var_value(mini->env_vars, "PATH"), ':');
 	i = -1;
 	while (paths[++i])
 	{
@@ -48,7 +48,7 @@ static char	*get_correct_cmd_rela(char *cmd)
 	return (NULL);
 }
 
-char	*get_correct_cmd(char *cmd)
+char	*get_correct_cmd(char *cmd, t_mini *mini)
 {
 	if (!cmd)
 		return (NULL);
@@ -60,5 +60,5 @@ char	*get_correct_cmd(char *cmd)
 		return (ft_strdup("cd"));
 	if (cmd && cmd[0] && (cmd[0] == '/' || cmd[0] == '.'))
 		return (get_correct_cmd_absol(cmd));
-	return (get_correct_cmd_rela(cmd));
+	return (get_correct_cmd_rela(cmd, mini));
 }
