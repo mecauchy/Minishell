@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 13:57:52 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/06 22:32:45 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/06 22:57:20 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,18 +105,18 @@ static int	hd_exec_cmd(t_here_doc *hd, int *f_id, t_mini *mini)
 			close(f_id[1]);
 			close(f_id[0]);
 		}
-		if (is_builtin(hd -> cmd_args[0], hd -> cmd_args, mini))
+		if (is_builtin(hd->cmd_args->arr[0], hd->cmd_args->arr, mini))
 			return (ft_atoi(get_var_value(mini->env_vars, "?")));
-		vars_add(mini -> env_vars, "_", hd->cmd_args[0]);
-		return (envp = get_envp(mini->env_vars), execve(hd->cmd_args[0],
-				hd->cmd_args, envp), printf("%s: command not found\n",
-				hd->cmd_args[0]), free_tab(envp), close(f_id[0]), 127);
+		vars_add(mini -> env_vars, "_", hd->cmd_args->arr[0]);
+		return (envp = get_envp(mini->env_vars), execve(hd->cmd_args->arr[0],
+				hd->cmd_args->arr, envp), printf("%s: command not found\n",
+				hd->cmd_args->arr[0]), free_tab(envp), close(f_id[0]), 127);
 	}
 	return (_value = get_last_arg(hd -> cmd_args, mini -> env_vars),
 		vars_add(mini -> env_vars, "_", _value), free(_value), pid2);
 }
 
-void	here_doc_cmd(char *cmd, t_mini *mini)
+void	here_doc_cmd(char **cmd, t_mini *mini)
 {
 	t_here_doc	*hd;
 	t_list		*lines;

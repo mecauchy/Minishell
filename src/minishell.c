@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:07:38 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/06 22:34:06 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/06 22:57:49 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,9 @@ void	parse_line(char *line, t_mini *mini)
 	// 	g_signal = SIGUSR1;
 	// 	return (here_doc_cmd(line, mini));
 	// }
+	if (!is_correct_cmds(line))
+		return (printf("bash: syntax error\n"),
+			vars_add(mini->env_vars, "?", "2"), (void)line);
 	full_cmd = split_cmds(line);
 	mini -> cmds_splitted = full_cmd;
 	multi_cmds(mini);
@@ -118,7 +121,7 @@ int	main(int argc, char **argv, char **envp)
 	signal(SIGQUIT, SIG_IGN);
 	mini = init_mini(envp);
 	if (!mini)
-		return (perror("Error"), 1);
+		return (printf("Malloc error\n"), 1);
 	while (1)
 	{
 		g_signal = 0;

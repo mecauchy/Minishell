@@ -6,21 +6,39 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 14:21:27 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/06 22:28:05 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/06 22:58:19 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-int	is_all_space(char *line)
+char	**get_cmd_and_args(char *cmd, char **split, int index)
 {
-	int	i;
+	int		i;
+	int		j;
+	char	**cmd_and_args;
 
-	i = -1;
-	while (line[++i])
-		if (!((8 <= line[i] && line[i] <= 13) || line[i] == 32))
-			return (0);
-	return (1);
+	i = index - 1;
+	while (split[++i] != 0)
+		if (split[i][0] == '|')
+			break ;
+	cmd_and_args = ft_calloc((i - index) + 1, sizeof(char *));
+	if (cmd_and_args == 0)
+		return (NULL);
+	cmd_and_args[i - index] = 0;
+	cmd_and_args[0] = ft_strdup(cmd);
+	j = 0;
+	while (++j < i - index)
+	{
+		cmd_and_args[j] = ft_strdup(split[index + j]);
+		if (cmd_and_args[j] == 0)
+		{
+			while (--j > 0)
+				free(cmd_and_args[j]);
+			free(cmd_and_args);
+		}
+	}
+	return (cmd_and_args);
 }
 
 int	ft_is_identifier(char *name)

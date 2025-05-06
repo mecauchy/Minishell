@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:02:17 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/06 22:33:24 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/06 22:57:07 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,7 @@ typedef struct s_mini
 
 typedef struct s_here_doc
 {
-	char	**cmd_args;
+	t_array	*array;
 	char	*delimiter;
 	int		fd;
 	int		do_expand;
@@ -118,8 +118,7 @@ int					ft_is_identifier(char *name);
 void				free_tab(char **tab);
 char				*ft_strjoin_free(char *s1, char *s2);
 char				**split_cmds(char *line);
-char				**split_expand(char	**splited_cmds, char *line,
-						t_env_vars *vars);
+char				**split_expand(char	**splited_cmds, t_env_vars *vars);
 char				*get_correct_cmd(char *cmd);
 char				**get_cmd_and_args(char *cmd,
 						char **split_expanded, int index);
@@ -131,6 +130,7 @@ long long			ft_atoll(char *nb);
 void				free_cmds(t_cmd *cmds);
 char				**append(char **sp, int *len_tot, int *sp_i, char *sub);
 t_array				*init_array(void);
+int					is_correct_cmds(char *line);
 
 /* EXPAND */
 
@@ -192,7 +192,7 @@ int					is_builtin(char *cmd, char **cmd_args, t_mini *mini);
 /* HERE DOC */
 
 void				free_hd(t_here_doc *hd);
-t_here_doc			*parse_heredoc(char *cmd, t_mini *mini);
+t_here_doc			*parse_heredoc(char **cmd, t_mini *mini);
 void				here_doc_cmd(char *cmd, t_mini *mini);
 
 /* MAIN */

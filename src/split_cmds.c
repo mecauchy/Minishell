@@ -6,48 +6,21 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 12:42:54 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/21 14:48:49 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/05 21:12:03 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-static int	split_cmds_len(char *line)
+static int	end_word(char *line, char ***sp, int *len_tot, int *sp_i)
 {
 	int		i;
-	int		len;
 	char	c;
+	char	*sub;
 
 	i = 0;
-	len = 0;
-	while (line[i] && (line[i] == ' ' || line[i] == '\t'))
-		i ++;
-	while (line[i])
-	{
-		while (line[i] && (line[i] != ' ' && line[i] != '\t'))
-		{
-			if (line[i] == '\'' || line[i] == '"')
-			{
-				c = line[i++];
-				while (line[i] && line[i] != c)
-					i ++;
-			}
-			i ++;
-		}
-		while (line[i] && (line[i] == ' ' || line[i] == '\t'))
-			i ++;
-		len ++;
-	}
-	return (len);
-}
-
-static int	go_to_end_word(char *line, int start, char **line_sp, int *cpt)
-{
-	int		i;
-	char	c;
-
-	i = start;
-	while (line[i] && (line[i] != ' ' && line[i] != '\t'))
+	while (line[i] && (line[i] != ' ' && line[i] != '\t' && line[i] != '>'
+			&& line[i] != '<' && line[i] != '|'))
 	{
 		if (line[i] == '\'' || line[i] == '"')
 		{
@@ -57,16 +30,42 @@ static int	go_to_end_word(char *line, int start, char **line_sp, int *cpt)
 		}
 		i ++;
 	}
-	line_sp[*cpt] = ft_substr(line, start, i - start);
-	if (line_sp[*cpt] == 0)
-	{
-		i = *cpt;
-		while (--i >= 0)
-			free(line_sp[i]);
-		free(line_sp);
+	sub = ft_substr(line, 0, i);
+	if (sub == 0)
+		return (free_tab(*sp), -1);
+	if (!sub[0])
+		return (free(sub), i);
+	*sp = append(*sp, len_tot, sp_i, sub);
+	if (sp == 0)
 		return (-1);
-	}
-	*cpt += 1;
+	return (i);
+}
+
+static int	end_deli(char *line, char ***sp, int *len_tot, int *sp_i)
+{
+	int		i;
+	int		st_deli;
+	char	*sub;
+
+	i = 0;
+	while (line[i] && (line[i] == ' ' || line[i] == '\t'))
+		i ++;
+	if (!line[i])
+		return (i);
+	st_deli = i;
+	while (line[i] && (line[i] == '>' || line[i] == '<' || line[i] == '|'))
+		i ++;
+	sub = ft_substr(line, st_deli, i - st_deli);
+	if (sub == 0)
+		return (free_tab(*sp), -1);
+	if (!is_all_space(sub))
+		*sp = append(*sp, len_tot, sp_i, sub);
+	else
+		free(sub);
+	if (*sp == 0)
+		return (-1);
+	while (line[i] && (line[i] == ' ' || line[i] == '\t'))
+		i ++;
 	return (i);
 }
 
@@ -88,27 +87,29 @@ split_cmds renvoie tjs quelque chose qu'il faut free apres utilisation
 */
 char	**split_cmds(char *line)
 {
-	char	**line_sp;
+	char	**sp;
+	int		len_tot;
 	int		i;
-	int		cpt;
+	int		sp_i;
 
-	line_sp = malloc(sizeof(char *) * (split_cmds_len(line) + 1));
-	if (line_sp == NULL)
-		return (NULL);
-	line_sp[split_cmds_len(line)] = 0;
 	i = 0;
-	cpt = 0;
+	sp_i = 0;
+	len_tot = 2;
+	sp = ft_calloc(3, sizeof(char *));
+	if (sp == 0)
+		return (NULL);
 	while (line[i] && (line[i] == ' ' || line[i] == '\t'))
 		i ++;
 	while (line[i])
 	{
-		i = go_to_end_word(line, i, line_sp, &cpt);
-		if (i == -1)
-			return (NULL);
-		while (line[i] && (line[i] == ' ' || line[i] == '\t'))
-			i ++;
+		i += end_word(&line[i], &sp, &len_tot, &sp_i);
+		if (sp == 0)
+			return (0);
+		i += end_deli(&line[i], &sp, &len_tot, &sp_i);
+		if (sp == 0)
+			return (0);
 	}
-	return (line_sp);
+	return (sp);
 }
 
 /* split_expand manuel
@@ -136,15 +137,18 @@ Valeurs de retour :
 
 	free le tableau avec free_tab
 */
-char	**split_expand(char	**splited_cmds, char *line, t_env_vars *vars)
+char	**split_expand(char	**splited_cmds, t_env_vars *vars)
 {
 	char	**split_expanded;
 	int		i;
 
-	split_expanded = malloc(sizeof(char *) * (split_cmds_len(line) + 1));
+	i = 0;
+	while (splited_cmds[i])
+		i ++;
+	split_expanded = malloc(sizeof(char *) * (i + 1));
 	if (split_expanded == 0)
 		return (0);
-	split_expanded[split_cmds_len(line)] = 0;
+	split_expanded[i] = 0;
 	i = -1;
 	while (splited_cmds[++i])
 	{
@@ -153,40 +157,10 @@ char	**split_expand(char	**splited_cmds, char *line, t_env_vars *vars)
 		{
 			while (i >= 0)
 				free(split_expanded[i]);
-			free(split_expanded);
-			return (NULL);
+			return (free(split_expanded), NULL);
 		}
 		if (!ft_strncmp(splited_cmds[i], "<<", 3))
 			i ++;
 	}
 	return (split_expanded);
-}
-
-char	**get_cmd_and_args(char *cmd, char **split, int index)
-{
-	int		i;
-	int		j;
-	char	**cmd_and_args;
-
-	i = index - 1;
-	while (split[++i] != 0)
-		if (split[i][0] == '|')
-			break ;
-	cmd_and_args = ft_calloc((i - index) + 1, sizeof(char *));
-	if (cmd_and_args == 0)
-		return (NULL);
-	cmd_and_args[i - index] = 0;
-	cmd_and_args[0] = ft_strdup(cmd);
-	j = 0;
-	while (++j < i - index)
-	{
-		cmd_and_args[j] = ft_strdup(split[index + j]);
-		if (cmd_and_args[j] == 0)
-		{
-			while (--j > 0)
-				free(cmd_and_args[j]);
-			free(cmd_and_args);
-		}
-	}
-	return (cmd_and_args);
 }
