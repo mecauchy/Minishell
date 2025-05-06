@@ -6,6 +6,10 @@ INC = includes/
 CC = cc
 CFLAGS = -Wall -Werror -Wextra
 
+BLUE			=	\e[34m
+
+CYANT			=	\e[36m
+
 SRC = $(SRC_DIR)ft_atoi.c $(SRC_DIR)ft_bzero.c $(SRC_DIR)ft_calloc.c \
 	$(SRC_DIR)ft_isalnum.c $(SRC_DIR)ft_isalpha.c $(SRC_DIR)ft_isascii.c \
 	$(SRC_DIR)ft_isdigit.c $(SRC_DIR)ft_isprint.c $(SRC_DIR)ft_itoa.c $(SRC_DIR)ft_memchr.c \
@@ -37,7 +41,7 @@ $(OBJ_DIR) :
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.c
 	@$(CC) $(CFLAGS) -I $(INC) -c $< -o $@
-	@echo "\e[92mCompiling\e[m $(notdir $<)..."
+	@echo "$(CYANT)libft $(RESET) : \e[92mCompiling\e[m $(notdir $<)... \n"
 
 clean :
 	rm -rf $(OBJ_DIR)

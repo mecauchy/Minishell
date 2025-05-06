@@ -6,7 +6,7 @@
 #    By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/05 10:53:25 by mcauchy-          #+#    #+#              #
-#    Updated: 2025/05/06 13:31:49 by mcauchy-         ###   ########.fr        #
+#    Updated: 2025/05/06 14:00:52 by mcauchy-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -79,7 +79,7 @@ $(OBJ_DIR)		:
 
 $(OBJ_DIR)%.o	:	$(SRC_DIR)%.c
 					@$(CC) $(CFLAGS) -I $(INC) -c $< -o $@
-					@echo "$(BLUE)minishell $(RESET): \e[92mCompiling\e[m $(notdir $<)..."
+					@echo "$(BLUE)minishell $(RESET): \e[92mCompiling\e[m $(notdir $<)...\n"
 
 clean			:
 					@$(MAKE) clean -C libft --no-print-directory
