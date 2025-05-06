@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:02:17 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/02 16:40:16 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/05 10:59:06 by mcauchy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,6 +165,11 @@ struct sigaction	*init_quit(void);
 
 /* REDIRECTION*/
 
+void				redirect_pipe(t_data *data, int i);
+void				apply_redirection(t_cmd *cmd, int i);
+void				close_fds(t_data *data);
+void				wait_all_pids(t_data *data, t_env_vars *vars);
+void				init_fds(t_data *data);
 int					is_redir(char *cmd);
 int					len_without_redir(char **cmd);
 char				**clean_without_redir(char **cmd);

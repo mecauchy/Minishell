@@ -36,7 +36,8 @@ $(OBJ_DIR) :
 	mkdir -p $(OBJ_DIR)
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.c
-	$(CC) $(CFLAGS) -I $(INC) -c $< -o $@
+	@$(CC) $(CFLAGS) -I $(INC) -c $< -o $@
+	@echo "\e[92mCompiling\e[m $(notdir $<)..."
 
 clean :
 	rm -rf $(OBJ_DIR)
@@ -44,6 +45,7 @@ clean :
 fclean : clean
 	rm -f $(NAME)
 
-re	: fclean all
+re	: fclean
+	@make all
 
 .PHONY : all clean fclean re
