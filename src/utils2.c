@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 14:21:27 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/30 10:53:44 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/06 22:28:05 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ Arguments :
 	- vars : les variables d'environnement
 */
 
-void	wait_upex(int pid, t_env_vars *vars)
+void	wait_upex(int pid, t_env_vars *vars, char **cmd_args)
 {
 	int		status;
 	char	*exit_status;
@@ -58,7 +58,11 @@ void	wait_upex(int pid, t_env_vars *vars)
 	if (g_signal == SIGINT)
 		exit_status = ft_itoa(128 + g_signal);
 	else if (WIFEXITED(status))
+	{
 		exit_status = ft_itoa(WEXITSTATUS(status));
+		if (WEXITSTATUS(status) == 127)
+			printf("%s: command not found\n", cmd_args[0]);
+	}
 	else
 		exit_status = ft_itoa(128 + g_signal);
 	vars_add(vars, "?", exit_status);

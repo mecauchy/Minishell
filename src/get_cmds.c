@@ -6,28 +6,54 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/02 16:38:13 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/02 16:51:26 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/06 22:24:55 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-t_array	*init_array(void)
+static void	init_redir(t_cmd *cmd, int nb_cmd, int nb_redir)
 {
-	t_array	*tab;
-
-	tab = ft_calloc(1, sizeof(t_array));
-	if (tab == 0)
-		return (NULL);
-	tab -> tot_len = 2;
-	tab -> arr_i = 0;
-	tab -> arr = ft_calloc(3, sizeof(char *));
-	if (tab -> arr == 0)
-		return (free(tab), NULL);
-	return (tab);
+	cmd->redir[nb_cmd] = ft_calloc(nb_redir + 1, sizeof(t_redir *));
+	if (cmd->redir[nb_cmd] == 0)
+		return (free_cmds(cmd));
+	while (--nb_redir >= 0)
+	{
+		cmd->redir[nb_cmd][nb_redir] = ft_calloc(1, sizeof(t_redir));
+		if (cmd->redir[nb_cmd][nb_redir] == 0)
+		{
+			while (cmd->redir[nb_cmd][++nb_redir] == 0)
+				free(cmd->redir[nb_cmd][++nb_redir]);
+			return (free(cmd->redir[nb_cmd]), free_cmds(cmd));
+		}
+	}
 }
 
-static t_cmd	*init_cmds(int nb_cmd)
+static	void	init_redirs(t_cmd *cmd, char **av)
+{
+	int		i;
+	int		nb_redir;
+	int		nb_cmd;
+
+	nb_cmd = 0;
+	nb_redir = 0;
+	i = -1;
+	while (av[++i])
+	{
+		if (av[i][0] == '>' || av[i][0] == '<')
+			nb_redir ++;
+		if (av[i][0] == '|')
+		{
+			init_redir(cmd, nb_cmd, nb_redir);
+			nb_cmd ++;
+			nb_redir = 0;
+		}
+	}
+	init_redir(cmd, nb_cmd, nb_redir);
+	return ;
+}
+
+static t_cmd	*init_cmds(int nb_cmd, char **av)
 {
 	t_cmd	*cmds;
 	int		i;
@@ -36,15 +62,15 @@ static t_cmd	*init_cmds(int nb_cmd)
 	if (cmds == 0)
 		return (NULL);
 	cmds->args = ft_calloc((nb_cmd + 1), sizeof(t_array *));
-	cmds->redir = ft_calloc((nb_cmd + 1), sizeof(t_redir *));
+	cmds->redir = ft_calloc((nb_cmd + 1), sizeof(t_redir **));
 	if (!cmds->args || !cmds->redir)
 		return (free(cmds->args), free(cmds->redir), free(cmds), NULL);
+	init_redirs(cmds, av);
 	i = -1;
 	while (++i < nb_cmd)
 	{
 		cmds->args[i] = init_array();
-		cmds->redir[i] = ft_calloc(1, sizeof(t_redir));
-		if (!cmds->args[i] || !cmds->redir[i])
+		if (!cmds->args[i])
 			return (free_cmds(cmds), NULL);
 	}
 	return (cmds);
@@ -52,17 +78,7 @@ static t_cmd	*init_cmds(int nb_cmd)
 
 static void	parse_add(t_cmd *cmds, char **av, int *i, int *nb_cmd)
 {
-	if (av[*i][0] == '<' || av[*i][0] == '>')
-	{
-		cmds->redir[*nb_cmd]->type = ft_strdup(av[*i]);
-		cmds->redir[*nb_cmd]->file = ft_strdup(av[*i + 1]);
-		if (!cmds->redir[*nb_cmd] || !cmds->redir[*nb_cmd])
-			return (free_cmds(cmds));
-		*i += 2;
-	}
-	if (!av[*i])
-		return ;
-	if (av[*i][0] == '|')
+	if (av[*i] && av[*i][0] == '|')
 	{
 		*nb_cmd += 1;
 		*i += 1;
@@ -78,32 +94,29 @@ static void	parse_add(t_cmd *cmds, char **av, int *i, int *nb_cmd)
 	}
 }
 
-static void	parse_cmds(t_cmd *cmds, char **av)
-{
-	int		i;
-	int		nb_cmd;
-
-	i = 0;
-	nb_cmd = 0;
-	while (av[i])
-	{
-		parse_add(cmds, av, &i, &nb_cmd);
-		if (cmds == 0)
-			return ;
-	}
-}
-
 t_cmd	*get_cmds(char **av)
 {
-	int		nb_cmds;
+	int		i;
+	int		r_i;
+	int		cmd_i;
 	t_cmd	*cmds;
 
-	nb_cmds = nb_cmd(av);
-	cmds = init_cmds(nb_cmds);
+	cmds = init_cmds(nb_cmd(av), av);
 	if (!cmds)
 		return (NULL);
-	parse_cmds(cmds, av);
-	if (!cmds)
-		return (NULL);
+	i = 0;
+	cmd_i = 0;
+	r_i = 0;
+	while (av[i] && cmds)
+	{
+		if (av[i][0] == '<' || av[i][0] == '>')
+		{
+			cmds->redir[cmd_i][r_i]->type = ft_strdup(av[i++]);
+			cmds->redir[cmd_i][r_i++]->file = ft_strdup(av[i++]);
+			if (!cmds->redir[cmd_i][r_i - 1] || !cmds->redir[cmd_i][r_i - 1])
+				return (free_cmds(cmds), NULL);
+		}
+		parse_add(cmds, av, &i, &cmd_i);
+	}
 	return (cmds);
 }

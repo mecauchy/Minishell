@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 16:29:47 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/30 12:00:23 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/06 22:32:08 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,5 +136,5 @@ void	ft_echo(char **args, t_env_vars *vars)
 		exit(echo_ch(args, vars));
 	}
 	else
-		wait_upex(pid, vars);
+		wait_upex(pid, vars, NULL);
 }

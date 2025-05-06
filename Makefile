@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+         #
+#    By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/05 10:53:25 by mcauchy-          #+#    #+#              #
-#    Updated: 2025/05/06 14:00:52 by mcauchy-         ###   ########.fr        #
+#    Updated: 2025/05/06 22:34:43 by vluo             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -53,7 +53,7 @@ $(LIBFT)		:
 					$(MAKE) -C libft --no-print-directory
 
 $(NAME)			:	$(LIBFT) $(OBJ_DIR) $(OBJ)
-					@$(CC) $(CFLAGS) $(READLINEFLAGS) -I $(INC) $(OBJ) $(LIBFT) -o $(NAME)
+					@$(CC) $(CFLAGS) $(READLINEFLAGS) -I $(INC) $(OBJ) $(LIBFT) -o $(NAME) $(READLINEFLAGS)
 					@clear
 					@echo "Compilation Done"
 					@echo ""

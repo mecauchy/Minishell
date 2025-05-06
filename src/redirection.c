@@ -3,36 +3,41 @@
 /*                                                        :::      ::::::::   */
 /*   redirection.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 13:27:33 by mcauchy-          #+#    #+#             */
-/*   Updated: 2025/05/06 13:29:58 by mcauchy-         ###   ########.fr       */
+/*   Updated: 2025/05/06 22:26:32 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-void	apply_redirection(t_cmd *cmd, int i)
+void	apply_redirection(t_redir ***redir, int i)
 {
 	int	fd;
+	int	r_i;
 
-	if (cmd->redir[i]->type == NULL)
-		return ;
-	if (cmd->redir[i]->type[0] == '<')
+	r_i = -1;
+	while (redir[i][++r_i])
 	{
-		fd = open(cmd->redir[i]->file, O_RDONLY);
-		if (fd == -1)
-			return (perror("Minishell : open"), exit(EXIT_FAILURE));
-		dup2(fd, STDIN_FILENO);
-		close(fd);
-	}
-	if (cmd->redir[i]->type[0] == '>')
-	{
-		fd = open(cmd->redir[i]->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-		if (fd == -1)
-			return (perror("Minishell : open"), exit(EXIT_FAILURE));
-		dup2(fd, STDOUT_FILENO);
-		close(fd);
+		if (redir[i][r_i]->type == NULL)
+			continue ;
+		if (redir[i][r_i]->type[0] == '<')
+		{
+			fd = open(redir[i][r_i]->file, O_RDONLY);
+			if (fd == -1)
+				return (perror("Minishell : open"), exit(EXIT_FAILURE));
+			dup2(fd, STDIN_FILENO);
+			close(fd);
+		}
+		if (redir[i][r_i]->type[0] == '>')
+		{
+			fd = open(redir[i][r_i]->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+			if (fd == -1)
+				return (perror("Minishell : open"), exit(EXIT_FAILURE));
+			dup2(fd, STDOUT_FILENO);
+			close(fd);
+		}
 	}
 }
 

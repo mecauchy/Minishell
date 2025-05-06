@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 10:51:40 by mcauchy-          #+#    #+#             */
-/*   Updated: 2025/05/06 13:25:28 by mcauchy-         ###   ########.fr       */
+/*   Updated: 2025/05/06 22:27:04 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-void	exec_multi_cmd(t_data **d, t_cmd *cmds, t_mini *mini)
+void	exec_multi_cmd(t_data **d, t_cmd *cmds, t_mini *m)
 {
 	int		i;
 	char	**env;
@@ -27,24 +27,21 @@ void	exec_multi_cmd(t_data **d, t_cmd *cmds, t_mini *mini)
 			exit(1);
 		if (data->pid[i] == 0)
 		{
-/*			 printf("PID = %d\n", getpid());
-			printf("Child executing command: %s\n", cmds->args[i]->arr[0]);*/
+			printf("Child executing command: %s\n", cmds->args[i]->arr[0]);
 			redirect_pipe(data, i);
-			apply_redirection(cmds, i);
+			apply_redirection(cmds->redir, i);
 			if (!cmds->args[i]->arr[0])
 				exit(0);
-			env = get_envp(mini -> env_vars);
-			if (execve(cmds->args[i]->arr[0], cmds->args[i]->arr, env) == -1)
-			{
-				free_tab(env);
-				printf("ERRRRROR\n");
-				exit(1);
-			}
+			if (is_builtin(cmds->args[i]->arr[0], cmds->args[i]->arr, m))
+				exit(ft_atoi(get_var_value(m->env_vars, "?")));
+			vars_add(m -> env_vars, "_", cmds->args[i]->arr[0]);
+			return (env = get_envp(m->env_vars), execve(cmds->args[i]->arr[0],
+					cmds->args[i]->arr, env), exit(127));
 		}
 		i++;
 	}
 	close_fds(data);
-	wait_all_pids(data, mini -> env_vars);
+	wait_all_pids(data, m -> env_vars, cmds);
 }
 
 void	print_cmds(t_cmd *cmd, t_mini *mini)
@@ -53,18 +50,23 @@ void	print_cmds(t_cmd *cmd, t_mini *mini)
 	int	j;
 
 	i = -1;
+	printf("------------------\n");
 	while (++i < nb_cmd(mini->cmds_splitted))
 	{
-		printf("cmd [%d] : [", i);
+		printf("cmd [%d] : [ ", i);
 		j = -1;
 		while (cmd->args[i]->arr[++j])
-			printf("|%s| ", cmd->args[i]->arr[j]);
-		if (cmd->redir[i] == 0)
-			printf("] with no redir\n");
+			printf("%s ", cmd->args[i]->arr[j]);
+		if (!cmd->redir[i][0])
+			printf("] with no redirs \n");
 		else
-			printf("] with redir type = [%s] and file = [%s]\n",
-				cmd->redir[i]->type, cmd->redir[i]->file);
+			printf("] with redirs \n");
+		j = -1;
+		while (cmd->redir[i][++j])
+			printf("redir type = [%s] and file = [%s]\n",
+				cmd->redir[i][j]->type, cmd->redir[i][j]->file);
 	}
+	printf("------------------\n");
 }
 
 int	multi_cmds(t_mini *mini)

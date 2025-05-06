@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:02:17 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/05 10:59:06 by mcauchy-         ###   ########.fr       */
+/*   Updated: 2025/05/06 22:33:24 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ Comprend la liste des redirections
 typedef struct s_cmd
 {
 	t_array	**args;
-	t_redir	**redir;
+	t_redir	***redir;
 }				t_cmd;
 
 typedef struct s_data
@@ -124,12 +124,13 @@ char				*get_correct_cmd(char *cmd);
 char				**get_cmd_and_args(char *cmd,
 						char **split_expanded, int index);
 void				print_nonprintable(char *str);
-void				wait_upex(int pid, t_env_vars *vars);
+void				wait_upex(int pid, t_env_vars *vars, char **cmd_args);
 char				*get_last_arg(char **cmd_arg, t_env_vars *vars);
 char				*unquote(char *line);
 long long			ft_atoll(char *nb);
 void				free_cmds(t_cmd *cmds);
 char				**append(char **sp, int *len_tot, int *sp_i, char *sub);
+t_array				*init_array(void);
 
 /* EXPAND */
 
@@ -161,14 +162,12 @@ char				**get_envp(t_env_vars *vars);
 void				handle_ctrc_c(int sig);
 struct sigaction	*init_ctrl_c_sig(void);
 
-struct sigaction	*init_quit(void);
-
 /* REDIRECTION*/
 
 void				redirect_pipe(t_data *data, int i);
-void				apply_redirection(t_cmd *cmd, int i);
+void				apply_redirection(t_redir ***redir, int i);
 void				close_fds(t_data *data);
-void				wait_all_pids(t_data *data, t_env_vars *vars);
+void				wait_all_pids(t_data *data, t_env_vars *vars, t_cmd *cmds);
 void				init_fds(t_data *data);
 int					is_redir(char *cmd);
 int					len_without_redir(char **cmd);

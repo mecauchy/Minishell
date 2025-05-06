@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 13:57:52 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/29 13:12:45 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/06 22:32:45 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,7 +137,7 @@ void	here_doc_cmd(char *cmd, t_mini *mini)
 	ps[1] = hd_exec_cmd(hd, f_id, mini);
 	if (ps[0] == -1 || ps[1] == -1)
 		return (free_hd(hd), ft_lstclear(&lines, free));
-	return (close(f_id[0]), close(f_id[1]),
-		wait_upex(ps[0], mini -> env_vars), wait_upex(ps[1], mini -> env_vars),
+	return (close(f_id[0]), close(f_id[1]), wait_upex(ps[0], mini->env_vars,
+			hd->cmd_args), wait_upex(ps[1], mini -> env_vars, hd -> cmd_args),
 		ft_lstclear(&lines, free), free_hd(hd));
 }

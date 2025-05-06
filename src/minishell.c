@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:07:38 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/02 16:22:29 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/06 22:34:06 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void	exec_cmd(char *cmd, char **cmd_args, t_env_vars *vars)
 	if (pid < 0)
 		return (perror("Error: "));
 	if (pid > 0)
-		wait_upex(pid, vars);
+		wait_upex(pid, vars, cmd_args);
 	else
 		return (env = get_envp(vars), vars_add(vars, "_", cmd), execve(cmd,
 				cmd_args, env), printf("%s: command not found\n", cmd),
