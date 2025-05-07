@@ -6,40 +6,11 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 14:21:27 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/07 14:05:34 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/07 17:18:44 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
-
-char	**get_cmd_and_args(char *cmd, char **split, int index)
-{
-	int		i;
-	int		j;
-	char	**cmd_and_args;
-
-	i = index - 1;
-	while (split[++i] != 0)
-		if (split[i][0] == '|')
-			break ;
-	cmd_and_args = ft_calloc((i - index) + 1, sizeof(char *));
-	if (cmd_and_args == 0)
-		return (NULL);
-	cmd_and_args[i - index] = 0;
-	cmd_and_args[0] = ft_strdup(cmd);
-	j = 0;
-	while (++j < i - index)
-	{
-		cmd_and_args[j] = ft_strdup(split[index + j]);
-		if (cmd_and_args[j] == 0)
-		{
-			while (--j > 0)
-				free(cmd_and_args[j]);
-			free(cmd_and_args);
-		}
-	}
-	return (cmd_and_args);
-}
 
 int	ft_is_identifier(char *name)
 {
@@ -66,7 +37,7 @@ Arguments :
 	- vars : les variables d'environnement
 */
 
-void	wait_upex(int pid, t_env_vars *vars, char **cmd_args)
+void	wait_upex(int pid, t_env_vars *vars, char **cmd_args, int do_free)
 {
 	int		status;
 	char	*exit_status;
@@ -79,11 +50,15 @@ void	wait_upex(int pid, t_env_vars *vars, char **cmd_args)
 	{
 		exit_status = ft_itoa(WEXITSTATUS(status));
 		if (WEXITSTATUS(status) == 127)
-			if (cmd_args)
+			if (cmd_args && !do_free)
 				printf("%s: command not found\n", cmd_args[0]);
 	}
 	else
 		exit_status = ft_itoa(128 + g_signal);
+	if (cmd_args)
+		vars_add(vars, "_", cmd_args[0]);
+	if (do_free)
+		free_tab(cmd_args);
 	vars_add(vars, "?", exit_status);
 	free(exit_status);
 }

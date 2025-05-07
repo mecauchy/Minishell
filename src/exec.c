@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 10:51:40 by mcauchy-          #+#    #+#             */
-/*   Updated: 2025/05/07 15:44:47 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/07 17:11:51 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,6 @@ static void	exec_child(t_cmd *cmds, t_data *data, t_mini *m, int i)
 		cmds->args[i]->arr[0] = corr_cmd;
 	}
 	printf("Child executing command: %s\n", cmds->args[i]->arr[0]);
-	if (is_builtin(cmds->args[i]->arr[0], cmds->args[i]->arr, m))
-		exit(ft_atoi(get_var_value(m->env_vars, "?")));
 	vars_add(m -> env_vars, "_", cmds->args[i]->arr[0]);
 	return (env = get_envp(m->env_vars), execve(cmds->args[i]->arr[0],
 			cmds->args[i]->arr, env), free_tab(env), exit(127));
@@ -53,18 +51,23 @@ void	exec_multi_cmd(t_data **d, t_cmd *cmds, t_mini *m)
 {
 	int		i;
 	t_data	*data;
+	int		is_built;
 
 	i = 0;
 	data = *d;
 	while (i < data->nb_cmds)
 	{
+		is_built = is_builtin(cmds->args[i]->arr[0], cmds->args[i]->arr, m);
 		data->pid[i] = fork();
 		if (data->pid[i] < 0)
 			exit(1);
 		if (data->pid[i] == 0)
 		{
 			g_signal = SIGUSR1;
-			return (exec_child(cmds, data, m, i));
+			if (is_built != 1)
+				return (exec_child(cmds, data, m, i));
+			else
+				exit(ft_atoi(get_var_value(m->env_vars, "?")));
 		}
 		i++;
 	}

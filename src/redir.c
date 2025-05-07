@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 14:38:43 by mecauchy          #+#    #+#             */
-/*   Updated: 2025/05/07 14:32:56 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/07 16:36:21 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,8 @@ void	wait_all_pids(t_data *data, t_env_vars *vars, t_cmd *cmds)
 	i = 0;
 	while (i < data->nb_cmds)
 	{
-		wait_upex(data -> pid[i], vars, cmds->args[i]->arr);
+		wait_upex(data -> pid[i], vars,
+			ft_split(cmds->args[i]->arr[0], ' '), 1);
 		i++;
 	}
 }

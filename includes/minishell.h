@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:02:17 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/07 15:01:21 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/07 17:19:04 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,11 +120,10 @@ char				*ft_strjoin_free(char *s1, char *s2);
 char				**split_cmds(char *line);
 char				**split_expand(char	**splited_cmds, t_env_vars *vars);
 char				*get_correct_cmd(char *cmd, t_mini *mini);
-char				**get_cmd_and_args(char *cmd,
-						char **split_expanded, int index);
-void				print_nonprintable(char *str);
-void				wait_upex(int pid, t_env_vars *vars, char **cmd_args);
 char				*get_last_arg(char **cmd_arg, t_env_vars *vars);
+void				print_nonprintable(char *str);
+void				wait_upex(int pid, t_env_vars *vars, char **cmd_args,
+						int do_free);
 char				*unquote(char *line);
 long long			ft_atoll(char *nb);
 void				free_cmds(t_cmd *cmds);
@@ -173,11 +172,6 @@ int					is_redir(char *cmd);
 int					len_without_redir(char **cmd);
 char				**clean_without_redir(char **cmd);
 
-/* COVERT TO DEC */
-
-int					octal_to_dec(char *octal);
-int					hex_to_dec(char *nb);
-
 /* BUILTINS */
 
 void				ft_pwd(t_env_vars *vars);
@@ -185,6 +179,8 @@ void				ft_env(t_env_vars *vars);
 void				ft_export(char **args, t_env_vars *vars);
 void				ft_unset(char **args, t_env_vars *vars);
 void				ft_exit(char **n, t_mini *mini);
+int					octal_to_dec(char *octal);
+int					hex_to_dec(char *nb);
 void				ft_echo(char **args, t_env_vars *vars);
 void				ft_cd(char *path, t_env_vars *vars);
 int					is_builtin(char *cmd, char **cmd_args, t_mini *mini);

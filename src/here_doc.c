@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 13:57:52 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/07 15:01:38 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/07 16:35:15 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,6 +128,7 @@ void	here_doc_cmd(char **cmd, t_mini *mini, t_cmd *cmds, int i)
 		return ;
 	if (ps[0] == -1 || ps[1] == -1)
 		return (free_hd(hd));
-	return (wait_upex(ps[0], mini->env_vars, NULL),
-		wait_upex(ps[1], mini->env_vars, NULL), free_hd(hd));
+	return (wait_upex(ps[0], mini->env_vars, NULL, 0),
+		wait_upex(ps[1], mini->env_vars,
+			ft_split(hd->cmd_args->arr[0], ' '), 1), free_hd(hd));
 }
