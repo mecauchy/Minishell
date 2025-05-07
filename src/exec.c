@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 10:51:40 by mcauchy-          #+#    #+#             */
-/*   Updated: 2025/05/07 01:08:53 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/07 15:44:47 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,12 +29,12 @@ static void	exec_child(t_cmd *cmds, t_data *data, t_mini *m, int i)
 	char	**env;
 
 	redirect_pipe(data, i);
-	apply_redirection(cmds->redir, i);
 	if (!cmds->args[i]->arr[0])
 		exit(0);
 	if (is_hd(cmds, i))
-		return (here_doc_cmd(cmds->args[i]->arr, m),
+		return (here_doc_cmd(cmds->args[i]->arr, m, cmds, i),
 			exit(ft_atoi(get_var_value(m->env_vars, "?"))));
+	apply_redirection(cmds->redir, i);
 	corr_cmd = get_correct_cmd(cmds->args[i]->arr[0], m);
 	if (corr_cmd != NULL)
 	{
@@ -44,9 +44,9 @@ static void	exec_child(t_cmd *cmds, t_data *data, t_mini *m, int i)
 	printf("Child executing command: %s\n", cmds->args[i]->arr[0]);
 	if (is_builtin(cmds->args[i]->arr[0], cmds->args[i]->arr, m))
 		exit(ft_atoi(get_var_value(m->env_vars, "?")));
-	vars_add(m -> env_vars, "_", corr_cmd);
+	vars_add(m -> env_vars, "_", cmds->args[i]->arr[0]);
 	return (env = get_envp(m->env_vars), execve(cmds->args[i]->arr[0],
-			cmds->args[i]->arr, env), exit(127));
+			cmds->args[i]->arr, env), free_tab(env), exit(127));
 }
 
 void	exec_multi_cmd(t_data **d, t_cmd *cmds, t_mini *m)
@@ -62,7 +62,10 @@ void	exec_multi_cmd(t_data **d, t_cmd *cmds, t_mini *m)
 		if (data->pid[i] < 0)
 			exit(1);
 		if (data->pid[i] == 0)
+		{
+			g_signal = SIGUSR1;
 			return (exec_child(cmds, data, m, i));
+		}
 		i++;
 	}
 	close_fds(data);

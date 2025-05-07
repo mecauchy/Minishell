@@ -6,40 +6,11 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 13:57:52 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/07 01:18:26 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/07 15:01:38 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
-
-static void	print_lines(t_list *lines, t_here_doc *hd, t_env_vars *vars, int fd)
-{
-	t_list	*tmp;
-	char	*line;
-	char	*to_ex;
-
-	vars_add(vars, "?", "0");
-	if (hd -> cmd_args == 0)
-		return (ft_lstclear(&lines, free));
-	tmp = lines;
-	while (tmp != 0)
-	{
-		if (hd -> do_expand)
-		{
-			to_ex = ft_substr((char *)(tmp -> content), 0,
-					ft_strlen((char *)(tmp -> content)) - 1);
-			line = expand(to_ex, vars);
-			line = ft_strjoin_free(line, ft_strdup("\n"));
-			free(to_ex);
-		}
-		else
-			line = ft_strdup((char *)(tmp -> content));
-		write(fd, line, ft_strlen(line));
-		free(line);
-		tmp = tmp -> next;
-	}
-	ft_lstclear(&lines, free);
-}
 
 static t_list	*get_del_lines(char *deli, t_env_vars *vars)
 {
@@ -81,7 +52,7 @@ static int	hd_pr_lines(t_here_doc *hd, int *f_id, t_list *lines,
 	{
 		dup2(f_id[1], 1);
 		close(f_id[0]);
-		print_lines(lines, hd, vars, f_id[1]);
+		print_hd_lines(lines, hd, vars, f_id[1]);
 		close(f_id[1]);
 		return (exit(0), 0);
 	}
@@ -110,36 +81,53 @@ static int	hd_exec_cmd(t_here_doc *hd, int *f_id, t_mini *mini)
 		vars_add(mini -> env_vars, "_", hd->cmd_args->arr[0]);
 		return (envp = get_envp(mini->env_vars),
 			execve(hd->cmd_args->arr[0], hd->cmd_args->arr, envp),
-			printf("%s: command not found\n", hd->cmd_args->arr[0]),
 			free_tab(envp), close(f_id[0]), exit(127), 127);
 	}
 	return (_value = get_last_arg(hd->cmd_args->arr, mini -> env_vars),
 		vars_add(mini -> env_vars, "_", _value), free(_value), pid2);
 }
 
-void	here_doc_cmd(char **cmd, t_mini *mini)
+int	*pipe_exec(t_here_doc *hd, t_mini *mini, t_cmd *cmds, int i)
+{
+	t_list	*lines;
+	char	*corr_cmd;
+	int		*fs;
+	int		*ps;
+
+	lines = get_del_lines(hd -> delimiter, mini -> env_vars);
+	if (lines == 0 && g_signal != SIGUSR1)
+		return (vars_add(mini -> env_vars, "?", "130"), free_hd(hd), NULL);
+	if (hd -> cmd_args == 0)
+		return (print_hd_lines(lines, hd, mini->env_vars, hd->fd),
+			free_hd(hd), NULL);
+	ps = ft_calloc(2, sizeof(int));
+	fs = ft_calloc(2, sizeof(int));
+	if (pipe(fs) == -1)
+		return (free_hd(hd), ft_lstclear(&lines, free), fs);
+	ps[0] = hd_pr_lines(hd, fs, lines, mini -> env_vars);
+	ft_lstclear(&lines, free);
+	corr_cmd = get_correct_cmd(hd->cmd_args->arr[0], mini);
+	if (corr_cmd)
+		return (apply_redirection(cmds->redir, i), ps[1] = hd_exec_cmd(hd,
+				fs, mini), free(corr_cmd), close(fs[0]), close(fs[1]), ps);
+	else
+		return (ps[1] = hd_exec_cmd(hd, fs, mini),
+			apply_redirection(cmds->redir, i), close(fs[0]), close(fs[1]), ps);
+}
+
+void	here_doc_cmd(char **cmd, t_mini *mini, t_cmd *cmds, int i)
 {
 	t_here_doc	*hd;
-	t_list		*lines;
-	int			f_id[2];
-	int			ps[2];
+	int			*ps;
 
 	hd = parse_heredoc(cmd, mini);
 	if (hd == 0)
 		return ;
-	lines = get_del_lines(hd -> delimiter, mini -> env_vars);
-	if (lines == 0 && g_signal != SIGUSR1)
-		return (vars_add(mini -> env_vars, "?", "130"), free_hd(hd));
-	if (hd -> cmd_args == 0)
-		return (print_lines(lines, hd, mini->env_vars, hd->fd), free_hd(hd));
-	if (pipe(f_id) == -1)
-		return (free_hd(hd), ft_lstclear(&lines, free));
-	ps[0] = hd_pr_lines(hd, f_id, lines, mini -> env_vars);
-	ps[1] = hd_exec_cmd(hd, f_id, mini);
+	ps = pipe_exec(hd, mini, cmds, i);
+	if (ps == 0)
+		return ;
 	if (ps[0] == -1 || ps[1] == -1)
-		return (free_hd(hd), ft_lstclear(&lines, free));
-	return (close(f_id[0]), close(f_id[1]),
-		wait_upex(ps[0], mini->env_vars, hd->cmd_args->arr),
-		wait_upex(ps[1], mini->env_vars, hd->cmd_args->arr),
-		ft_lstclear(&lines, free), free_hd(hd));
+		return (free_hd(hd));
+	return (wait_upex(ps[0], mini->env_vars, NULL),
+		wait_upex(ps[1], mini->env_vars, NULL), free_hd(hd));
 }

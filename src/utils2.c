@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 14:21:27 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/06 22:58:19 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/07 14:05:34 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,8 @@ void	wait_upex(int pid, t_env_vars *vars, char **cmd_args)
 	{
 		exit_status = ft_itoa(WEXITSTATUS(status));
 		if (WEXITSTATUS(status) == 127)
-			printf("%s: command not found\n", cmd_args[0]);
+			if (cmd_args)
+				printf("%s: command not found\n", cmd_args[0]);
 	}
 	else
 		exit_status = ft_itoa(128 + g_signal);

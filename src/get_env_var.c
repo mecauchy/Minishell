@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 17:19:06 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/14 15:05:34 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/07 15:09:08 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,8 +91,7 @@ static	char	*join_name_value(t_env_vars *var)
 	s2 = ft_strdup("=");
 	if (!s1 || !s2)
 		return (free(s1), free(s2), NULL);
-	join = ft_strjoin_free(s1, s2);
-	s1 = join;
+	s1 = ft_strjoin_free(s1, s2);
 	s2 = ft_strdup(var -> value);
 	if (!s1 || !s2)
 		return (free(s1), free(s2), NULL);
@@ -132,10 +131,9 @@ char	**get_envp(t_env_vars *vars)
 		i ++;
 		tmp = tmp -> next;
 	}
-	envp = malloc(sizeof(char *) * (i + 1));
-	if (vars == 0)
+	envp = ft_calloc(i + 2, sizeof(char *));
+	if (!vars || !envp)
 		return (NULL);
-	envp[i] = 0;
 	i = 0;
 	tmp = vars;
 	while (tmp != NULL)

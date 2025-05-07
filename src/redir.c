@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 14:38:43 by mecauchy          #+#    #+#             */
-/*   Updated: 2025/05/07 00:52:06 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/07 14:32:56 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,12 +34,6 @@ void	init_fds(t_data *data)
 	{
 		return ;
 	}
-	// if (data->nb_cmds == 1)
-	// {
-	// 	pipe(data->fd);
-	// }
-	// else
-	// {
 	while (i < data->nb_cmds - 1)
 	{
 		if (pipe(data->fd + i * 2) == -1)
@@ -49,7 +43,6 @@ void	init_fds(t_data *data)
 		}
 		i++;
 	}
-	// }
 }
 
 void	close_fds(t_data *data)
@@ -69,7 +62,8 @@ void	redirect_pipe(t_data *data, int i)
 {
 	if (i == 0)
 	{
-		dup2(data->fd[1], STDOUT_FILENO);
+		if (data -> nb_cmds > 1)
+			dup2(data->fd[1], STDOUT_FILENO);
 	}
 	else if (i == data->nb_cmds - 1)
 	{
