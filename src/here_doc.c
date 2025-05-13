@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 13:57:52 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/07 16:35:15 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/13 18:10:39 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,13 @@ static t_list	*get_del_lines(char *deli, t_env_vars *vars)
 
 	lines = NULL;
 	unquo_del = unquote(deli);
-	ft_putstr_fd("heredoc> ", 1);
+	ft_putstr_fd("heredoc> ", 0);
 	lin = get_next_line(0);
 	while (lin && !(!ft_strncmp(lin, unquo_del, ft_strlen(unquo_del))
 			&& lin[ft_strlen(unquo_del)] == '\n'))
 	{
 		ft_lstadd_back(&lines, ft_lstnew(lin));
-		ft_putstr_fd("> ", 1);
+		ft_putstr_fd("> ", 0);
 		lin = get_next_line(0);
 	}
 	if ((lin == NULL || ft_strncmp(lin, unquo_del, ft_strlen(unquo_del))) != 0
@@ -90,14 +90,14 @@ static int	hd_exec_cmd(t_here_doc *hd, int *f_id, t_mini *mini)
 int	*pipe_exec(t_here_doc *hd, t_mini *mini, t_cmd *cmds, int i)
 {
 	t_list	*lines;
-	char	*corr_cmd;
+	char	*corr;
 	int		*fs;
 	int		*ps;
 
 	lines = get_del_lines(hd -> delimiter, mini -> env_vars);
 	if (lines == 0 && g_signal != SIGUSR1)
 		return (vars_add(mini -> env_vars, "?", "130"), free_hd(hd), NULL);
-	if (hd -> cmd_args == 0)
+	if (hd -> cmd_args -> arr[0] == 0)
 		return (print_hd_lines(lines, hd, mini->env_vars, hd->fd),
 			free_hd(hd), NULL);
 	ps = ft_calloc(2, sizeof(int));
@@ -106,13 +106,12 @@ int	*pipe_exec(t_here_doc *hd, t_mini *mini, t_cmd *cmds, int i)
 		return (free_hd(hd), ft_lstclear(&lines, free), fs);
 	ps[0] = hd_pr_lines(hd, fs, lines, mini -> env_vars);
 	ft_lstclear(&lines, free);
-	corr_cmd = get_correct_cmd(hd->cmd_args->arr[0], mini);
-	if (corr_cmd)
-		return (apply_redirection(cmds->redir, i), ps[1] = hd_exec_cmd(hd,
-				fs, mini), free(corr_cmd), close(fs[0]), close(fs[1]), ps);
-	else
-		return (ps[1] = hd_exec_cmd(hd, fs, mini),
-			apply_redirection(cmds->redir, i), close(fs[0]), close(fs[1]), ps);
+	corr = get_correct_cmd(hd->cmd_args->arr[0], mini);
+	if (corr)
+		return (apply_redirection(cmds->redir, i), ps[1] = hd_exec_cmd(hd, fs,
+				mini), free(corr), close(fs[0]), close(fs[1]), free(fs), ps);
+	return (ps[1] = hd_exec_cmd(hd, fs, mini), apply_redirection(cmds->redir,
+			i), close(fs[0]), close(fs[1]), free(fs), ps);
 }
 
 void	here_doc_cmd(char **cmd, t_mini *mini, t_cmd *cmds, int i)
@@ -128,7 +127,9 @@ void	here_doc_cmd(char **cmd, t_mini *mini, t_cmd *cmds, int i)
 		return ;
 	if (ps[0] == -1 || ps[1] == -1)
 		return (free_hd(hd));
-	return (wait_upex(ps[0], mini->env_vars, NULL, 0),
+	return (
+		wait_upex(ps[0], mini->env_vars, NULL, 0),
 		wait_upex(ps[1], mini->env_vars,
-			ft_split(hd->cmd_args->arr[0], ' '), 1), free_hd(hd));
+			ft_split(hd->cmd_args->arr[0], ' '), 1),
+		free_hd(hd), free(ps));
 }
