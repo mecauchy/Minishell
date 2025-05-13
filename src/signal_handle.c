@@ -6,13 +6,13 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 14:02:48 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/21 14:55:47 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/13 17:03:45 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-void	handle_ctrc_c(int sig)
+void	handle_sigint(int sig)
 {
 	write(2, "\n", 1);
 	rl_replace_line("", 0);
@@ -25,18 +25,35 @@ void	handle_ctrc_c(int sig)
 	g_signal = sig;
 }
 
-struct sigaction	*init_ctrl_c_sig(void)
+void	handle_sigquit(int sig)
 {
-	struct sigaction	*sa;
+	write(2, "Quit (core dumped) \n", 20);
+	rl_replace_line("", 0);
+	rl_on_new_line();
+	g_signal = sig;
+}
+
+struct sigaction	**init_sigs(void)
+{
+	struct sigaction	**sas;
 	int					err;
 
-	sa = ft_calloc(1, sizeof(struct sigaction));
-	if (sa == NULL)
+	sas = ft_calloc(2, sizeof(struct sigaction *));
+	if (!sas)
 		return (NULL);
-	sa -> sa_handler = handle_ctrc_c;
-	sigemptyset(&(sa->sa_mask));
-	err = sigaction(SIGINT, sa, NULL);
+	sas[0] = ft_calloc(1, sizeof(struct sigaction));
+	sas[1] = ft_calloc(1, sizeof(struct sigaction));
+	if (!sas[0] || !sas[1])
+		return (free(sas), NULL);
+	sas[0]->sa_handler = handle_sigint;
+	sigemptyset(&(sas[0]->sa_mask));
+	err = sigaction(SIGINT, sas[0], NULL);
 	if (err < 0)
-		return (NULL);
-	return (sa);
+		return (free(sas), NULL);
+	sas[1]->sa_handler = handle_sigquit;
+	sigemptyset(&(sas[1]->sa_mask));
+	err = sigaction(SIGQUIT, sas[1], NULL);
+	if (err < 0)
+		return (free(sas[0]), free(sas), NULL);
+	return (sas);
 }

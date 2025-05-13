@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:02:17 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/07 17:19:04 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/13 16:25:43 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,7 @@ typedef struct s_env_vars
 
 typedef struct s_mini
 {
-	struct sigaction	*sa;
+	struct sigaction	**sas;
 	t_env_vars			*env_vars;
 	char				**cmds_splitted;
 	int					exit_status;
@@ -158,8 +158,9 @@ char				**get_envp(t_env_vars *vars);
 
 /* SIGNALS */
 
-void				handle_ctrc_c(int sig);
-struct sigaction	*init_ctrl_c_sig(void);
+void				handle_sigint(int sig);
+void				handle_sigquit(int sig);
+struct sigaction	**init_sigs(void);
 
 /* REDIRECTION*/
 

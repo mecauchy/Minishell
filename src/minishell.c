@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:07:38 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/07 15:15:20 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/13 16:47:09 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,8 @@ void	parse_line(char *line, t_mini *mini)
 	full_cmd = split_cmds(line);
 	mini -> cmds_splitted = split_expand(full_cmd, mini->env_vars);
 	free_tab(full_cmd);
+	if (!mini -> cmds_splitted || !mini->cmds_splitted[0][0])
+		return (free_tab(mini->cmds_splitted));
 	multi_cmds(mini);
 	free_tab(mini->cmds_splitted);
 }
@@ -62,14 +64,15 @@ int	main(int argc, char **argv, char **envp)
 
 	if (argv[1])
 		return (argc - argc + 1);
-	signal(SIGQUIT, SIG_IGN);
 	mini = init_mini(envp);
 	if (!mini)
 		return (printf("Malloc error\n"), 1);
 	while (1)
 	{
 		g_signal = 0;
+		signal(SIGQUIT, SIG_IGN);
 		line = readline("minishell> ");
+		signal(SIGQUIT, handle_sigquit);
 		handle_line(mini, line);
 		if (mini -> do_exit)
 			return (rl_clear_history(), exit = mini -> exit_status,

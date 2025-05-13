@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 16:29:47 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/07 16:25:14 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/13 17:03:55 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,9 @@ static int	print_esc_char(char *line, char esc)
 		return (ft_putchar_fd('\v', 1), 1);
 	if (esc == '\\')
 		return (ft_putchar_fd('\\', 1), 1);
-	return (get_char_value(line, esc));
+	if (esc == '0' || esc == 'x' || esc == 'u' || esc == 'U')
+		return (get_char_value(line, esc));
+	return (ft_putchar_fd('\\', 1), 0);
 }
 
 static int	echo_print(char *line)
@@ -84,8 +86,7 @@ static int	echo_print(char *line)
 					break ;
 			if (esc_char[j] && esc_char[j] == 'c')
 				return (0);
-			if (esc_char[j])
-				i += print_esc_char(&line[i + 1], esc_char[j]);
+			i += print_esc_char(&line[i + 1], esc_char[j]);
 		}
 		else
 			ft_putchar_fd(line[i], 1);

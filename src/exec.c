@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 10:51:40 by mcauchy-          #+#    #+#             */
-/*   Updated: 2025/05/07 17:11:51 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/13 16:18:48 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ static void	exec_child(t_cmd *cmds, t_data *data, t_mini *m, int i)
 	char	*corr_cmd;
 	char	**env;
 
+	signal(SIGQUIT, SIG_DFL);
 	redirect_pipe(data, i);
 	if (!cmds->args[i]->arr[0])
 		exit(0);

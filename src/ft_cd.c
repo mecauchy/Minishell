@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 18:44:33 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/15 17:55:41 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/13 16:43:10 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ static char	*parse_path(char *path, t_env_vars *vars)
 	char	*res;
 	char	*corr_path;
 
-	if (ft_strncmp(path, "~", 2) == 0)
+	if (ft_strncmp(path, "~", 2) == 0 || ft_strncmp(path, "~/", 2) == 0)
 		corr_path = ft_strdup(get_var_value(vars, "HOME"));
 	else if (ft_strncmp(path, "-", 2) == 0)
 	{
