@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 17:19:06 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/07 15:09:08 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/14 12:45:42 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,13 @@ static char	*get_name_var(char *line)
 {
 	int	i;
 
+	if (line[1] == '?')
+		return (ft_strdup("?"));
 	i = 0;
 	while (line[++i])
 	{
-		if (line[i] == '\'' || line[i] == '"')
+		if (line[i] == '\'' || line[i] == '"'
+			|| line[i] == ' ' || line[i] == '\t')
 			break ;
 	}
 	if (!line[i])
@@ -72,6 +75,9 @@ char	*get_env_var(char *line, t_env_vars *vars)
 
 	if (!line)
 		return (NULL);
+	if (!line[1] || line[1] == ' ' || line[1] == '\t'
+		|| line[1] == '"' || line[1] == '\'')
+		return (ft_strdup("$"));
 	var_name = get_name_var(line);
 	if (!var_name || !var_name[0])
 		return (free(var_name), ft_strdup(""));

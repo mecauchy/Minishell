@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/02 16:38:13 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/07 00:45:41 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/14 12:20:30 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,7 +109,8 @@ t_cmd	*get_cmds(char **av)
 	while (av[i] && cmds)
 	{
 		if (ft_strncmp(av[i], "<<", 3) != 0
-			&& (av[i][0] == '<' || av[i][0] == '>'))
+			&& (!ft_strncmp(av[i], "<", 2) || !ft_strncmp(av[i], ">>", 3)
+				|| !ft_strncmp(av[i], ">", 2)))
 		{
 			cmds->redir[cmd_i][r_i]->type = ft_strdup(av[i++]);
 			cmds->redir[cmd_i][r_i++]->file = ft_strdup(av[i++]);

@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 17:06:45 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/21 18:50:56 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/14 12:51:23 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,9 +41,14 @@ static char	*get_dquote(char *line, t_env_vars *vars)
 		joined = ft_strjoin_free(joined, ft_substr(line, start, i - start));
 		if (!line[i] || line[i] == '"')
 			return (joined);
-		else
-			joined = ft_strjoin_free(joined, get_env_var(&line[i], vars));
-		while (line[i] && line[i] != '\'')
+		joined = ft_strjoin_free(joined, get_env_var(&line[i], vars));
+		if (line[i + 1] && line[i + 1] == '?')
+		{
+			i += 2;
+			continue ;
+		}
+		while (line[i] && line[i] != ' ' && line[i] != '\t'
+			&& line[i] != '"' && line[i] != '\'')
 			i ++;
 	}
 	return (joined);
