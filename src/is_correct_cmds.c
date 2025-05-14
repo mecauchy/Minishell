@@ -6,11 +6,28 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 23:10:02 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/07 00:41:58 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/14 12:53:03 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
+
+int	skip_quote(char *line, int i)
+{
+	char	c;
+
+	while (line[i] && (line[i] != '>' && line[i] != '<' && line[i] != '|'
+			&& line[i] != '"' && line[i] != '\''))
+		i ++;
+	if (line[i] == '\'' || line[i] == '"')
+	{
+		c = line[i];
+		while (line[++i])
+			if (line[i] == c)
+				return (i + 1);
+	}
+	return (i);
+}
 
 static int	correct_redir(char *line)
 {
@@ -46,12 +63,11 @@ int	is_correct_cmds(char *line)
 	int		i;
 	int		st;
 
-	i = 0;
-	while (line[i])
+	i = -1;
+	while (line[++i])
 	{
 		st = i;
-		while (line[i] && (line[i] != '>' && line[i] != '<' && line[i] != '|'))
-			i ++;
+		i = skip_quote(line, i);
 		if (!line[i])
 			return (!is_all_space(&line[st]));
 		if (line[i] == '>' || line[i] == '<')
@@ -65,7 +81,6 @@ int	is_correct_cmds(char *line)
 		if (line[i] == '|')
 			if (!line[i + 1])
 				return (0);
-		i ++;
 	}
 	return (1);
 }

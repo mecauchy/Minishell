@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 15:05:16 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/14 11:34:30 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/14 12:53:15 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ static int	join_word(char *cmd, int start, char **joined, t_env_vars *vars)
 	i = start;
 	if (cmd[i] == '\'' || cmd[i] == '"')
 	{
-		*joined = ft_strjoin_free(*joined, get_quote(&cmd[i - 1], vars));
+		*joined = ft_strjoin_free(*joined, get_quote(&cmd[i], vars));
 		c = cmd[i ++];
 		while (cmd[i] && cmd[i] != c)
 			i ++;
@@ -42,7 +42,10 @@ static int	join_word(char *cmd, int start, char **joined, t_env_vars *vars)
 	else
 	{
 		*joined = ft_strjoin_free(*joined, get_env_var(&cmd[i], vars));
-		while (cmd[i] && (cmd[i] != '\'' && cmd[i] != '"'))
+		if (cmd[i + 1] && cmd[i + 1] == '?')
+			return (i + 2);
+		while (cmd[i] && (cmd[i] != '\'' && cmd[i] != '"'
+				&& cmd[i] != ' ' && cmd[i] != '\t'))
 			i ++;
 	}
 	return (i);
@@ -97,12 +100,6 @@ char	*expand(char *cmd, t_env_vars *vars)
 	{
 		st = i;
 		while (cmd[i] && (cmd[i] != '\'' && cmd[i] != '"' && cmd[i] != '$'))
-			i ++;
-		if (!cmd[i])
-			return (ft_strjoin_free(joined, ft_substr(cmd, st, i - st)));
-		if (cmd[i] == '$' && !cmd[i + 1])
-			return (free(joined), ft_strdup("$"));
-		if (cmd[i + 1] && cmd[i + 1] == '"')
 			i ++;
 		if (!cmd[i])
 			return (ft_strjoin_free(joined, ft_substr(cmd, st, i - st)));
