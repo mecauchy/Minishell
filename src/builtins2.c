@@ -6,11 +6,19 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 18:11:02 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/14 11:21:02 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/14 17:49:19 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
+
+void	print_env(char *name, char *value)
+{
+	write(1, name, ft_strlen(name));
+	write(1, "=", 1);
+	write(1, value, ft_strlen(value));
+	write(1, "\n", 1);
+}
 
 static int	ft_export_one(char *arg, t_env_vars *vars)
 {
@@ -27,9 +35,10 @@ static int	ft_export_one(char *arg, t_env_vars *vars)
 		return (free(name), free(value), 0);
 	if (ft_is_identifier(name))
 		return (vars_add(vars, name, value), free(name), free(value), 1);
-	return (write(2, "export: not an identifier: ", 27),
-		write(2, name, ft_strlen(name)), write(2, "\n", 1),
-		free(name), free(value), 0);
+	write(2, "bash: export: ", 14);
+	write(2, arg, ft_strlen(arg));
+	write(2, ": not a valid identifier\n", 25);
+	return (free(name), free(value), 0);
 }
 
 void	ft_export(char **args, t_env_vars *vars)
@@ -48,7 +57,7 @@ void	ft_export(char **args, t_env_vars *vars)
 		vars_add(vars, "?", "0");
 }
 
-int	exit_too_many_args(char **cmd_args, t_mini *mini)
+void	exit_too_many_args(char **cmd_args, t_mini *mini)
 {
 	int		i;
 	char	*cmds[2];
@@ -61,9 +70,9 @@ int	exit_too_many_args(char **cmd_args, t_mini *mini)
 		write(2, "bash: exit: too many arguments\n", 31);
 		cmds[0] = "exit";
 		cmds[1] = "1";
-		return (ft_exit(cmds, mini), 1);
+		return (ft_exit(cmds, mini));
 	}
-	return (ft_exit(cmd_args, mini), 1);
+	return (ft_exit(cmd_args, mini));
 }
 
 int	is_builtin(char *cmd, char **cmd_args, t_mini *mini)
@@ -78,10 +87,10 @@ int	is_builtin(char *cmd, char **cmd_args, t_mini *mini)
 		return (ft_export(cmd_args, mini -> env_vars), 1);
 	else if (ft_strncmp(cmd, "unset", 6) == 0)
 		return (ft_unset(cmd_args, mini -> env_vars), 1);
-	else if (ft_strncmp(cmd, "exit", 5) == 0)
-		return (exit_too_many_args(cmd_args, mini));
 	else if (ft_strncmp(cmd, "echo", 5) == 0)
 		return (ft_echo(cmd_args, mini -> env_vars), 1);
+	else if (ft_strncmp(cmd, "exit", 5) == 0)
+		return (1);
 	else if (ft_strncmp(cmd, "cd", 3) == 0)
 	{
 		i = 0;

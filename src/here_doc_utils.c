@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 13:19:49 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/07 15:01:54 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/14 17:48:45 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	free_hd(t_here_doc *hd)
 	free(hd);
 }
 
-void	print_hd_lines(t_list *lines, t_here_doc *hd, t_env_vars *vars, int fd)
+void	print_hd_lines(t_list *lines, t_here_doc *hd, t_env_vars *vars)
 {
 	t_list	*tmp;
 	char	*line;
@@ -42,7 +42,7 @@ void	print_hd_lines(t_list *lines, t_here_doc *hd, t_env_vars *vars, int fd)
 		}
 		else
 			line = ft_strdup((char *)(tmp -> content));
-		write(fd, line, ft_strlen(line));
+		write(0, line, ft_strlen(line));
 		free(line);
 		tmp = tmp -> next;
 	}

@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 13:57:52 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/13 18:10:39 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/14 17:52:19 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ static int	hd_pr_lines(t_here_doc *hd, int *f_id, t_list *lines,
 	{
 		dup2(f_id[1], 1);
 		close(f_id[0]);
-		print_hd_lines(lines, hd, vars, f_id[1]);
+		print_hd_lines(lines, hd, vars);
 		close(f_id[1]);
 		return (exit(0), 0);
 	}
@@ -98,7 +98,7 @@ int	*pipe_exec(t_here_doc *hd, t_mini *mini, t_cmd *cmds, int i)
 	if (lines == 0 && g_signal != SIGUSR1)
 		return (vars_add(mini -> env_vars, "?", "130"), free_hd(hd), NULL);
 	if (hd -> cmd_args -> arr[0] == 0)
-		return (print_hd_lines(lines, hd, mini->env_vars, hd->fd),
+		return (print_hd_lines(lines, hd, mini->env_vars),
 			free_hd(hd), NULL);
 	ps = ft_calloc(2, sizeof(int));
 	fs = ft_calloc(2, sizeof(int));
@@ -107,6 +107,8 @@ int	*pipe_exec(t_here_doc *hd, t_mini *mini, t_cmd *cmds, int i)
 	ps[0] = hd_pr_lines(hd, fs, lines, mini -> env_vars);
 	ft_lstclear(&lines, free);
 	corr = get_correct_cmd(hd->cmd_args->arr[0], mini);
+	if (!ft_strncmp(corr, "exit", 5))
+		exit_too_many_args(hd->cmd_args->arr, mini);
 	if (corr)
 		return (apply_redirection(cmds->redir, i), ps[1] = hd_exec_cmd(hd, fs,
 				mini), free(corr), close(fs[0]), close(fs[1]), free(fs), ps);

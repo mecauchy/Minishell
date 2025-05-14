@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:07:38 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/14 12:20:52 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/14 17:37:12 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,12 @@ void	parse_line(char *line, t_mini *mini)
 	char	**full_cmd;
 
 	if (!is_correct_cmds(line))
-		return (printf("bash: syntax error\n"),
+		return (write(2, "bash: syntax error\n", 19),
 			vars_add(mini->env_vars, "?", "2"), (void)line);
 	full_cmd = split_cmds(line);
 	mini -> cmds_splitted = split_expand(full_cmd, mini->env_vars);
 	free_tab(full_cmd);
-	if (!mini -> cmds_splitted || !mini->cmds_splitted[0][0])
+	if (!mini -> cmds_splitted || !mini -> cmds_splitted[0])
 		return (free_tab(mini->cmds_splitted));
 	multi_cmds(mini);
 	free_tab(mini->cmds_splitted);

@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 23:10:02 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/14 12:53:03 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/14 17:21:00 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ int	is_correct_cmds(char *line)
 		if (!line[i])
 			return (1);
 		if (line[i] == '|')
-			if (!line[i + 1])
+			if (!line[i + 1] || i == 0)
 				return (0);
 	}
 	return (1);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:02:17 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/14 11:43:42 by mcauchy-         ###   ########.fr       */
+/*   Updated: 2025/05/14 17:53:25 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ delimited by end-of-file (wanted `%s')\n"
 # include <bits/types/siginfo_t.h>
 # include <sys/wait.h>
 # include <fcntl.h>
+# include <sys/stat.h>
 
 extern int	g_signal;
 
@@ -179,9 +180,11 @@ void				redirection_right(t_redir ***redir, int i, int r_i);
 
 void				ft_pwd(t_env_vars *vars);
 void				ft_env(t_env_vars *vars);
+void				print_env(char *name, char *value);
 void				ft_export(char **args, t_env_vars *vars);
 void				ft_unset(char **args, t_env_vars *vars);
 void				ft_exit(char **n, t_mini *mini);
+void				exit_too_many_args(char **cmd_args, t_mini *mini);
 int					octal_to_dec(char *octal);
 int					hex_to_dec(char *nb);
 void				ft_echo(char **args, t_env_vars *vars);
@@ -192,7 +195,7 @@ int					is_builtin(char *cmd, char **cmd_args, t_mini *mini);
 
 void				free_hd(t_here_doc *hd);
 void				print_hd_lines(t_list *lines, t_here_doc *hd,
-						t_env_vars *vars, int fd);
+						t_env_vars *vars);
 t_here_doc			*parse_heredoc(char **cmd, t_mini *mini);
 void				here_doc_cmd(char **cmd, t_mini *mini, t_cmd *cmds, int i);
 

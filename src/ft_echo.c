@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 16:29:47 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/14 12:52:48 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/14 17:51:49 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ static int	get_char_value(char *line, char esc)
 		while (i < 3 && line[i + 1]
 			&& (line[i + 1] >= '0' && line[i + 1] <= '8'))
 			i ++;
-		ft_putchar_fd(octal_to_dec(ft_substr(line, 1, i)), 0);
+		ft_putchar_fd(octal_to_dec(ft_substr(line, 1, i)), 1);
 		return (i + 1);
 	}
 	stop = 8;
@@ -35,35 +35,35 @@ static int	get_char_value(char *line, char esc)
 		&& ((line[i + 1] >= 'A' && line[i + 1] <= 'F')
 			|| (line[i + 1] >= '0' && line[i + 1] <= '9')))
 		i ++;
-	ft_putchar_fd(hex_to_dec(ft_substr(line, 1, i)), 0);
+	ft_putchar_fd(hex_to_dec(ft_substr(line, 1, i)), 1);
 	return (i + 1);
 }
 
 static int	print_esc_char(char *line, char esc)
 {
 	if (esc == 'a')
-		return (ft_putchar_fd('\a', 1), 0);
+		return (ft_putchar_fd('\a', 1), 1);
 	if (esc == 'b')
-		return (ft_putchar_fd('\b', 1), 0);
+		return (ft_putchar_fd('\b', 1), 1);
 	if (esc == 'e')
-		return (ft_putchar_fd('\e', 1), 0);
+		return (ft_putchar_fd('\e', 1), 1);
 	if (esc == 'E')
-		return (ft_putchar_fd('\E', 1), 0);
+		return (ft_putchar_fd('\E', 1), 1);
 	if (esc == 'f')
-		return (ft_putchar_fd('\f', 1), 0);
+		return (ft_putchar_fd('\f', 1), 1);
 	if (esc == 'n')
-		return (ft_putchar_fd('\n', 1), 0);
+		return (ft_putchar_fd('\n', 1), 1);
 	if (esc == 'r')
-		return (ft_putchar_fd('\r', 1), 0);
+		return (ft_putchar_fd('\r', 1), 1);
 	if (esc == 't')
-		return (ft_putchar_fd('\t', 1), 0);
+		return (ft_putchar_fd('\t', 1), 1);
 	if (esc == 'v')
-		return (ft_putchar_fd('\v', 1), 0);
+		return (ft_putchar_fd('\v', 1), 1);
 	if (esc == '\\')
-		return (ft_putchar_fd('\\', 1), 0);
+		return (ft_putchar_fd('\\', 1), 1);
 	if (esc == '0' || esc == 'x' || esc == 'u' || esc == 'U')
 		return (get_char_value(line, esc));
-	return (ft_putchar_fd('\\', 1), 0);
+	return (ft_putchar_fd('\\', 1), 1);
 }
 
 static int	echo_print(char *line)
@@ -89,7 +89,7 @@ static int	echo_print(char *line)
 			i += print_esc_char(&line[i + 1], esc_char[j]);
 		}
 		else
-			ft_putchar_fd(line[i], 0);
+			ft_putchar_fd(line[i], 1);
 	}
 	return (1);
 }
@@ -110,12 +110,12 @@ static int	echo_ch(char **args)
 	{
 		if (!echo_print(args[i]))
 			return (0);
-		ft_putchar_fd(' ', 0);
+		ft_putchar_fd(' ', 1);
 	}
 	if (!echo_print(args[i]))
 		return (0);
 	if (ft_strncmp(args[1], "-n", 3))
-		ft_putchar_fd('\n', 0);
+		ft_putchar_fd('\n', 1);
 	return (0);
 }
 

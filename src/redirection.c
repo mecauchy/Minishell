@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirection.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 13:27:33 by mcauchy-          #+#    #+#             */
-/*   Updated: 2025/05/14 11:42:43 by mcauchy-         ###   ########.fr       */
+/*   Updated: 2025/05/14 14:28:59 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ void	apply_redirection(t_redir ***redir, int i)
 void	redirection_right_right(t_redir ***redir, int i, int r_i)
 {
 	int	fd;
-	
+
 	fd = open(redir[i][r_i]->file, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	if (fd == -1)
 		return (perror("Minishell : open"), exit(EXIT_FAILURE));
@@ -54,7 +54,7 @@ void	redirection_right_right(t_redir ***redir, int i, int r_i)
 void	redirection_right(t_redir ***redir, int i, int r_i)
 {
 	int	fd1;
-	
+
 	fd1 = open(redir[i][r_i]->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd1 == -1)
 		return (perror("Minishell : open"), exit(EXIT_FAILURE));

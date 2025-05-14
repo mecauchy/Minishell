@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 12:42:21 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/07 01:07:47 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/14 14:34:42 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,12 +52,20 @@ char	*get_correct_cmd(char *cmd, t_mini *mini)
 {
 	if (!cmd)
 		return (NULL);
-	if (ft_strncmp(cmd, "export", 7) == 0)
-		return (ft_strdup("export"));
-	if (ft_strncmp(cmd, "exit", 5) == 0)
-		return (ft_strdup("exit"));
+	if (ft_strncmp(cmd, "echo", 5) == 0)
+		return (ft_strdup("echo"));
 	if (ft_strncmp(cmd, "cd", 3) == 0)
 		return (ft_strdup("cd"));
+	if (ft_strncmp(cmd, "pwd", 4) == 0)
+		return (ft_strdup("pwd"));
+	if (ft_strncmp(cmd, "export", 7) == 0)
+		return (ft_strdup("export"));
+	if (ft_strncmp(cmd, "unset", 6) == 0)
+		return (ft_strdup("unset"));
+	if (ft_strncmp(cmd, "env", 4) == 0)
+		return (ft_strdup("env"));
+	if (ft_strncmp(cmd, "exit", 5) == 0)
+		return (ft_strdup("exit"));
 	if (cmd && cmd[0] && (cmd[0] == '/' || cmd[0] == '.'))
 		return (get_correct_cmd_absol(cmd));
 	return (get_correct_cmd_rela(cmd, mini));

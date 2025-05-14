@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/02 16:38:13 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/14 12:20:30 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/14 17:38:37 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,9 +41,10 @@ static	void	init_redirs(t_cmd *cmd, char **av)
 	while (av[++i])
 	{
 		if (ft_strncmp(av[i], "<<", 3) != 0
-			&& (av[i][0] == '>' || av[i][0] == '<'))
+			&& (!ft_strncmp(av[i], ">", 2) || !ft_strncmp(av[i], "<", 2)
+				|| !ft_strncmp(av[i], ">>", 3)))
 			nb_redir ++;
-		if (av[i][0] == '|')
+		if (!ft_strncmp(av[i], "|", 2))
 		{
 			init_redir(cmd, nb_cmd, nb_redir);
 			nb_cmd ++;
@@ -83,12 +84,18 @@ static void	parse_add(t_cmd *cmds, char **av, int *i, int *nb_cmd)
 	{
 		*nb_cmd += 1;
 		*i += 1;
+		return ;
 	}
 	if (av[*i])
 	{
-		cmds->args[*nb_cmd]->arr = append(cmds->args[*nb_cmd]->arr,
-				&cmds->args[*nb_cmd]->tot_len,
-				&cmds->args[*nb_cmd]->arr_i, ft_strdup(av[*i]));
+		if (!ft_strncmp(av[*i], "c|", 3))
+			cmds->args[*nb_cmd]->arr = append(cmds->args[*nb_cmd]->arr,
+					&cmds->args[*nb_cmd]->tot_len,
+					&cmds->args[*nb_cmd]->arr_i, ft_strdup("|"));
+		else
+			cmds->args[*nb_cmd]->arr = append(cmds->args[*nb_cmd]->arr,
+					&cmds->args[*nb_cmd]->tot_len,
+					&cmds->args[*nb_cmd]->arr_i, ft_strdup(av[*i]));
 		if (cmds->args[*nb_cmd]->arr == 0)
 			return (free_cmds(cmds));
 		*i += 1;
@@ -108,16 +115,15 @@ t_cmd	*get_cmds(char **av)
 	r_i = 0;
 	while (av[i] && cmds)
 	{
-		if (ft_strncmp(av[i], "<<", 3) != 0
-			&& (!ft_strncmp(av[i], "<", 2) || !ft_strncmp(av[i], ">>", 3)
-				|| !ft_strncmp(av[i], ">", 2)))
+		while (ft_strncmp(av[i], "<<", 3) && (!ft_strncmp(av[i], "<", 2)
+				|| !ft_strncmp(av[i], ">>", 3) || !ft_strncmp(av[i], ">", 2)))
 		{
 			cmds->redir[cmd_i][r_i]->type = ft_strdup(av[i++]);
 			cmds->redir[cmd_i][r_i++]->file = ft_strdup(av[i++]);
 			if (!cmds->redir[cmd_i][r_i - 1] || !cmds->redir[cmd_i][r_i - 1])
 				return (free_cmds(cmds), NULL);
 		}
-		if (av[i] && av[i][0] == '|')
+		if (av[i] && !ft_strncmp(av[i], "|", 2))
 			r_i = 0;
 		parse_add(cmds, av, &i, &cmd_i);
 	}

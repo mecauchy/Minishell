@@ -6,11 +6,12 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 12:42:54 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/07 00:42:39 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/14 17:38:49 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
+#include <readline/rltypedefs.h>
 
 static int	end_word(char *line, char ***sp, int *len_tot, int *sp_i)
 {
@@ -112,30 +113,32 @@ char	**split_cmds(char *line)
 	return (sp);
 }
 
-static void	add_expanded(char **splited_cmds, char **split_expanded,
+static void	add_expanded(char **sp_cmds, t_array *sp_exp,
 		t_env_vars *vars, int *i)
 {
-	if (!ft_strncmp(splited_cmds[*i], "<<", 3))
+	char	*expa;
+
+	if (!ft_strncmp(sp_cmds[*i], "<<", 3))
 	{
-		split_expanded[*i] = ft_strdup(splited_cmds[*i]);
+		sp_exp->arr = append(sp_exp->arr, &sp_exp->tot_len,
+				&sp_exp->arr_i, ft_strdup(sp_cmds[*i]));
+		sp_exp->arr = append(sp_exp->arr, &sp_exp->tot_len,
+				&sp_exp->arr_i, ft_strdup(sp_cmds[*i + 1]));
 		*i += 1;
-		split_expanded[*i] = ft_strdup(splited_cmds[*i]);
-		if (!split_expanded[*i] || !split_expanded[*i - 1])
-		{
-			free(split_expanded[*i]);
-			free(split_expanded[*i - 1]);
-			free_tab(split_expanded);
-			return ;
-		}
 		return ;
 	}
-	split_expanded[*i] = expand(splited_cmds[*i], vars);
-	if (!split_expanded[*i])
+	expa = expand(sp_cmds[*i], vars);
+	if (!ft_strncmp(expa, "|", 2) && ft_strncmp(sp_cmds[*i], "|", 2))
 	{
-		while (*i >= 0)
-			free(split_expanded[*i]);
-		return (free(split_expanded));
+		sp_exp->arr = append(sp_exp->arr, &sp_exp->tot_len,
+				&sp_exp->arr_i, ft_strdup("c|"));
+		free(expa);
 	}
+	else if (ft_strncmp(expa, "", 1))
+		sp_exp->arr = append(sp_exp->arr, &sp_exp->tot_len,
+				&sp_exp->arr_i, expa);
+	else
+		free(expa);
 	return ;
 }
 
@@ -166,21 +169,21 @@ Valeurs de retour :
 */
 char	**split_expand(char	**splited_cmds, t_env_vars *vars)
 {
-	char	**split_expanded;
+	t_array	*split_expanded;
+	char	**res;
 	int		i;
 
-	i = 0;
-	while (splited_cmds[i])
-		i ++;
-	split_expanded = ft_calloc(i + 1, (sizeof(char *)));
+	split_expanded = init_array();
 	if (split_expanded == 0)
 		return (0);
 	i = -1;
 	while (splited_cmds[++i])
 	{
 		add_expanded(splited_cmds, split_expanded, vars, &i);
-		if (split_expanded == 0)
-			return (NULL);
+		if (split_expanded->arr == 0)
+			return (free(split_expanded), NULL);
 	}
-	return (split_expanded);
+	res = split_expanded -> arr;
+	free(split_expanded);
+	return (res);
 }

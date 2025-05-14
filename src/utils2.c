@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 14:21:27 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/13 17:01:37 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/14 15:56:39 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,45 +25,6 @@ int	ft_is_identifier(char *name)
 		if (!ft_isalnum(name[i]) && name[i] != '_')
 			return (0);
 	return (1);
-}
-
-/* wait_upex manuel
-
-wait and update exit selon la valeur de retour du processus
--> si il y a eu une erreur echo $? pour voir la valeur de sortie
-
-Arguments : 
-	- pid : l'id du process dont on veut wait
-	- vars : les variables d'environnement
-*/
-
-void	wait_upex(int pid, t_env_vars *vars, char **cmd_args, int do_free)
-{
-	int		status;
-	char	*exit_status;
-
-	g_signal = SIGUSR1;
-	waitpid(pid, &status, 0);
-	if (g_signal == SIGINT)
-		exit_status = ft_itoa(128 + g_signal);
-	else if (WIFEXITED(status))
-	{
-		exit_status = ft_itoa(WEXITSTATUS(status));
-		if (WEXITSTATUS(status) == 127)
-			if (cmd_args)
-				printf("%s: command not found\n", cmd_args[0]);
-	}
-	else
-	{
-		exit_status = ft_itoa(128 + g_signal);
-		if (g_signal == SIGUSR1)
-			exit_status = ft_itoa(128 + 3);
-	}
-	if (cmd_args)
-		vars_add(vars, "_", cmd_args[0]);
-	if (do_free)
-		free_tab(cmd_args);
-	return (vars_add(vars, "?", exit_status), free(exit_status));
 }
 
 char	*get_last_arg(char **cmd_arg, t_env_vars *vars)
