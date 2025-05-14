@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirection.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 13:27:33 by mcauchy-          #+#    #+#             */
-/*   Updated: 2025/05/06 22:57:59 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/14 11:42:43 by mcauchy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,59 +32,32 @@ void	apply_redirection(t_redir ***redir, int i)
 		}
 		if (redir[i][r_i]->type[0] == '>')
 		{
-			fd = open(redir[i][r_i]->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-			if (fd == -1)
-				return (perror("Minishell : open"), exit(EXIT_FAILURE));
-			dup2(fd, STDOUT_FILENO);
-			close(fd);
+			if (redir[i][r_i]->type[1] == '>')
+				redirection_right_right(redir, i, r_i);
+			else
+				redirection_right(redir, i, r_i);
 		}
 	}
 }
 
-// void	redirection_right_right(t_redir *current)
-// {
-// 	int	fd;
-// 	fd = open(current->file, O_WRONLY | O_CREAT | O_APPEND, 0644);
-// 	if (fd == -1)
-// 	{
-// 		perror("Minishell : open");
-// 		exit(EXIT_FAILURE);
-// 	}
-// 	else
-// 	{
-// 		dup2(fd, STDOUT_FILENO);
-// 		close(fd);
-// 	}
-// }
+void	redirection_right_right(t_redir ***redir, int i, int r_i)
+{
+	int	fd;
+	
+	fd = open(redir[i][r_i]->file, O_WRONLY | O_CREAT | O_APPEND, 0644);
+	if (fd == -1)
+		return (perror("Minishell : open"), exit(EXIT_FAILURE));
+	dup2(fd, STDOUT_FILENO);
+	close(fd);
+}
 
-// void	redirection_right(t_redir *redir)
-// {
-// 	int	fd;
-
-// 	fd = open(redir->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-// 	if (fd == -1)
-// 	{perror("Minishell : open");
-// 		exit(EXIT_FAILURE);
-// 	}
-// 	else
-// 	{
-// 		dup2(fd, STDOUT_FILENO);
-// 		close(fd);
-// 	}
-// }
-
-// void	redirection_left(t_redir *current)
-// {
-// 	int	fd;
-// 	fd = open(current->file, O_RDONLY);
-// 	if (fd == -1)
-// 	{
-// 		perror("Minishell : open");
-// 		exit(EXIT_FAILURE);
-// 	}
-// 	else
-// 	{
-// 		dup2(fd, STDIN_FILENO);
-// 		close(fd);
-// 	}
-// }
+void	redirection_right(t_redir ***redir, int i, int r_i)
+{
+	int	fd1;
+	
+	fd1 = open(redir[i][r_i]->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (fd1 == -1)
+		return (perror("Minishell : open"), exit(EXIT_FAILURE));
+	dup2(fd1, STDOUT_FILENO);
+	close(fd1);
+}

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: mcauchy- <mcauchy-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:02:17 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/14 11:05:39 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/14 11:43:42 by mcauchy-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 # define REDIR_IN	"<"
 # define REDIR_OUT	">"
 # define HEREDOC	"<<"
-# define O_APPEND	">>"
+# define APPEND	">>"
 
 # define HD_ERROR_MESSAGE "\nbash: warning: here-document \
 delimited by end-of-file (wanted `%s')\n"
@@ -172,6 +172,8 @@ void				init_fds(t_data *data);
 int					is_redir(char *cmd);
 int					len_without_redir(char **cmd);
 char				**clean_without_redir(char **cmd);
+void				redirection_right_right(t_redir ***redir, int i, int r_i);
+void				redirection_right(t_redir ***redir, int i, int r_i);
 
 /* BUILTINS */
 
