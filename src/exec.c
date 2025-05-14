@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 10:51:40 by mcauchy-          #+#    #+#             */
-/*   Updated: 2025/05/13 16:18:48 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/14 11:00:06 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ static void	exec_child(t_cmd *cmds, t_data *data, t_mini *m, int i)
 		free(cmds->args[i]->arr[0]);
 		cmds->args[i]->arr[0] = corr_cmd;
 	}
-	printf("Child executing command: %s\n", cmds->args[i]->arr[0]);
+	// printf("Child executing command: %s\n", cmds->args[i]->arr[0]);
 	vars_add(m -> env_vars, "_", cmds->args[i]->arr[0]);
 	return (env = get_envp(m->env_vars), execve(cmds->args[i]->arr[0],
 			cmds->args[i]->arr, env), free_tab(env), exit(127));
@@ -108,7 +108,7 @@ int	multi_cmds(t_mini *mini)
 
 	data = malloc(sizeof(t_data));
 	data -> nb_cmds = nb_cmd(mini->cmds_splitted);
-	printf("nb comand is = %d\n", data->nb_cmds);
+	// printf("nb comand is = %d\n", data->nb_cmds);
 	data->pid = malloc(sizeof(int) * data->nb_cmds);
 	if (!data->pid)
 	{
@@ -121,7 +121,7 @@ int	multi_cmds(t_mini *mini)
 	cmd = get_cmds(mini->cmds_splitted);
 	if (!cmd)
 		return (0);
-	print_cmds(cmd, mini);
+	// print_cmds(cmd, mini);
 	exec_multi_cmd(&data, cmd, mini);
 	free_cmds(cmd);
 	free(data -> pid);

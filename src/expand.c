@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 15:05:16 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/13 16:02:33 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/14 11:34:30 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ static int	join_word(char *cmd, int start, char **joined, t_env_vars *vars)
 	i = start;
 	if (cmd[i] == '\'' || cmd[i] == '"')
 	{
-		*joined = ft_strjoin_free(*joined, get_quote(&cmd[i], vars));
+		*joined = ft_strjoin_free(*joined, get_quote(&cmd[i - 1], vars));
 		c = cmd[i ++];
 		while (cmd[i] && cmd[i] != c)
 			i ++;

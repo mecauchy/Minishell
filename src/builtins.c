@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 12:29:00 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/07 16:24:48 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/14 11:21:44 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,8 +118,9 @@ void	ft_exit(char **n, t_mini *mini)
 	res = ft_atoll(exit);
 	if (!check_isll(exit, i) || exit[i + j]
 		|| res > LLONG_MAX || res < LLONG_MIN)
-		return (printf("bash: exit: %s: numeric argument requiered\n",
-				exit), mini -> exit_status = 2, mini -> do_exit = 1, (void)n);
+		return (write(2, "bash: exit: ", 12), write(2, exit, ft_strlen(exit)),
+			write(2, ": numeric argument required\n", 28),
+			mini -> exit_status = 2, mini -> do_exit = 1, (void)n);
 	mini -> exit_status = res;
 	mini -> do_exit = 1;
 }

@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 18:11:02 by vluo              #+#    #+#             */
-/*   Updated: 2025/04/14 16:49:10 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/14 11:21:02 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,8 @@ static int	ft_export_one(char *arg, t_env_vars *vars)
 		return (free(name), free(value), 0);
 	if (ft_is_identifier(name))
 		return (vars_add(vars, name, value), free(name), free(value), 1);
-	return (printf("export: not an identifier: %s\n", name),
+	return (write(2, "export: not an identifier: ", 27),
+		write(2, name, ft_strlen(name)), write(2, "\n", 1),
 		free(name), free(value), 0);
 }
 
@@ -47,8 +48,28 @@ void	ft_export(char **args, t_env_vars *vars)
 		vars_add(vars, "?", "0");
 }
 
+int	exit_too_many_args(char **cmd_args, t_mini *mini)
+{
+	int		i;
+	char	*cmds[2];
+
+	i = 0;
+	while (cmd_args[i] && i < 4)
+		i ++;
+	if (i >= 3)
+	{
+		write(2, "bash: exit: too many arguments\n", 31);
+		cmds[0] = "exit";
+		cmds[1] = "1";
+		return (ft_exit(cmds, mini), 1);
+	}
+	return (ft_exit(cmd_args, mini), 1);
+}
+
 int	is_builtin(char *cmd, char **cmd_args, t_mini *mini)
 {
+	int	i;
+
 	if (ft_strncmp(cmd, "pwd", 4) == 0)
 		return (ft_pwd(mini -> env_vars), 1);
 	else if (ft_strncmp(cmd, "env", 4) == 0)
@@ -58,10 +79,18 @@ int	is_builtin(char *cmd, char **cmd_args, t_mini *mini)
 	else if (ft_strncmp(cmd, "unset", 6) == 0)
 		return (ft_unset(cmd_args, mini -> env_vars), 1);
 	else if (ft_strncmp(cmd, "exit", 5) == 0)
-		return (ft_exit(cmd_args, mini), 1);
+		return (exit_too_many_args(cmd_args, mini));
 	else if (ft_strncmp(cmd, "echo", 5) == 0)
 		return (ft_echo(cmd_args, mini -> env_vars), 1);
 	else if (ft_strncmp(cmd, "cd", 3) == 0)
+	{
+		i = 0;
+		while (cmd_args[i] && i < 4)
+			i ++;
+		if (i >= 3)
+			return (write(2, "bash: cd: too many arguments\n", 29),
+				vars_add(mini->env_vars, "?", "1"), 1);
 		return (ft_cd(cmd_args[1], mini -> env_vars), 1);
+	}
 	return (0);
 }

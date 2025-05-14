@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 16:29:47 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/13 17:03:55 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/14 11:35:11 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,10 +94,9 @@ static int	echo_print(char *line)
 	return (1);
 }
 
-static int	echo_ch(char **args, t_env_vars *vars)
+static int	echo_ch(char **args)
 {
 	int		i;
-	char	*line;
 
 	if (!args[1])
 		return (ft_putchar_fd('\n', 1), 0);
@@ -109,18 +108,15 @@ static int	echo_ch(char **args, t_env_vars *vars)
 		i = 0;
 	while (args[++i + 1])
 	{
-		line = expand(args[i], vars);
-		if (!echo_print(line))
-			return (free(line), 0);
+		if (!echo_print(args[i]))
+			return (0);
 		ft_putchar_fd(' ', 1);
-		free(line);
 	}
-	line = expand(args[i], vars);
-	if (!echo_print(line))
-		return (free(line), 0);
+	if (!echo_print(args[i]))
+		return (0);
 	if (ft_strncmp(args[1], "-n", 3))
 		ft_putchar_fd('\n', 1);
-	return (free(line), 0);
+	return (0);
 }
 
 void	ft_echo(char **args, t_env_vars *vars)
@@ -134,7 +130,7 @@ void	ft_echo(char **args, t_env_vars *vars)
 	{
 		g_signal = SIGUSR1;
 		signal(SIGINT, SIG_DFL);
-		exit(echo_ch(args, vars));
+		exit(echo_ch(args));
 	}
 	else
 		wait_upex(pid, vars, ft_split("echo", ' '), 1);
