@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 18:11:02 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/16 12:28:52 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/16 13:10:30 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ int	is_builtin(char *cmd, char **cmd_args, t_mini *mini)
 	else if (ft_strncmp(cmd, "echo", 5) == 0)
 		return (ft_echo(cmd_args, mini -> env_vars), 1);
 	else if (ft_strncmp(cmd, "exit", 5) == 0)
-		return (ft_exit(cmd_args, mini), 1);
+		return (exit_too_many_args(cmd_args, mini), 1);
 	else if (ft_strncmp(cmd, "cd", 3) == 0)
 	{
 		i = 0;

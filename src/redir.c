@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 14:38:43 by mecauchy          #+#    #+#             */
-/*   Updated: 2025/05/13 17:02:43 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/16 13:45:20 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,13 +79,16 @@ void	redirect_pipe(t_data *data, int i)
 
 void	wait_all_pids(t_data *data, t_env_vars *vars, t_cmd *cmds)
 {
-	int	i;
+	int		i;
+	char	**sp;
 
 	i = 0;
 	while (i < data->nb_cmds)
 	{
-		wait_upex(data -> pid[i], vars,
-			ft_split(cmds->args[i]->arr[0], ' '), 1);
+		sp = ft_calloc(2, sizeof(char *));
+		sp[0] = ft_strdup(cmds->args[i]->arr[0]);
+		sp[1] = 0;
+		wait_upex(data -> pid[i], vars, sp, 1);
 		i++;
 	}
 }

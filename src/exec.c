@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 10:51:40 by mcauchy-          #+#    #+#             */
-/*   Updated: 2025/05/16 12:43:18 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/16 13:43:04 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,8 +61,6 @@ void	exec_multi_cmd(t_data **d, t_cmd *cmds, t_mini *mini)
 	data = *d;
 	while (i < data->nb_cmds)
 	{
-		if (!ft_strncmp(cmds->args[i]->arr[0], "exit", 5))
-			exit_too_many_args(cmds->args[i]->arr, mini);
 		data->pid[i] = fork();
 		if (data->pid[i] < 0)
 			exit(1);
@@ -85,8 +83,12 @@ void	single_cmd(t_data **d, t_cmd *cmds, t_mini *mini)
 	data = *d;
 	if (is_hd(cmds, 0))
 		return (here_doc_cmd(cmds->args[0]->arr, mini, cmds, 0));
-	if (is_builtin(cmds->args[0]->arr[0], cmds->args[0]->arr, mini))
+	if (check_is_main_builtin(cmds->args[0]->arr[0]))
+	{
+		apply_redirection(cmds->redir, 0);
+		is_builtin(cmds->args[0]->arr[0], cmds->args[0]->arr, mini);
 		return ;
+	}
 	pid = fork();
 	if (pid < 0)
 		return ;

@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 12:42:54 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/14 17:38:49 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/16 12:58:48 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ static int	end_deli(char *line, char ***sp, int *len_tot, int *sp_i)
 	sub = ft_substr(line, st_deli, i - st_deli);
 	if (sub == 0)
 		return (free_tab(*sp), -1);
-	if (!is_all_space(sub))
+	if (!is_all_space(sub, NULL))
 		*sp = append(*sp, len_tot, sp_i, sub);
 	else
 		free(sub);
@@ -134,7 +134,7 @@ static void	add_expanded(char **sp_cmds, t_array *sp_exp,
 				&sp_exp->arr_i, ft_strdup("c|"));
 		free(expa);
 	}
-	else if (ft_strncmp(expa, "", 1))
+	else if (ft_strncmp(expa, "", 1) || *i != 0)
 		sp_exp->arr = append(sp_exp->arr, &sp_exp->tot_len,
 				&sp_exp->arr_i, expa);
 	else

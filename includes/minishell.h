@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:02:17 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/16 12:33:16 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/16 13:25:58 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,6 +131,7 @@ void				free_cmds(t_cmd *cmds);
 char				**append(char **sp, int *len_tot, int *sp_i, char *sub);
 t_array				*init_array(void);
 int					is_correct_cmds(char *line);
+int					check_is_main_builtin(char *cmd);
 
 /* EXPAND */
 

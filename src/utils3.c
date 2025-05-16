@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 14:45:20 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/16 12:32:51 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/16 12:56:13 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,10 @@ int	is_all_space(char *line, t_env_vars *vars)
 	char	*expanded;
 	int		i;
 
-	expanded = expand(line, vars);
+	if (vars == NULL)
+		expanded = ft_strdup(line);
+	else
+		expanded = expand(line, vars);
 	i = 0;
 	while (expanded[i] && (expanded[i] == ' ' || expanded[i] == '\t'))
 		i ++;

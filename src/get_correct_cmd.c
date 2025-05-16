@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 12:42:21 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/14 14:34:42 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/16 13:01:55 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,29 +21,25 @@ static char	*get_correct_cmd_absol(char *cmd)
 
 static char	*get_correct_cmd_rela(char *cmd, t_mini *mini)
 {
-	char	**cmd_no_arg;
 	char	**paths;
 	char	*path_cmd;
 	char	*correct_path;
 	int		i;
 
-	cmd_no_arg = ft_split(cmd, ' ');
 	paths = ft_split(get_var_value(mini->env_vars, "PATH"), ':');
 	i = -1;
 	while (paths[++i])
 	{
 		path_cmd = ft_strjoin(paths[i], "/");
-		correct_path = ft_strjoin(path_cmd, cmd_no_arg[0]);
+		correct_path = ft_strjoin(path_cmd, cmd);
 		free(path_cmd);
 		if (access(correct_path, F_OK | X_OK) == 0)
-		{
-			free_tab(cmd_no_arg);
+		{	
 			free_tab(paths);
 			return (correct_path);
 		}
 		free(correct_path);
 	}
-	free_tab(cmd_no_arg);
 	free_tab(paths);
 	return (NULL);
 }
