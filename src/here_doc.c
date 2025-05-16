@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 13:57:52 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/14 17:52:19 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/16 12:36:22 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,8 @@ static int	hd_exec_cmd(t_here_doc *hd, int *f_id, t_mini *mini)
 	int		pid2;
 	char	*_value;
 
+	if (is_builtin(hd->cmd_args->arr[0], hd->cmd_args->arr, mini))
+		return (ft_atoi(get_var_value(mini->env_vars, "?")));
 	pid2 = fork();
 	if (pid2 == -1)
 		return (-1);
@@ -76,8 +78,6 @@ static int	hd_exec_cmd(t_here_doc *hd, int *f_id, t_mini *mini)
 			close(f_id[1]);
 			close(f_id[0]);
 		}
-		if (is_builtin(hd->cmd_args->arr[0], hd->cmd_args->arr, mini))
-			return (ft_atoi(get_var_value(mini->env_vars, "?")));
 		vars_add(mini -> env_vars, "_", hd->cmd_args->arr[0]);
 		return (envp = get_envp(mini->env_vars),
 			execve(hd->cmd_args->arr[0], hd->cmd_args->arr, envp),
@@ -107,8 +107,6 @@ int	*pipe_exec(t_here_doc *hd, t_mini *mini, t_cmd *cmds, int i)
 	ps[0] = hd_pr_lines(hd, fs, lines, mini -> env_vars);
 	ft_lstclear(&lines, free);
 	corr = get_correct_cmd(hd->cmd_args->arr[0], mini);
-	if (!ft_strncmp(corr, "exit", 5))
-		exit_too_many_args(hd->cmd_args->arr, mini);
 	if (corr)
 		return (apply_redirection(cmds->redir, i), ps[1] = hd_exec_cmd(hd, fs,
 				mini), free(corr), close(fs[0]), close(fs[1]), free(fs), ps);

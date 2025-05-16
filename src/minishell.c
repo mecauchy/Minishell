@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:07:38 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/14 17:37:12 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/16 12:40:21 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ void	handle_line(t_mini *mini, char *line)
 	if (line == NULL)
 		return (ex = ft_atoi(get_var_value(mini -> env_vars, "?")),
 			printf("exit\n"), rl_clear_history(), free_mini(mini), exit(ex));
-	if (*line && !is_all_space(line))
+	if (*line && !is_all_space(line, mini -> env_vars))
 	{
 		add_history(line);
 		if (!is_correctly_quoted(line))

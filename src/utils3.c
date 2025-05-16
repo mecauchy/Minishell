@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 14:45:20 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/06 23:11:51 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/16 12:32:51 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,12 +93,16 @@ char	**append(char **sp, int *len_tot, int *sp_i, char *sub)
 		*len_tot = *len_tot * 2, *sp_i = i + 1, free(sp), split_double);
 }
 
-int	is_all_space(char *line)
+int	is_all_space(char *line, t_env_vars *vars)
 {
-	int	i;
+	char	*expanded;
+	int		i;
 
+	expanded = expand(line, vars);
 	i = 0;
-	while (line[i] && (line[i] == ' ' || line[i] == '\t'))
+	while (expanded[i] && (expanded[i] == ' ' || expanded[i] == '\t'))
 		i ++;
-	return (line[i] == 0);
+	if (expanded[i] == 0)
+		return (free(expanded), 1);
+	return (free(expanded), 0);
 }

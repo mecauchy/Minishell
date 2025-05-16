@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 12:29:00 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/14 14:36:35 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/16 12:30:24 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,9 +89,9 @@ int	check_isll(char *nb, int len)
 	if (nb[i] == '-')
 		po = -1;
 	res = ft_atoll(nb);
-	if (res <= 0 && po == -1)
+	if (res < 0 && po == -1)
 		return (1);
-	if (res > 0 && po == 1)
+	if (res >= 0 && po == 1)
 		return (1);
 	return (0);
 }

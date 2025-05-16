@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 13:02:17 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/14 17:53:25 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/16 12:33:16 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,7 +114,7 @@ typedef struct s_here_doc
 /* UTILS */
 
 int					is_correctly_quoted(char *line);
-int					is_all_space(char *line);
+int					is_all_space(char *line, t_env_vars *vars);
 int					ft_is_identifier(char *name);
 void				free_tab(char **tab);
 char				*ft_strjoin_free(char *s1, char *s2);

@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 10:51:40 by mcauchy-          #+#    #+#             */
-/*   Updated: 2025/05/14 18:21:48 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/16 12:43:18 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,8 @@ static void	exec_child(t_cmd *cmds, t_data *data, t_mini *m, int i)
 	char	**env;
 
 	signal(SIGQUIT, SIG_DFL);
-	redirect_pipe(data, i);
+	if (data -> nb_cmds != 1)
+		redirect_pipe(data, i);
 	if (!cmds->args[i]->arr[0])
 		exit(0);
 	if (is_hd(cmds, i))
@@ -51,7 +52,7 @@ static void	exec_child(t_cmd *cmds, t_data *data, t_mini *m, int i)
 	return (exit(ft_atoi(get_var_value(m->env_vars, "?"))));
 }
 
-void	exec_multi_cmd(t_data **d, t_cmd *cmds, t_mini *m)
+void	exec_multi_cmd(t_data **d, t_cmd *cmds, t_mini *mini)
 {
 	int		i;
 	t_data	*data;
@@ -61,19 +62,41 @@ void	exec_multi_cmd(t_data **d, t_cmd *cmds, t_mini *m)
 	while (i < data->nb_cmds)
 	{
 		if (!ft_strncmp(cmds->args[i]->arr[0], "exit", 5))
-			exit_too_many_args(cmds->args[i]->arr, m);
+			exit_too_many_args(cmds->args[i]->arr, mini);
 		data->pid[i] = fork();
 		if (data->pid[i] < 0)
 			exit(1);
 		if (data->pid[i] == 0)
 		{
 			g_signal = SIGUSR1;
-			return (exec_child(cmds, data, m, i));
+			return (exec_child(cmds, data, mini, i));
 		}
 		i++;
 	}
 	close_fds(data);
-	wait_all_pids(data, m -> env_vars, cmds);
+	wait_all_pids(data, mini -> env_vars, cmds);
+}
+
+void	single_cmd(t_data **d, t_cmd *cmds, t_mini *mini)
+{
+	t_data	*data;
+	int		pid;
+
+	data = *d;
+	if (is_hd(cmds, 0))
+		return (here_doc_cmd(cmds->args[0]->arr, mini, cmds, 0));
+	if (is_builtin(cmds->args[0]->arr[0], cmds->args[0]->arr, mini))
+		return ;
+	pid = fork();
+	if (pid < 0)
+		return ;
+	if (pid == 0)
+	{
+		g_signal = 0;
+		return (exec_child(cmds, data, mini, 0));
+	}
+	wait_upex(pid, mini -> env_vars,
+		ft_split(cmds->args[0]->arr[0], ' '), 1);
 }
 
 int	multi_cmds(t_mini *mini)
@@ -85,20 +108,16 @@ int	multi_cmds(t_mini *mini)
 	data -> nb_cmds = nb_cmd(mini->cmds_splitted);
 	data->pid = malloc(sizeof(int) * data->nb_cmds);
 	if (!data->pid)
-	{
-		perror("malloc");
-		exit(1);
-	}
+		return (perror("malloc"), exit(1), 1);
 	if (!data)
 		return (0);
 	init_fds(data);
 	cmd = get_cmds(mini->cmds_splitted);
 	if (!cmd)
 		return (0);
-	exec_multi_cmd(&data, cmd, mini);
-	free_cmds(cmd);
-	free(data -> pid);
-	free(data -> fd);
-	free(data);
-	return (0);
+	if (data -> nb_cmds == 1)
+		single_cmd(&data, cmd, mini);
+	else
+		exec_multi_cmd(&data, cmd, mini);
+	return (free_cmds(cmd), free(data->pid), free(data->fd), free(data), 0);
 }
