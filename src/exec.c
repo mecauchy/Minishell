@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 10:51:40 by mcauchy-          #+#    #+#             */
-/*   Updated: 2025/05/16 13:43:04 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/16 15:30:43 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,7 @@ void	single_cmd(t_data **d, t_cmd *cmds, t_mini *mini)
 	t_data	*data;
 	int		pid;
 
+	g_signal = SIGUSR1;
 	data = *d;
 	if (is_hd(cmds, 0))
 		return (here_doc_cmd(cmds->args[0]->arr, mini, cmds, 0));

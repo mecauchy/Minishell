@@ -6,7 +6,7 @@
 /*   By: vluo <vluo@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 14:21:27 by vluo              #+#    #+#             */
-/*   Updated: 2025/05/16 13:26:34 by vluo             ###   ########.fr       */
+/*   Updated: 2025/05/16 15:42:02 by vluo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,4 +73,13 @@ int	check_is_main_builtin(char *cmd)
 	else if (ft_strncmp(cmd, "cd", 3) == 0)
 		return (1);
 	return (0);
+}
+
+void	free_hd(t_here_doc *hd)
+{
+	free_tab(hd -> delimiter -> arr);
+	free(hd -> delimiter);
+	free_tab(hd -> cmd_args -> arr);
+	free(hd -> cmd_args);
+	free(hd);
 }
